@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言年初时，给自己立了个flag：至少写20篇技术文章。然而，半年过去了，自己竟然还一篇还没有写，实在是惭愧。想想最近这段时间过得确实有点安逸，该看的书没看，该写的文章没写。孔圣人曾说：每日三省吾身。圣人每天都要反省自己。我作为一个普通人，也应该偶尔反省一下自己。自己跳槽来深圳已过三个月，太忙，没时间写文章。趁着今天周末，就找个时间谈谈这次跳槽吧。（伟大源于日复一日的坚持）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谈谈这次跳槽">
+<meta property="og:url" content="http://nancyyihao.github.io/2018/10/13/Talk-About-Hopping-To-Tencent/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="前言年初时，给自己立了个flag：至少写20篇技术文章。然而，半年过去了，自己竟然还一篇还没有写，实在是惭愧。想想最近这段时间过得确实有点安逸，该看的书没看，该写的文章没写。孔圣人曾说：每日三省吾身。圣人每天都要反省自己。我作为一个普通人，也应该偶尔反省一下自己。自己跳槽来深圳已过三个月，太忙，没时间写文章。趁着今天周末，就找个时间谈谈这次跳槽吧。（伟大源于日复一日的坚持）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:36:38.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Thinking">
+<meta property="article:tag" content="生活">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2018/10/13/Talk-About-Hopping-To-Tencent/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>谈谈这次跳槽 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2018/10/13/Talk-About-Hopping-To-Tencent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          谈谈这次跳槽
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-10-13 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-13T00:00:00+08:00">2018-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:36:38" itemprop="dateModified" datetime="2020-01-05T23:36:38+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Thinking/" itemprop="url" rel="index">
+                    <span itemprop="name">Thinking</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/10/13/Talk-About-Hopping-To-Tencent/" class="post-meta-item leancloud_visitors" data-flag-title="谈谈这次跳槽" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/10/13/Talk-About-Hopping-To-Tencent/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/10/13/Talk-About-Hopping-To-Tencent/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>年初时，给自己立了个flag：至少写20篇技术文章。然而，半年过去了，自己竟然还一篇还没有写，实在是惭愧。想想最近这段时间过得确实有点安逸，该看的书没看，该写的文章没写。孔圣人曾说：每日三省吾身。圣人每天都要反省自己。我作为一个普通人，也应该偶尔反省一下自己。自己跳槽来深圳已过三个月，太忙，没时间写文章。趁着今天周末，就找个时间谈谈这次跳槽吧。（伟大源于日复一日的坚持）</p>
+<a id="more"></a>
+
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>曾在去年十月份左右的时候，就已经给自己立了个flag：明年6月份无论如何都要回深圳。之后就进入了漫长的准备阶段。看了大牛任玉刚分享的Android学习路线指南，给自己跳槽的定位是中级Android开发工程师。因为大厂要不就招聘应届生，要不就招3年以上工作经验的高级工程师。由于准备跳槽的时间点是6月，自己也就不到2年左右工作经验，这个时候跳槽大厂是有点尴尬的。既然决心已定，就全力以赴吧。</p>
+<p>口头说准备容易，行动起来真的太难。加上那段时间公司新项目(milk)，根本就没有时间去准备面试相关知识。恰恰是那段忙碌的时间，让我的技术能力，代码设计能力有了很大的提高，自己的一些新想法也在新项目上得到实践，最重要的是自己的工作也慢慢得到了同事和老大的认可，这让我渐渐打消的要跳槽的念头。但是也一直在刻意积累自己想要学的东西。包括自定义view、热修复、网络层框架和客户端整体架构在2月初时，我基本已经摸清楚了。</p>
+<p>转眼时间来到3月份，老大给我晋升加薪，这个时候就更加犹豫了。口口声声说要回深圳（当然没跟其他人说跳槽的事），但是内心已经松口了，觉得明年再回去也没问题。毕竟刚晋升就走确实对不起老大。</p>
+<p>事情转机出现在4月份。一个HR在脉脉上联系我，问我要不要去试试看。当时招聘JD写的也是要求3年以上的工作经验，在HR盛情邀请之下，我还是决定试一试，毕竟就算失败了，我也不亏，为明年做准备。</p>
+<h3 id="面试"><a href="#面试" class="headerlink" title="面试"></a>面试</h3><p>4月中旬把简历写好发给了HR，也没太在意。一天组内团建去爬山，累得半死半活，8点多洗完澡，准备睡觉。在晚上9点左右就收到了一面面试官的电话面试，答得并不好，有不少基础的题目，该答出来的都没答上来。不想找借口，确实是因为太累了。之后就没抱希望，第二天就直接跟HR说面试应该挂了。没想到竟然过了，让我十分意外。</p>
+<p>流程很快，一面之后紧接着就是约二面时间，当然是希望能越往后越好，为自己多争取一点复习时间。面试官说最晚一周后，我想着反正无所谓（就没想着会过），就又把时间提前了两天。二面是视频面试，问题比一面更有深度，都是问很深入的东西，比如叫你设计一个网络架构你会怎么设计，需要考虑什么问题？为什么要这样设计？都是很开放的问题，要是平时没有深入了解其中原理，基本上就跪了。最后还问了一个算法题，大意是给定一篇文章，文章中有很多的过滤词，用什么方法能快速找出这些过滤词并替换掉？到最后其实是有点蒙的，一开始只能想到最普通的遍历，这样的算法的自己也是不满意的，当然面试官也不满意，我就跟面试官说给我5分钟，喝了口水冷静下来，想到了建立字典树的方案先把所有的过滤词放到树中，再用文章一遍扫描，这个方法是n+m的复杂度，相比第一个n*m好很多。当时也没看面试官反应，貌似也不是最优解。最后就问还有什么想问的，这些都是套路话，问了一些团队工作方式，氛围等几个泛泛的问题之后就结束面试了，时间不到一个小时。</p>
+<p>二面之后立马约三面，三面是个总经理级别的人物。面试过程也比较轻松，主要是聊聊我现在的工作、跳槽的目的和对未来的规划。问题不大，半个多小时就结束了。</p>
+<p>几天过去后，HR通知我面试全部通过了。整个流程下来，不到半个月，然而我并没有狂喜。等待我的是一个很艰难的抉择。</p>
+<h3 id="抉择"><a href="#抉择" class="headerlink" title="抉择"></a>抉择</h3><p>从入职到现在，leader对我都很好，从一开始啥都不会到现在能够独当一面，很大程度都是leader的功劳，自己在一年多时间里也成长了很多，而且今年刚刚提了晋升和加薪，这个点走确实有点不太合适。几番衡量之下，发现自己回深圳的念头更加强烈，而深圳相对来说鹅厂应该算是不错的去处，便最终决定接受鹅厂的offer，准备南下。决定之后便立马跟leader说了，leader表示理解，很快就通过了离职申请。离职的最后一天，整个组的同事一起出来请我吃饭，为我送行，大公司中有这样好氛围的组并不多。猪厂扁平化的管理风格也让我很怀念，我们总监是和我们做在一起的，还经常一起吃饭，来到鹅厂三个月，总监几乎见不到面。</p>
+<h3 id="南下"><a href="#南下" class="headerlink" title="南下"></a>南下</h3><p>6月4日办完离职手续之后，6月5日就匆匆赶往深圳了。深圳给我的第一印象是空气特别好，有活力，年轻人特别多。虽然来的第一个星期天天下雨，但心情舒畅了许多，感觉和北京相比，自己还是比较喜欢这种气候。在北京眼里全部只有工作、工作、工作，至少在这边还能跟同学撸撸串、聊聊人生。</p>
+<h3 id="入职"><a href="#入职" class="headerlink" title="入职"></a>入职</h3><p>入职之后，和自己想象完全不一样。没有代码规范、没有code review，代码质量也不高，版本管理用的竟然还是svn！经过一段艰难的适应期之后，还是告诉自己，既来之则安之，改变自己能改变的，接受自己不能改变的。第一天进来刚把环境装好，第二天就马上改bug了。这种快节奏我还真第一次遇到。原来猪场新同事入职，一般都有两周的缓冲时间来熟悉环境，后面才是慢慢接触新bug，新需求。第一个需求很快就到来了，就是把普通全屏h5改成播放器加h5的形式，凭借这一年多的工作经验，做这么个需求自然不在话下，但是自己还是不停测试并优化自己的代码，快速并很好的完成了任务。令自己比较欣慰的是，一起合作的同事一开始也不太重视代码质量，在我的影响之下，也开始重视代码质量了。</p>
+<h3 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h3><p>从8月份至今，每周上六天班，国庆因为要发版，也来加了五天班，忙得晕头转向，也经常问自己：自己到底想要在这份工作中得到什么？本来以为这么成熟的app，不会有太多的变动，会有更多的时间去钻研技术，然而现实的需求并没有排期，boss拍定一个时间，就需要在那个时间点完成，压力可想而知，代码质量就更不用说了。晚上十点多回去是常有的事，自己计划要做的事（Android源码系列分析文章）只能往后放了。因为工作中有时候也要用到iOS开发相关知识，学习iOS开发的计划便提前了，国庆回来之后，OC语法基本学完，后面还是得抽时间去学学iOS-app开发的设计架构和理念。有了Android基础，学起来快了很多。等这段时间忙完，希望能够抽身去学习自己感兴趣的linux底层相关的技术，还是要注意工作的积累，不然天天做业务，几年后技术就荒废了。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Thinking/" rel="tag"># Thinking</a>
+              <a href="/tags/%E7%94%9F%E6%B4%BB/" rel="tag"># 生活</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/16/Refactoring-Review/" rel="prev" title="《重构-改善既有代码设计》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《重构-改善既有代码设计》读书笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/11/11/Talk-About-My-Current-Status/" rel="next" title="谈谈近况">
+      谈谈近况 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试"><span class="nav-number">3.</span> <span class="nav-text">面试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抉择"><span class="nav-number">4.</span> <span class="nav-text">抉择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#南下"><span class="nav-number">5.</span> <span class="nav-text">南下</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#入职"><span class="nav-number">6.</span> <span class="nav-text">入职</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反思"><span class="nav-number">7.</span> <span class="nav-text">反思</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言最近做需求，使用了ListPopupWindow，但是发现在ListView列表中，显示PopupWindow时，有可能会往上滚动（见下图），觉得有点奇怪，就花了点时间去找原因。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于ListPopupWindow的问题分析">
+<meta property="og:url" content="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="前言最近做需求，使用了ListPopupWindow，但是发现在ListView列表中，显示PopupWindow时，有可能会往上滚动（见下图），觉得有点奇怪，就花了点时间去找原因。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/p1.gif">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/p2.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/p3.png">
+<meta property="article:published_time" content="2017-10-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:06:39.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="ListPopupWindow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/p1.gif">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>关于ListPopupWindow的问题分析 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/10/13/Android-ListPopupWindow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于ListPopupWindow的问题分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-13 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-13T00:00:00+08:00">2017-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:06:39" itemprop="dateModified" datetime="2020-01-05T23:06:39+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/10/13/Android-ListPopupWindow/" class="post-meta-item leancloud_visitors" data-flag-title="关于ListPopupWindow的问题分析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/10/13/Android-ListPopupWindow/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/10/13/Android-ListPopupWindow/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近做需求，使用了ListPopupWindow，但是发现在ListView列表中，显示PopupWindow时，有可能会往上滚动（见下图），觉得有点奇怪，就花了点时间去找原因。</p>
+<a id="more"></a>
+<p><img src="/2017/10/13/Android-ListPopupWindow/p1.gif" alt></p>
+<h3 id="分析过程"><a href="#分析过程" class="headerlink" title="分析过程"></a>分析过程</h3><p>从哪里入手呢？当然是一步一步来，从ListPopupWindow.show()源码开始看起</p>
+<h4 id="ListPopupWindow-show"><a href="#ListPopupWindow-show" class="headerlink" title="ListPopupWindow.show()"></a>ListPopupWindow.show()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Show the popup list. If the list is already showing, this method</span></span><br><span class="line"><span class="comment">     * will recalculate the popup's size and position.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> height = buildDropDown();</span><br><span class="line">        <span class="keyword">boolean</span> noInputMethod = isInputMethodNotNeeded();</span><br><span class="line">        PopupWindowCompat.setWindowLayoutType(mPopup, mDropDownWindowLayoutType);</span><br><span class="line">        <span class="keyword">if</span> (mPopup.isShowing()) &#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> widthSpec;</span><br><span class="line">            <span class="keyword">if</span> (mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT) &#123;</span><br><span class="line">                <span class="comment">// The call to PopupWindow's update method below can accept -1 for any</span></span><br><span class="line">                <span class="comment">// value you do not want to update.</span></span><br><span class="line">                widthSpec = -<span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mDropDownWidth == ViewGroup.LayoutParams.WRAP_CONTENT) &#123;</span><br><span class="line">                widthSpec = getAnchorView().getWidth();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                widthSpec = mDropDownWidth;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> heightSpec;</span><br><span class="line">            <span class="keyword">if</span> (mDropDownHeight == ViewGroup.LayoutParams.MATCH_PARENT) &#123;</span><br><span class="line">                <span class="comment">// The call to PopupWindow's update method below can accept -1 for any</span></span><br><span class="line">                <span class="comment">// value you do not want to update.</span></span><br><span class="line">                heightSpec = noInputMethod ? height : ViewGroup.LayoutParams.MATCH_PARENT;</span><br><span class="line">                <span class="keyword">if</span> (noInputMethod) &#123;</span><br><span class="line">                    mPopup.setWidth(mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT ?</span><br><span class="line">                            ViewGroup.LayoutParams.MATCH_PARENT : <span class="number">0</span>);</span><br><span class="line">                    mPopup.setHeight(<span class="number">0</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    mPopup.setWidth(mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT ?</span><br><span class="line">                                    ViewGroup.LayoutParams.MATCH_PARENT : <span class="number">0</span>);</span><br><span class="line">                    mPopup.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mDropDownHeight == ViewGroup.LayoutParams.WRAP_CONTENT) &#123;</span><br><span class="line">                heightSpec = height;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                heightSpec = mDropDownHeight;</span><br><span class="line">            &#125;</span><br><span class="line">            mPopup.setOutsideTouchable(!mForceIgnoreOutsideTouch &amp;&amp; !mDropDownAlwaysVisible);</span><br><span class="line">            mPopup.update(getAnchorView(), mDropDownHorizontalOffset,</span><br><span class="line">                            mDropDownVerticalOffset, (widthSpec &lt; <span class="number">0</span>)? -<span class="number">1</span> : widthSpec,</span><br><span class="line">                            (heightSpec &lt; <span class="number">0</span>)? -<span class="number">1</span> : heightSpec);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> widthSpec;</span><br><span class="line">            <span class="keyword">if</span> (mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT) &#123;</span><br><span class="line">                widthSpec = ViewGroup.LayoutParams.MATCH_PARENT;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (mDropDownWidth == ViewGroup.LayoutParams.WRAP_CONTENT) &#123;</span><br><span class="line">                    widthSpec = getAnchorView().getWidth();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    widthSpec = mDropDownWidth;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> heightSpec;</span><br><span class="line">            <span class="keyword">if</span> (mDropDownHeight == ViewGroup.LayoutParams.MATCH_PARENT) &#123;</span><br><span class="line">                heightSpec = ViewGroup.LayoutParams.MATCH_PARENT;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (mDropDownHeight == ViewGroup.LayoutParams.WRAP_CONTENT) &#123;</span><br><span class="line">                    heightSpec = height;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    heightSpec = mDropDownHeight;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            mPopup.setWidth(widthSpec);</span><br><span class="line">            mPopup.setHeight(heightSpec);</span><br><span class="line">            setPopupClipToScreenEnabled(<span class="keyword">true</span>);</span><br><span class="line">            <span class="comment">// use outside touchable to dismiss drop down when touching outside of it, so</span></span><br><span class="line">            <span class="comment">// only set this if the dropdown is not always visible</span></span><br><span class="line">            mPopup.setOutsideTouchable(!mForceIgnoreOutsideTouch &amp;&amp; !mDropDownAlwaysVisible);</span><br><span class="line">            mPopup.setTouchInterceptor(mTouchInterceptor);</span><br><span class="line">            PopupWindowCompat.showAsDropDown(mPopup, getAnchorView(), mDropDownHorizontalOffset,</span><br><span class="line">                    mDropDownVerticalOffset, mDropDownGravity);</span><br><span class="line">            mDropDownList.setSelection(ListView.INVALID_POSITION);</span><br><span class="line">            <span class="keyword">if</span> (!mModal || mDropDownList.isInTouchMode()) &#123;</span><br><span class="line">                clearListSelection();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!mModal) &#123;</span><br><span class="line">                mHandler.post(mHideSelector);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="PopupWindowCompat-showAsDropDown"><a href="#PopupWindowCompat-showAsDropDown" class="headerlink" title="PopupWindowCompat.showAsDropDown()"></a>PopupWindowCompat.showAsDropDown()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showAsDropDown</span><span class="params">(PopupWindow popup, View anchor, <span class="keyword">int</span> xoff, <span class="keyword">int</span> yoff,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> gravity)</span> </span>&#123;</span><br><span class="line">    IMPL.showAsDropDown(popup, anchor, xoff, yoff, gravity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="BasePopupWindowImpl-showAsDropDown"><a href="#BasePopupWindowImpl-showAsDropDown" class="headerlink" title="BasePopupWindowImpl.showAsDropDown()"></a>BasePopupWindowImpl.showAsDropDown()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showAsDropDown</span><span class="params">(PopupWindow popup, View anchor, <span class="keyword">int</span> xoff, <span class="keyword">int</span> yoff,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> gravity)</span> </span>&#123;</span><br><span class="line">            popup.showAsDropDown(anchor, xoff, yoff);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="PopupWindow-showAsDropDown"><a href="#PopupWindow-showAsDropDown" class="headerlink" title="PopupWindow.showAsDropDown()"></a>PopupWindow.showAsDropDown()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showAsDropDown</span><span class="params">(View anchor, <span class="keyword">int</span> xoff, <span class="keyword">int</span> yoff)</span> </span>&#123;</span><br><span class="line">    showAsDropDown(anchor, xoff, yoff, DEFAULT_ANCHORED_GRAVITY);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="PopupWindow-showAsDropDown-1"><a href="#PopupWindow-showAsDropDown-1" class="headerlink" title="PopupWindow.showAsDropDown()"></a>PopupWindow.showAsDropDown()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showAsDropDown</span><span class="params">(View anchor, <span class="keyword">int</span> xoff, <span class="keyword">int</span> yoff, <span class="keyword">int</span> gravity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isShowing() || mContentView == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    TransitionManager.endTransitions(mDecorView);</span><br><span class="line">    attachToAnchor(anchor, xoff, yoff, gravity);</span><br><span class="line">    mIsShowing = <span class="keyword">true</span>;</span><br><span class="line">    mIsDropdown = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">final</span> WindowManager.LayoutParams p = createPopupLayoutParams(anchor.getWindowToken());</span><br><span class="line">    preparePopup(p);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> aboveAnchor = findDropDownPosition(anchor, p, xoff, yoff,</span><br><span class="line">            p.width, p.height, gravity);</span><br><span class="line">    updateAboveAnchor(aboveAnchor);</span><br><span class="line">    p.accessibilityIdOfAnchor = (anchor != <span class="keyword">null</span>) ? anchor.getAccessibilityViewId() : -<span class="number">1</span>;</span><br><span class="line">    invokePopup(p);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="PopupWindow-findDropDownPosition"><a href="#PopupWindow-findDropDownPosition" class="headerlink" title="PopupWindow.findDropDownPosition()"></a>PopupWindow.findDropDownPosition()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">findDropDownPosition</span><span class="params">(View anchor, WindowManager.LayoutParams outParams,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> xOffset, <span class="keyword">int</span> yOffset, <span class="keyword">int</span> width, <span class="keyword">int</span> height, <span class="keyword">int</span> gravity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> anchorHeight = anchor.getHeight();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> anchorWidth = anchor.getWidth();</span><br><span class="line">    <span class="keyword">if</span> (mOverlapAnchor) &#123;</span><br><span class="line">        yOffset -= anchorHeight;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Initially, align to the bottom-left corner of the anchor plus offsets.</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span>[] drawingLocation = mTmpDrawingLocation;</span><br><span class="line">    anchor.getLocationInWindow(drawingLocation);</span><br><span class="line">    outParams.x = drawingLocation[<span class="number">0</span>] + xOffset;</span><br><span class="line">    outParams.y = drawingLocation[<span class="number">1</span>] + anchorHeight + yOffset;</span><br><span class="line">    <span class="keyword">final</span> Rect displayFrame = <span class="keyword">new</span> Rect();</span><br><span class="line">    anchor.getWindowVisibleDisplayFrame(displayFrame);</span><br><span class="line">    <span class="keyword">if</span> (width == MATCH_PARENT) &#123;</span><br><span class="line">        width = displayFrame.right - displayFrame.left;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (height == MATCH_PARENT) &#123;</span><br><span class="line">        height = displayFrame.bottom - displayFrame.top;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Let the window manager know to align the top to y.</span></span><br><span class="line">    outParams.gravity = Gravity.LEFT | Gravity.TOP;</span><br><span class="line">    outParams.width = width;</span><br><span class="line">    outParams.height = height;</span><br><span class="line">    <span class="comment">// If we need to adjust for gravity RIGHT, align to the bottom-right</span></span><br><span class="line">    <span class="comment">// corner of the anchor (still accounting for offsets).</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hgrav = Gravity.getAbsoluteGravity(gravity, anchor.getLayoutDirection())</span><br><span class="line">            &amp; Gravity.HORIZONTAL_GRAVITY_MASK;</span><br><span class="line">    <span class="keyword">if</span> (hgrav == Gravity.RIGHT) &#123;</span><br><span class="line">        outParams.x -= width - anchorWidth;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span>[] screenLocation = mTmpScreenLocation;</span><br><span class="line">    anchor.getLocationOnScreen(screenLocation);</span><br><span class="line">    <span class="comment">// First, attempt to fit the popup vertically without resizing.</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> fitsVertical = tryFitVertical(outParams, yOffset, height,</span><br><span class="line">            anchorHeight, drawingLocation[<span class="number">1</span>], screenLocation[<span class="number">1</span>], displayFrame.top,</span><br><span class="line">            displayFrame.bottom, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// Next, attempt to fit the popup horizontally without resizing.</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> fitsHorizontal = tryFitHorizontal(outParams, xOffset, width,</span><br><span class="line">            anchorWidth, drawingLocation[<span class="number">0</span>], screenLocation[<span class="number">0</span>], displayFrame.left,</span><br><span class="line">            displayFrame.right, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// If the popup still doesn't fit, attempt to scroll the parent.</span></span><br><span class="line">    <span class="keyword">if</span> (!fitsVertical || !fitsHorizontal) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> scrollX = anchor.getScrollX();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> scrollY = anchor.getScrollY();</span><br><span class="line">        <span class="keyword">final</span> Rect r = <span class="keyword">new</span> Rect(scrollX, scrollY, scrollX + width + xOffset,</span><br><span class="line">                scrollY + height + anchorHeight + yOffset);</span><br><span class="line">        <span class="keyword">if</span> (mAllowScrollingAnchorParent &amp;&amp; anchor.requestRectangleOnScreen(r, <span class="keyword">true</span>)) &#123;</span><br><span class="line">            <span class="comment">// Reset for the new anchor position.</span></span><br><span class="line">            anchor.getLocationInWindow(drawingLocation);</span><br><span class="line">            outParams.x = drawingLocation[<span class="number">0</span>] + xOffset;</span><br><span class="line">            outParams.y = drawingLocation[<span class="number">1</span>] + anchorHeight + yOffset;</span><br><span class="line">            <span class="comment">// Preserve the gravity adjustment.</span></span><br><span class="line">            <span class="keyword">if</span> (hgrav == Gravity.RIGHT) &#123;</span><br><span class="line">                outParams.x -= width - anchorWidth;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Try to fit the popup again and allowing resizing.</span></span><br><span class="line">        tryFitVertical(outParams, yOffset, height, anchorHeight, drawingLocation[<span class="number">1</span>],</span><br><span class="line">                screenLocation[<span class="number">1</span>], displayFrame.top, displayFrame.bottom, mClipToScreen);</span><br><span class="line">        tryFitHorizontal(outParams, xOffset, width, anchorWidth, drawingLocation[<span class="number">0</span>],</span><br><span class="line">                screenLocation[<span class="number">0</span>], displayFrame.left, displayFrame.right, mClipToScreen);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Return whether the popup's top edge is above the anchor's top edge.</span></span><br><span class="line">    <span class="keyword">return</span> outParams.y &lt; drawingLocation[<span class="number">1</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="anchor-View-requestRectangleOnScreen-r-true"><a href="#anchor-View-requestRectangleOnScreen-r-true" class="headerlink" title="anchor(View).requestRectangleOnScreen(r, true)"></a>anchor(View).requestRectangleOnScreen(r, true)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Request that a rectangle of this view be visible on the screen,</span></span><br><span class="line"><span class="comment">     * scrolling if necessary just enough.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;A View should call this if it maintains some notion of which part</span></span><br><span class="line"><span class="comment">     * of its content is interesting.  For example, a text editing view</span></span><br><span class="line"><span class="comment">     * should call this when its cursor moves.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;The Rectangle passed into this method should be in the View's content coordinate space.</span></span><br><span class="line"><span class="comment">     * It should not be affected by which part of the View is currently visible or its scroll</span></span><br><span class="line"><span class="comment">     * position.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;When &lt;code&gt;immediate&lt;/code&gt; is set to true, scrolling will not be</span></span><br><span class="line"><span class="comment">     * animated.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> rectangle The rectangle in the View's content coordinate space</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> immediate True to forbid animated scrolling, false otherwise</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Whether any parent scrolled.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestRectangleOnScreen</span><span class="params">(Rect rectangle, <span class="keyword">boolean</span> immediate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        View child = <span class="keyword">this</span>;</span><br><span class="line">        RectF position = (mAttachInfo != <span class="keyword">null</span>) ? mAttachInfo.mTmpTransformRect : <span class="keyword">new</span> RectF();</span><br><span class="line">        position.set(rectangle);</span><br><span class="line">        ViewParent parent = mParent;</span><br><span class="line">        <span class="keyword">boolean</span> scrolled = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">while</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">            rectangle.set((<span class="keyword">int</span>) position.left, (<span class="keyword">int</span>) position.top,</span><br><span class="line">                    (<span class="keyword">int</span>) position.right, (<span class="keyword">int</span>) position.bottom);</span><br><span class="line">            scrolled |= parent.requestChildRectangleOnScreen(child, rectangle, immediate);</span><br><span class="line">            <span class="keyword">if</span> (!(parent <span class="keyword">instanceof</span> View)) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// move it from child's content coordinate space to parent's content coordinate space</span></span><br><span class="line">            position.offset(child.mLeft - child.getScrollX(), child.mTop -child.getScrollY());</span><br><span class="line">            child = (View) parent;</span><br><span class="line">            parent = child.getParent();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> scrolled;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="parent-ViewParent-requestChildRectangleOnScreen-child-rectangle-immediate"><a href="#parent-ViewParent-requestChildRectangleOnScreen-child-rectangle-immediate" class="headerlink" title="parent(ViewParent).requestChildRectangleOnScreen(child, rectangle, immediate)"></a>parent(ViewParent).requestChildRectangleOnScreen(child, rectangle, immediate)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Called when a child of this group wants a particular rectangle to be</span></span><br><span class="line"><span class="comment"> * positioned onto the screen.  &#123;<span class="doctag">@link</span> ViewGroup&#125;s overriding this can trust</span></span><br><span class="line"><span class="comment"> * that:</span></span><br><span class="line"><span class="comment"> * &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;child will be a direct child of this group&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;rectangle will be in the child's content coordinates&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;&#123;<span class="doctag">@link</span> ViewGroup&#125;s overriding this should uphold the contract:&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> * &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;nothing will change if the rectangle is already visible&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> *   &lt;li&gt;the view port will be scrolled only just enough to make the</span></span><br><span class="line"><span class="comment"> *       rectangle visible&lt;/li&gt;</span></span><br><span class="line"><span class="comment"> * &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> child The direct child making the request.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> rectangle The rectangle in the child's coordinates the child</span></span><br><span class="line"><span class="comment"> *        wishes to be on the screen.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> immediate True to forbid animated or delayed scrolling,</span></span><br><span class="line"><span class="comment"> *        false otherwise</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Whether the group scrolled to handle the operation</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestChildRectangleOnScreen</span><span class="params">(View child, Rect rectangle,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> immediate)</span></span>;</span><br></pre></td></tr></table></figure>
+<p><strong>the view port will be scrolled only just enough to make the rectangle visible</strong><br>到这里我们可以确定确实ListPopupWindow在显示过程中有可能使父控件滑动，具体滑动多少距离，我们继续往下看<br><img src="/2017/10/13/Android-ListPopupWindow/p2.png" alt></p>
+<p>因为我的代码中使用了ListView，这里就接着往下看ListView.requestChildRectangleOnScreen()方法</p>
+<h4 id="ListView-requestChildRectangleOnScreen"><a href="#ListView-requestChildRectangleOnScreen" class="headerlink" title="ListView.requestChildRectangleOnScreen()"></a>ListView.requestChildRectangleOnScreen()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestChildRectangleOnScreen</span><span class="params">(View child, Rect rect, <span class="keyword">boolean</span> immediate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> rectTopWithinChild = rect.top;</span><br><span class="line">        <span class="comment">// offset so rect is in coordinates of the this view</span></span><br><span class="line">        rect.offset(child.getLeft(), child.getTop());</span><br><span class="line">        rect.offset(-child.getScrollX(), -child.getScrollY());</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> height = getHeight();</span><br><span class="line">        <span class="keyword">int</span> listUnfadedTop = getScrollY();</span><br><span class="line">        <span class="keyword">int</span> listUnfadedBottom = listUnfadedTop + height;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> fadingEdge = getVerticalFadingEdgeLength();</span><br><span class="line">        <span class="keyword">if</span> (showingTopFadingEdge()) &#123;</span><br><span class="line">            <span class="comment">// leave room for top fading edge as long as rect isn't at very top</span></span><br><span class="line">            <span class="keyword">if</span> ((mSelectedPosition &gt; <span class="number">0</span>) || (rectTopWithinChild &gt; fadingEdge)) &#123;</span><br><span class="line">                listUnfadedTop += fadingEdge;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> childCount = getChildCount();</span><br><span class="line">        <span class="keyword">int</span> bottomOfBottomChild = getChildAt(childCount - <span class="number">1</span>).getBottom();</span><br><span class="line">        <span class="keyword">if</span> (showingBottomFadingEdge()) &#123;</span><br><span class="line">            <span class="comment">// leave room for bottom fading edge as long as rect isn't at very bottom</span></span><br><span class="line">            <span class="keyword">if</span> ((mSelectedPosition &lt; mItemCount - <span class="number">1</span>)</span><br><span class="line">                    || (rect.bottom &lt; (bottomOfBottomChild - fadingEdge))) &#123;</span><br><span class="line">                listUnfadedBottom -= fadingEdge;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> scrollYDelta = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (rect.bottom &gt; listUnfadedBottom &amp;&amp; rect.top &gt; listUnfadedTop) &#123;</span><br><span class="line">            <span class="comment">// need to MOVE DOWN to get it in view: move down just enough so</span></span><br><span class="line">            <span class="comment">// that the entire rectangle is in view (or at least the first</span></span><br><span class="line">            <span class="comment">// screen size chunk).</span></span><br><span class="line">            <span class="keyword">if</span> (rect.height() &gt; height) &#123;</span><br><span class="line">                <span class="comment">// just enough to get screen size chunk on</span></span><br><span class="line">                scrollYDelta += (rect.top - listUnfadedTop);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// get entire rect at bottom of screen</span></span><br><span class="line">                scrollYDelta += (rect.bottom - listUnfadedBottom);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// make sure we aren't scrolling beyond the end of our children</span></span><br><span class="line">            <span class="keyword">int</span> distanceToBottom = bottomOfBottomChild - listUnfadedBottom;</span><br><span class="line">            scrollYDelta = Math.min(scrollYDelta, distanceToBottom);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (rect.top &lt; listUnfadedTop &amp;&amp; rect.bottom &lt; listUnfadedBottom) &#123;</span><br><span class="line">            <span class="comment">// need to MOVE UP to get it in view: move up just enough so that</span></span><br><span class="line">            <span class="comment">// entire rectangle is in view (or at least the first screen</span></span><br><span class="line">            <span class="comment">// size chunk of it).</span></span><br><span class="line">            <span class="keyword">if</span> (rect.height() &gt; height) &#123;</span><br><span class="line">                <span class="comment">// screen size chunk</span></span><br><span class="line">                scrollYDelta -= (listUnfadedBottom - rect.bottom);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// entire rect at top</span></span><br><span class="line">                scrollYDelta -= (listUnfadedTop - rect.top);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// make sure we aren't scrolling any further than the top our children</span></span><br><span class="line">            <span class="keyword">int</span> top = getChildAt(<span class="number">0</span>).getTop();</span><br><span class="line">            <span class="keyword">int</span> deltaToTop = top - listUnfadedTop;</span><br><span class="line">            scrollYDelta = Math.max(scrollYDelta, deltaToTop);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> scroll = scrollYDelta != <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (scroll) &#123;</span><br><span class="line">            scrollListItemsBy(-scrollYDelta);</span><br><span class="line">            positionSelector(INVALID_POSITION, child);</span><br><span class="line">            mSelectedTop = child.getTop();</span><br><span class="line">            invalidate();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> scroll;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>到这里我们可以发现，滑动的距离就是scrollYDelta.如果ListPopupWindow整个View高度较低，就滑动刚好可以使得ListPopupWindow整个View显示出来的距离。</p>
+<h4 id="ListView-scrollListItemsBy-scrollYDelta"><a href="#ListView-scrollListItemsBy-scrollYDelta" class="headerlink" title="ListView.scrollListItemsBy(-scrollYDelta);"></a>ListView.scrollListItemsBy(-scrollYDelta);</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Scroll the children by amount, adding a view at the end and removing</span></span><br><span class="line"><span class="comment">    * views that fall off as necessary.</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> amount The amount (positive or negative) to scroll.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scrollListItemsBy</span><span class="params">(<span class="keyword">int</span> amount)</span> </span>&#123;</span><br><span class="line">       offsetChildrenTopAndBottom(amount);</span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">int</span> listBottom = getHeight() - mListPadding.bottom;</span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">int</span> listTop = mListPadding.top;</span><br><span class="line">       <span class="keyword">final</span> AbsListView.RecycleBin recycleBin = mRecycler;</span><br><span class="line">       <span class="keyword">if</span> (amount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="comment">// shifted items up</span></span><br><span class="line">           <span class="comment">// may need to pan views into the bottom space</span></span><br><span class="line">           <span class="keyword">int</span> numChildren = getChildCount();</span><br><span class="line">           View last = getChildAt(numChildren - <span class="number">1</span>);</span><br><span class="line">           <span class="keyword">while</span> (last.getBottom() &lt; listBottom) &#123;</span><br><span class="line">               <span class="keyword">final</span> <span class="keyword">int</span> lastVisiblePosition = mFirstPosition + numChildren - <span class="number">1</span>;</span><br><span class="line">               <span class="keyword">if</span> (lastVisiblePosition &lt; mItemCount - <span class="number">1</span>) &#123;</span><br><span class="line">                   last = addViewBelow(last, lastVisiblePosition);</span><br><span class="line">                   numChildren++;</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">// may have brought in the last child of the list that is skinnier</span></span><br><span class="line">           <span class="comment">// than the fading edge, thereby leaving space at the end.  need</span></span><br><span class="line">           <span class="comment">// to shift back</span></span><br><span class="line">           <span class="keyword">if</span> (last.getBottom() &lt; listBottom) &#123;</span><br><span class="line">               offsetChildrenTopAndBottom(listBottom - last.getBottom());</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">// top views may be panned off screen</span></span><br><span class="line">           View first = getChildAt(<span class="number">0</span>);</span><br><span class="line">           <span class="keyword">while</span> (first.getBottom() &lt; listTop) &#123;</span><br><span class="line">               AbsListView.LayoutParams layoutParams = (LayoutParams) first.getLayoutParams();</span><br><span class="line">               <span class="keyword">if</span> (recycleBin.shouldRecycleViewType(layoutParams.viewType)) &#123;</span><br><span class="line">                   recycleBin.addScrapView(first, mFirstPosition);</span><br><span class="line">               &#125;</span><br><span class="line">               detachViewFromParent(first);</span><br><span class="line">               first = getChildAt(<span class="number">0</span>);</span><br><span class="line">               mFirstPosition++;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="comment">// shifted items down</span></span><br><span class="line">           View first = getChildAt(<span class="number">0</span>);</span><br><span class="line">           <span class="comment">// may need to pan views into top</span></span><br><span class="line">           <span class="keyword">while</span> ((first.getTop() &gt; listTop) &amp;&amp; (mFirstPosition &gt; <span class="number">0</span>)) &#123;</span><br><span class="line">               first = addViewAbove(first, mFirstPosition);</span><br><span class="line">               mFirstPosition--;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">// may have brought the very first child of the list in too far and</span></span><br><span class="line">           <span class="comment">// need to shift it back</span></span><br><span class="line">           <span class="keyword">if</span> (first.getTop() &gt; listTop) &#123;</span><br><span class="line">               offsetChildrenTopAndBottom(listTop - first.getTop());</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">int</span> lastIndex = getChildCount() - <span class="number">1</span>;</span><br><span class="line">           View last = getChildAt(lastIndex);</span><br><span class="line">           <span class="comment">// bottom view may be panned off screen</span></span><br><span class="line">           <span class="keyword">while</span> (last.getTop() &gt; listBottom) &#123;</span><br><span class="line">               AbsListView.LayoutParams layoutParams = (LayoutParams) last.getLayoutParams();</span><br><span class="line">               <span class="keyword">if</span> (recycleBin.shouldRecycleViewType(layoutParams.viewType)) &#123;</span><br><span class="line">                   recycleBin.addScrapView(last, mFirstPosition+lastIndex);</span><br><span class="line">               &#125;</span><br><span class="line">               detachViewFromParent(last);</span><br><span class="line">               last = getChildAt(--lastIndex);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       recycleBin.fullyDetachScrapViews();</span><br><span class="line">       removeUnusedFixedViews(mHeaderViewInfos);</span><br><span class="line">       removeUnusedFixedViews(mFooterViewInfos);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>至此，已经找到问题根源：<br>如果ListPopupWindow当前内容无法显示，为了保证ListPopupWindow显示内容尽可能可见，ListPopupWindow会自动挪动anchorView所在的可滑动ViewGroup的位置。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>知道问题根源所在，解决方案也不在话下了。自己写个方法判断，根据anchorView位置显示即可。这里以屏幕一半作为分割线，源码如下，当然具体应该如何调整，看需求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showMenuView</span><span class="params">(Context context, View anchorView)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (context == <span class="keyword">null</span> || anchorView == <span class="keyword">null</span> ) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mPopupWindow = <span class="keyword">new</span> ListPopupWindow(context);</span><br><span class="line">    mPopupWindow.setModal(<span class="keyword">true</span>);</span><br><span class="line">    mPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);</span><br><span class="line">    mPopupWindow.setContentWidth(measureContentWidth(context));</span><br><span class="line">    mPopupWindow.setAnchorView(anchorView);</span><br><span class="line">    mPopupWindow.setDropDownGravity(Gravity.END);</span><br><span class="line">    mPopupWindow.setHorizontalOffset(getHorizontalOffset(context, anchorView));</span><br><span class="line">    mPopupWindow.setVerticalOffset(getVerticalOffset(context, anchorView));</span><br><span class="line">    mPopupWindow.show();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">getHorizontalOffset</span><span class="params">(Context context, View anchorView)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">getVerticalOffset</span><span class="params">(Context context, View anchorView)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> popupWindowHeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (isExceedHalf(anchorView)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mAdapter <span class="keyword">instanceof</span> CommonMenuAdapter) &#123;</span><br><span class="line">            popupWindowHeight = mAdapter.getCount() * ((CommonMenuAdapter) mAdapter)</span><br><span class="line">                    .getItemHeight();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -anchorView.getHeight() - popupWindowHeight;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isExceedHalf</span><span class="params">(View anchorView)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] locations = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</span><br><span class="line">    anchorView.getLocationOnScreen(locations);</span><br><span class="line">    <span class="comment">// 控件在屏幕的y坐标</span></span><br><span class="line">    <span class="keyword">int</span> y = locations[<span class="number">1</span>];</span><br><span class="line">    <span class="comment">// 系统屏幕高度一半</span></span><br><span class="line">    <span class="keyword">int</span> halfHeight = SystemUtils.getScreenHeight() / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">return</span> y &gt; halfHeight;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p><img src="/2017/10/13/Android-ListPopupWindow/p3.png" alt></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/ListPopupWindow/" rel="tag"># ListPopupWindow</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/" rel="prev" title="Android沉浸式状态栏趟坑之旅">
+      <i class="fa fa-chevron-left"></i> Android沉浸式状态栏趟坑之旅
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/10/29/Talk-about-Java-Volatile-and-Synchronized/" rel="next" title="谈谈 Java-voliatile-and-synchronized">
+      谈谈 Java-voliatile-and-synchronized <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析过程"><span class="nav-number">2.</span> <span class="nav-text">分析过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ListPopupWindow-show"><span class="nav-number">2.1.</span> <span class="nav-text">ListPopupWindow.show()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PopupWindowCompat-showAsDropDown"><span class="nav-number">2.2.</span> <span class="nav-text">PopupWindowCompat.showAsDropDown()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BasePopupWindowImpl-showAsDropDown"><span class="nav-number">2.3.</span> <span class="nav-text">BasePopupWindowImpl.showAsDropDown()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PopupWindow-showAsDropDown"><span class="nav-number">2.4.</span> <span class="nav-text">PopupWindow.showAsDropDown()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PopupWindow-showAsDropDown-1"><span class="nav-number">2.5.</span> <span class="nav-text">PopupWindow.showAsDropDown()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PopupWindow-findDropDownPosition"><span class="nav-number">2.6.</span> <span class="nav-text">PopupWindow.findDropDownPosition()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#anchor-View-requestRectangleOnScreen-r-true"><span class="nav-number">2.7.</span> <span class="nav-text">anchor(View).requestRectangleOnScreen(r, true)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#parent-ViewParent-requestChildRectangleOnScreen-child-rectangle-immediate"><span class="nav-number">2.8.</span> <span class="nav-text">parent(ViewParent).requestChildRectangleOnScreen(child, rectangle, immediate)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ListView-requestChildRectangleOnScreen"><span class="nav-number">2.9.</span> <span class="nav-text">ListView.requestChildRectangleOnScreen()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ListView-scrollListItemsBy-scrollYDelta"><span class="nav-number">2.10.</span> <span class="nav-text">ListView.scrollListItemsBy(-scrollYDelta);</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最终效果"><span class="nav-number">4.</span> <span class="nav-text">最终效果</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

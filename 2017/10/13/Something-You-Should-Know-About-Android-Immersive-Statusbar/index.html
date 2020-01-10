@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言Android从4.4开始提出透明状态栏的概念，在5.0之后才有比较像样的沉浸式状态栏，虽然不能修改状态栏图标颜色，至少体验变得更好了，但是对于开发者来说，Android因为版本分裂，导致没法统一，对于开发者来说的确是一件比较头疼的事，下面让我们来看看其中的坑吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android沉浸式状态栏趟坑之旅">
+<meta property="og:url" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="前言Android从4.4开始提出透明状态栏的概念，在5.0之后才有比较像样的沉浸式状态栏，虽然不能修改状态栏图标颜色，至少体验变得更好了，但是对于开发者来说，Android因为版本分裂，导致没法统一，对于开发者来说的确是一件比较头疼的事，下面让我们来看看其中的坑吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p1.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p2.gif">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p3.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p4.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p5.png">
+<meta property="article:published_time" content="2017-10-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:22:46.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="状态栏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p1.png">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Android沉浸式状态栏趟坑之旅 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android沉浸式状态栏趟坑之旅
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-13 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-13T00:00:00+08:00">2017-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:22:46" itemprop="dateModified" datetime="2020-01-05T23:22:46+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/" class="post-meta-item leancloud_visitors" data-flag-title="Android沉浸式状态栏趟坑之旅" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Android从4.4开始提出透明状态栏的概念，在5.0之后才有比较像样的沉浸式状态栏，虽然不能修改状态栏图标颜色，至少体验变得更好了，但是对于开发者来说，Android因为版本分裂，导致没法统一，对于开发者来说的确是一件比较头疼的事，下面让我们来看看其中的坑吧。</p>
+<a id="more"></a>
+
+<h3 id="沉浸式状态栏实现"><a href="#沉浸式状态栏实现" class="headerlink" title="沉浸式状态栏实现"></a>沉浸式状态栏实现</h3><p>5.0及以上手机想要做到沉浸式状态栏还是比较容易的（仅仅针对官方Android来说），代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) &#123;</span><br><span class="line">    Window window = getActivity().getWindow();</span><br><span class="line">    window.getDecorView()</span><br><span class="line">            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);</span><br><span class="line">    window.setStatusBarColor(Color.TRANSPARENT);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p1.png" alt><br>此时，你会发现另外一个问题（上图）：华为有些机型(EMUI 3.1，Android 5.0.2 ，PLK-AL10)就算是Android 5.0以上，也没法做到状态栏透明，会遮挡部分内容，这样的方案是绝对不会允许的。只能针对华为手机进行适配，判断如果是华为手机，则是用如下方案：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) &#123;</span><br><span class="line">    Window window = getActivity().getWindow();</span><br><span class="line">    window.getDecorView()</span><br><span class="line">            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);</span><br><span class="line">    window.setStatusBarColor(Color.TRANSPARENT);</span><br><span class="line">    <span class="keyword">if</span> (RomUtils.isEmui()) &#123;</span><br><span class="line">        <span class="comment">//适配华为手机</span></span><br><span class="line">        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中RomUtils，由网友<a href="http://www.jianshu.com/u/f8310d55f6b5" target="_blank" rel="noopener">@夏末m</a>提供，其代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RomUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"RomUtils"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_MIUI = <span class="string">"MIUI"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_EMUI = <span class="string">"EMUI"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_FLYME = <span class="string">"FLYME"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_OPPO = <span class="string">"OPPO"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_SMARTISAN = <span class="string">"SMARTISAN"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_VIVO = <span class="string">"VIVO"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROM_QIKU = <span class="string">"QIKU"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String KEY_VERSION_MIUI = <span class="string">"ro.miui.ui.version.name"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String KEY_VERSION_EMUI = <span class="string">"ro.build.version.emui"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String KEY_VERSION_OPPO = <span class="string">"ro.build.version.opporom"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String KEY_VERSION_SMARTISAN = <span class="string">"ro.smartisan.version"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String KEY_VERSION_VIVO = <span class="string">"ro.vivo.os.version"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String sName;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String sVersion;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isEmui</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_EMUI);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isMiui</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_MIUI);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isVivo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_VIVO);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isOppo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_OPPO);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isFlyme</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_FLYME);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">is360</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_QIKU) || check(<span class="string">"360"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isSmartisan</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> check(ROM_SMARTISAN);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sName == <span class="keyword">null</span>) &#123;</span><br><span class="line">            check(<span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getVersion</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sVersion == <span class="keyword">null</span>) &#123;</span><br><span class="line">            check(<span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sVersion;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">check</span><span class="params">(String rom)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sName != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> sName.equals(rom);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_MIUI))) &#123;</span><br><span class="line">            sName = ROM_MIUI;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_EMUI))) &#123;</span><br><span class="line">            sName = ROM_EMUI;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_OPPO))) &#123;</span><br><span class="line">            sName = ROM_OPPO;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_VIVO))) &#123;</span><br><span class="line">            sName = ROM_VIVO;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_SMARTISAN))) &#123;</span><br><span class="line">            sName = ROM_SMARTISAN;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            sVersion = Build.DISPLAY;</span><br><span class="line">            <span class="keyword">if</span> (sVersion.toUpperCase().contains(ROM_FLYME)) &#123;</span><br><span class="line">                sName = ROM_FLYME;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                sVersion = Build.UNKNOWN;</span><br><span class="line">                sName = Build.MANUFACTURER.toUpperCase();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sName.equals(rom);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getProp</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        String line = <span class="keyword">null</span>;</span><br><span class="line">        BufferedReader input = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Process p = Runtime.getRuntime().exec(<span class="string">"getprop "</span> + name);</span><br><span class="line">            input = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(p.getInputStream()), <span class="number">1024</span>);</span><br><span class="line">            line = input.readLine();</span><br><span class="line">            input.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            NTLog.e(TAG, <span class="string">"Unable to read prop "</span> + name + ex);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (input != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    input.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> line;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p2.gif" alt><br>解决了状态栏的问题，又发现了另外一个问题（上图）：跟帖输入框在软键盘弹起时，被挡住了。没法办，继续寻找解决方案。在网上搜索了一番，发现这个是Android存在已久的bug，有人已经提供了解决方案，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AndroidBug5497Workaround</span> </span>&#123;</span><br><span class="line">    <span class="comment">// For more information, see https://code.google.com/p/android/issues/detail?id=5497</span></span><br><span class="line">    <span class="comment">// To use this class, simply invoke assistActivity() on an Activity that already has its content view set.</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">assistActivity</span> <span class="params">(Activity activity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> AndroidBug5497Workaround(activity);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> View mChildOfContent;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> usableHeightPrevious;</span><br><span class="line">    <span class="keyword">private</span> FrameLayout.LayoutParams frameLayoutParams;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">AndroidBug5497Workaround</span><span class="params">(Activity activity)</span> </span>&#123;</span><br><span class="line">        FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);</span><br><span class="line">        mChildOfContent = content.getChildAt(<span class="number">0</span>);</span><br><span class="line">        mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(<span class="keyword">new</span> ViewTreeObserver.OnGlobalLayoutListener() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onGlobalLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                possiblyResizeChildOfContent();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        frameLayoutParams = (FrameLayout.LayoutParams) mChildOfContent.getLayoutParams();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">possiblyResizeChildOfContent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> usableHeightNow = computeUsableHeight();</span><br><span class="line">        <span class="keyword">if</span> (usableHeightNow != usableHeightPrevious) &#123;</span><br><span class="line">            <span class="keyword">int</span> usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();</span><br><span class="line">            <span class="keyword">int</span> heightDifference = usableHeightSansKeyboard - usableHeightNow;</span><br><span class="line">            <span class="keyword">if</span> (heightDifference &gt; (usableHeightSansKeyboard/<span class="number">4</span>)) &#123;</span><br><span class="line">                <span class="comment">// keyboard probably just became visible</span></span><br><span class="line">                frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// keyboard probably just became hidden</span></span><br><span class="line">                frameLayoutParams.height = usableHeightSansKeyboard;</span><br><span class="line">            &#125;</span><br><span class="line">            mChildOfContent.requestLayout();</span><br><span class="line">            usableHeightPrevious = usableHeightNow;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">computeUsableHeight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Rect r = <span class="keyword">new</span> Rect();</span><br><span class="line">        mChildOfContent.getWindowVisibleDisplayFrame(r);</span><br><span class="line">        <span class="keyword">return</span> (r.bottom - r.top);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一开始看到这个方案的时候，纵观代码，没有其他大问题，而且因为根布局的UI和Activity的生命周期是一致的，因此不用mChildOfContent.getViewTreeObserver().removeOnGlobalLayoutListener()也不会发生内存泄露，因此可以先尝试一下。</p>
+<p>其原理也十分简单，就是监听整个布局，如果布局发生了变化了超过屏幕1/4高度，则可认为是键盘弹起了，此时，重新设置根布局LayoutParams即可。更详细信息可以参考：<a href="http://www.cnblogs.com/ldq2016/p/6223294.html" target="_blank" rel="noopener">Android爬坑之旅：软键盘挡住输入框问题的终极解决方案</a>。</p>
+<p><img src="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p3.png" alt></p>
+<p>然而，并不管用！你会发现，输入框被虚拟键盘挡住了（上图）！不过，这个问题也不难解决，我们只需要把第一次根布局的高度记录下来，键盘收起的时候，把跟布局高度还原即可。最终代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by mason on 2017/10/11.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 解决输入框被软键盘隐藏的问题 <span class="doctag">@See</span> http://www.jianshu.com/p/a95a1b84da11 &lt;/br&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AndroidBug5497Workaround</span> </span>&#123;</span><br><span class="line">    <span class="comment">// For more information, see https://code.google.com/p/android/issues/detail?id=5497</span></span><br><span class="line">    <span class="comment">// To use this class, simply invoke assistActivity() on an Activity that already has its</span></span><br><span class="line">    <span class="comment">// content view set.</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">assistActivity</span><span class="params">(Activity activity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> AndroidBug5497Workaround(activity);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> View mChildOfContent;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mUsableHeightPrevious;</span><br><span class="line">    <span class="keyword">private</span> FrameLayout.LayoutParams mFrameLayoutParams;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mContentHeight;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mIsContentHeightMeasured = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">AndroidBug5497Workaround</span><span class="params">(Activity activity)</span> </span>&#123;</span><br><span class="line">        FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);</span><br><span class="line">        mChildOfContent = content.getChildAt(<span class="number">0</span>);</span><br><span class="line">        <span class="comment">//界面变动监听</span></span><br><span class="line">        mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(<span class="keyword">new</span> ViewTreeObserver</span><br><span class="line">                .OnGlobalLayoutListener() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onGlobalLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> ( !mIsContentHeightMeasured ) &#123;</span><br><span class="line">                    <span class="comment">//记住第一次根布局高度，兼容华为等机型</span></span><br><span class="line">                    mContentHeight = mChildOfContent.getHeight();</span><br><span class="line">                    mIsContentHeightMeasured = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                possiblyResizeChildOfContent();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        mFrameLayoutParams = (FrameLayout.LayoutParams)</span><br><span class="line">                mChildOfContent.getLayoutParams();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 调整根布局高度</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">possiblyResizeChildOfContent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> usableHeightNow = computeUsableHeight();</span><br><span class="line">        <span class="comment">//当前可见高度和上一次可见高度不一致 布局变动</span></span><br><span class="line">        <span class="keyword">if</span> (usableHeightNow != mUsableHeightPrevious) &#123;</span><br><span class="line">            <span class="keyword">int</span> usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();</span><br><span class="line">            <span class="keyword">int</span> heightDifference = usableHeightSansKeyboard - usableHeightNow;</span><br><span class="line">            <span class="keyword">if</span> (heightDifference &gt; (usableHeightSansKeyboard / <span class="number">4</span>)) &#123;</span><br><span class="line">                <span class="comment">// keyboard probably just became visible</span></span><br><span class="line">                <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">                    mFrameLayoutParams.height = usableHeightSansKeyboard - heightDifference +</span><br><span class="line">                            SystemUtils.getStatusBarHeight();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    mFrameLayoutParams.height = usableHeightSansKeyboard - heightDifference;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                mFrameLayoutParams.height = mContentHeight;</span><br><span class="line">            &#125;</span><br><span class="line">            mChildOfContent.requestLayout();</span><br><span class="line">            mUsableHeightPrevious = usableHeightNow;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算mChildOfContent可见高度</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">computeUsableHeight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Rect r = <span class="keyword">new</span> Rect();</span><br><span class="line">        mChildOfContent.getWindowVisibleDisplayFrame(r);</span><br><span class="line">        <span class="keyword">return</span> (r.bottom - r.top);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p4.png" alt><br><img src="/2017/10/13/Something-You-Should-Know-About-Android-Immersive-Statusbar/p5.png" alt><br>后来又发现，全屏状态下播放视频内容显示不全（上图），推测是因为添加了全局layout监听，并且重新改了跟布局的显示高度，因此在全屏播放时把监听去掉，非全屏播放时加上监听，再重新运行，终于正常了！最终代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by mason on 2017/10/12.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 解决输入框被软键盘隐藏的问题 <span class="doctag">@See</span> http://www.jianshu.com/p/a95a1b84da11 &lt;/br&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AndroidBug5497Workaround</span> </span>&#123;</span><br><span class="line">    <span class="comment">// For more information, see https://code.google.com/p/android/issues/detail?id=5497</span></span><br><span class="line">    <span class="keyword">private</span> ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> FrameLayout.LayoutParams mFrameLayoutParams;</span><br><span class="line">    <span class="keyword">private</span> FrameLayout.LayoutParams mOrigLayoutParams;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mIsContentHeightMeasured = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mUsableHeightPrevious;</span><br><span class="line">    <span class="keyword">private</span> View mChildOfContent;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mContentHeight;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AndroidBug5497Workaround</span><span class="params">(Activity activity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (activity != <span class="keyword">null</span> &amp;&amp; Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">            FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);</span><br><span class="line">            mChildOfContent = content.getChildAt(<span class="number">0</span>);</span><br><span class="line">            mFrameLayoutParams = (FrameLayout.LayoutParams)</span><br><span class="line">                    mChildOfContent.getLayoutParams();</span><br><span class="line">            mOrigLayoutParams = <span class="keyword">new</span> FrameLayout.LayoutParams(mFrameLayoutParams);</span><br><span class="line">            addGlobalLayoutListener();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 全屏状态下如果还有OnGlobalLayoutListener监听会导致播放器内容显示不全</span></span><br><span class="line"><span class="comment">     * 因此需要在Activity变成全屏前手动移除监听，变成非全屏前手动添加监听</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addGlobalLayoutListener</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">            removeGlobalLayoutListener();</span><br><span class="line">            mOnGlobalLayoutListener = <span class="keyword">new</span> ViewTreeObserver.OnGlobalLayoutListener() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onGlobalLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> (!mIsContentHeightMeasured) &#123;</span><br><span class="line">                        <span class="comment">//兼容华为等机型</span></span><br><span class="line">                        mContentHeight = mChildOfContent.getHeight();</span><br><span class="line">                        mIsContentHeightMeasured = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    possiblyResizeChildOfContent();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line">            mChildOfContent.getViewTreeObserver()</span><br><span class="line">                    .addOnGlobalLayoutListener(mOnGlobalLayoutListener);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeGlobalLayoutListener</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mOnGlobalLayoutListener != <span class="keyword">null</span> &amp;&amp; mChildOfContent != <span class="keyword">null</span>) &#123;</span><br><span class="line">                mFrameLayoutParams = <span class="keyword">new</span> FrameLayout.LayoutParams(mOrigLayoutParams);</span><br><span class="line">                mChildOfContent.setLayoutParams(mFrameLayoutParams);</span><br><span class="line">                mChildOfContent.getViewTreeObserver()</span><br><span class="line">                        .removeOnGlobalLayoutListener(mOnGlobalLayoutListener);</span><br><span class="line">                mOnGlobalLayoutListener = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重新调整跟布局的高度</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">possiblyResizeChildOfContent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> usableHeightNow = computeUsableHeight();</span><br><span class="line">        <span class="comment">//当前可见高度和上一次可见高度不一致 布局变动</span></span><br><span class="line">        <span class="keyword">if</span> (usableHeightNow != mUsableHeightPrevious) &#123;</span><br><span class="line">            <span class="keyword">int</span> usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();</span><br><span class="line">            <span class="keyword">int</span> heightDifference = usableHeightSansKeyboard - usableHeightNow;</span><br><span class="line">            <span class="keyword">if</span> (heightDifference &gt; (usableHeightSansKeyboard / <span class="number">4</span>)) &#123;</span><br><span class="line">                <span class="comment">// keyboard probably just became visible</span></span><br><span class="line">                <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</span><br><span class="line">                    mFrameLayoutParams.height = usableHeightSansKeyboard - heightDifference +</span><br><span class="line">                            SystemUtils.getStatusBarHeight();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    mFrameLayoutParams.height = usableHeightSansKeyboard - heightDifference;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                mFrameLayoutParams.height = mContentHeight;</span><br><span class="line">            &#125;</span><br><span class="line">            mChildOfContent.setLayoutParams(mFrameLayoutParams);</span><br><span class="line">            mChildOfContent.requestLayout();</span><br><span class="line">            mUsableHeightPrevious = usableHeightNow;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计算mChildOfContent可见高度</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">computeUsableHeight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Rect r = <span class="keyword">new</span> Rect();</span><br><span class="line">        mChildOfContent.getWindowVisibleDisplayFrame(r);</span><br><span class="line">        <span class="keyword">return</span> (r.bottom - r.top);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该类是用方法也比较简单，新建一个对象，然后在监听横竖屏变化即可.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">AndroidBug5497Workaround mAndroidBugFixer;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(@Nullable Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        <span class="comment">// 使用自定义actionbar，也可以把该方法放到Fragment.onViewCreated()下执行</span></span><br><span class="line">        setCustomActionbar();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setCustomActionbar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (getActivity() == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">        ActionBar.LayoutParams lp = <span class="keyword">new</span> ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,</span><br><span class="line">                ActionBar.LayoutParams.MATCH_PARENT);</span><br><span class="line">        mActionBarView = LayoutInflater.from(getActivity())</span><br><span class="line">                .inflate(R.layout.news_video_detail_action_bar_layout, <span class="keyword">null</span>);</span><br><span class="line">        mBackView = (ImageView) mActionBarView.findViewById(R.id.action_bar_back);</span><br><span class="line">        mBackView.setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">        mTitleView = (TextView) mActionBarView.findViewById(R.id.action_bar_title);</span><br><span class="line">        ActionBar actionBar = getActionBar();</span><br><span class="line">        <span class="keyword">if</span> (actionBar != <span class="keyword">null</span>) &#123;</span><br><span class="line">            actionBar.setCustomView(mActionBarView, lp);</span><br><span class="line">            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);</span><br><span class="line">            actionBar.setDisplayShowCustomEnabled(<span class="keyword">true</span>);</span><br><span class="line">            actionBar.setDisplayShowHomeEnabled(<span class="keyword">false</span>);</span><br><span class="line">            actionBar.setDisplayShowTitleEnabled(<span class="keyword">false</span>);</span><br><span class="line">            actionBar.setBackgroundDrawable(</span><br><span class="line">                    getResources().getDrawable(android.R.color.transparent));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (SystemUtils.isLollipop()) &#123;</span><br><span class="line">            Window window = getActivity().getWindow();</span><br><span class="line">            window.getDecorView()</span><br><span class="line">                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);</span><br><span class="line">            <span class="keyword">if</span> (RomUtils.isEmui()) &#123;</span><br><span class="line">                <span class="comment">//适配华为手机</span></span><br><span class="line">                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);</span><br><span class="line">            &#125;</span><br><span class="line">            window.setStatusBarColor(Color.TRANSPARENT);</span><br><span class="line">            <span class="keyword">if</span> (getActivity() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">//修复输入框被软键盘覆盖问题</span></span><br><span class="line">                mAndroidBugFixer = <span class="keyword">new</span> AndroidBug5497Workaround(getActivity());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onConfigurationChanged</span><span class="params">(Configuration newConfig)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onConfigurationChanged(newConfig);</span><br><span class="line">        <span class="keyword">if</span> (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mAndroidBugFixer != <span class="keyword">null</span>) &#123;</span><br><span class="line">                mAndroidBugFixer.removeGlobalLayoutListener();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mAndroidBugFixer != <span class="keyword">null</span>) &#123;</span><br><span class="line">                mAndroidBugFixer.addGlobalLayoutListener();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>PS：如果发现是用了该类，屏幕有跳一下，闪一下的现象，可以去掉adjustPan标记</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 去掉该行代码</span></span><br><span class="line">getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);</span><br></pre></td></tr></table></figure>
+<p>搞定了状态栏和输入框的问题，后来视觉又要求actionbar-title要居中，不过这也不是什么难事，自定义actionbar就可以了。最终代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">自定义actionbar view</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setCustomActionbar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (getActivity() == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    ActionBar.LayoutParams lp = <span class="keyword">new</span> ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,</span><br><span class="line">            ActionBar.LayoutParams.MATCH_PARENT);</span><br><span class="line">    mActionBarView = LayoutInflater.from(getActivity())</span><br><span class="line">            .inflate(R.layout.news_video_detail_action_bar_layout, <span class="keyword">null</span>);</span><br><span class="line">    mBackView = mActionBarView.findViewById(R.id.action_bar_back);</span><br><span class="line">    mBackView.setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">    mTitleView = (TextView) mActionBarView.findViewById(R.id.action_bar_title);</span><br><span class="line">    ActionBar actionBar = getActionBar();</span><br><span class="line">    <span class="keyword">if</span> (actionBar != <span class="keyword">null</span>) &#123;</span><br><span class="line">        actionBar.setCustomView(mActionBarView, lp);</span><br><span class="line">        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);</span><br><span class="line">        actionBar.setDisplayShowCustomEnabled(<span class="keyword">true</span>);</span><br><span class="line">        actionBar.setDisplayShowHomeEnabled(<span class="keyword">false</span>);</span><br><span class="line">        actionBar.setDisplayShowTitleEnabled(<span class="keyword">false</span>);</span><br><span class="line">        actionBar.setBackgroundDrawable(</span><br><span class="line">                getResources().getDrawable(android.R.color.transparent));</span><br><span class="line">        <span class="comment">//设置actionbar返回按钮图片</span></span><br><span class="line">        <span class="comment">//actionBar.setHomeAsUpIndicator(R.drawable.base_action_bar_back);</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) &#123;</span><br><span class="line">        Window window = getActivity().getWindow();</span><br><span class="line">        window.getDecorView()</span><br><span class="line">                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);</span><br><span class="line">        window.setStatusBarColor(Color.TRANSPARENT);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (RomUtils.isEmui()) &#123;</span><br><span class="line">            <span class="comment">//状态栏适配华为手机</span></span><br><span class="line">            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);</span><br><span class="line">        &#125;</span><br><span class="line">        window.setStatusBarColor(Color.TRANSPARENT);</span><br><span class="line">        <span class="keyword">if</span> (getActivity() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//修复输入框被软键盘覆盖问题</span></span><br><span class="line">            mAndroidBugFixer = <span class="keyword">new</span> AndroidBug5497Workaround(getActivity());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> ActionBar <span class="title">getActionBar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (getActivity() <span class="keyword">instanceof</span> FragmentActivity) &#123;</span><br><span class="line">        <span class="keyword">return</span> ((FragmentActivity)getActivity()).getSupportActionBar();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这次解决问题的过程参考了网上的解决方案， 经过了严格的测试，才把代码提交上去。个人对于网上第三方开源库其实是有些谨慎的，原因有二：其一，网上的开源库不一定适合当前项目，可能会有兼容问题（support-v4、support-v7）；其二，就算能解决，也不能保证该开源库没有其他问题。这也是这次做状态栏透明没有使用第三方开源库的原因。个人还是比较倾向于自己写，毕竟自己写的代码自己放心。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E7%8A%B6%E6%80%81%E6%A0%8F/" rel="tag"># 状态栏</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/10/08/Talk-about-MVP/" rel="prev" title="谈谈MVP">
+      <i class="fa fa-chevron-left"></i> 谈谈MVP
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/10/13/Android-ListPopupWindow/" rel="next" title="关于ListPopupWindow的问题分析">
+      关于ListPopupWindow的问题分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#沉浸式状态栏实现"><span class="nav-number">2.</span> <span class="nav-text">沉浸式状态栏实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

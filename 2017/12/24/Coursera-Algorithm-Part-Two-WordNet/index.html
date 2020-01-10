@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="问题Part-Two week1的作业是wordnet。wordnet是一个单词网络。用有向边来表示单词的关系。比如miracle —&gt;event，说明miracle是event的一种，他们是isa关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Coursera公开课-Algorithm-WordNet">
+<meta property="og:url" content="http://nancyyihao.github.io/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="问题Part-Two week1的作业是wordnet。wordnet是一个单词网络。用有向边来表示单词的关系。比如miracle —&gt;event，说明miracle是event的一种，他们是isa关系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/p1.png">
+<meta property="article:published_time" content="2017-12-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:16:57.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Coursera">
+<meta property="article:tag" content="WordNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/p1.png">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Coursera公开课-Algorithm-WordNet | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Coursera公开课-Algorithm-WordNet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-24 00:00:00" itemprop="dateCreated datePublished" datetime="2017-12-24T00:00:00+08:00">2017-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:16:57" itemprop="dateModified" datetime="2020-01-05T23:16:57+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/" class="post-meta-item leancloud_visitors" data-flag-title="Coursera公开课-Algorithm-WordNet" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>Part-Two week1的作业是wordnet。wordnet是一个单词网络。用有向边来表示单词的关系。比如miracle —&gt;event，说明miracle是event的一种，他们是isa关系。</p>
+<a id="more"></a>
+<p><img src="/2017/12/24/Coursera-Algorithm-Part-Two-WordNet/p1.png" alt></p>
+<p>第一个问题是对于给定的一个有向图，找出两者之间的最短距离和公共祖先。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SAP</span> </span>&#123;</span><br><span class="line">   <span class="comment">// constructor takes a digraph (not necessarily a DAG)</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">SAP</span><span class="params">(Digraph G)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// length of shortest ancestral path between v and w; -1 if no such path</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">length</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">ancestor</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">length</span><span class="params">(Iterable&lt;Integer&gt; v, Iterable&lt;Integer&gt; w)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// a common ancestor that participates in shortest ancestral path; -1 if no such path</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">ancestor</span><span class="params">(Iterable&lt;Integer&gt; v, Iterable&lt;Integer&gt; w)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// do unit testing of this class</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>第二个问题是对于给定的一个wordnet，找出wordnet中的所有单词，并计算任意两个单词之间的距离。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordNet</span> </span>&#123;</span><br><span class="line">   <span class="comment">// constructor takes the name of the two input files</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">WordNet</span><span class="params">(String synsets, String hypernyms)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// returns all WordNet nouns</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">nouns</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   <span class="comment">// is the word a WordNet noun?</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isNoun</span><span class="params">(String word)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// distance between nounA and nounB (defined below)</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">distance</span><span class="params">(String nounA, String nounB)</span></span></span><br><span class="line"><span class="function">   <span class="comment">//distance(A, B) = distance is the minimum length of any ancestral path between any synset v of A and any synset w of B.</span></span></span><br><span class="line"><span class="function">   <span class="comment">// a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB</span></span></span><br><span class="line"><span class="function">   <span class="comment">// in a shortest ancestral path (defined below)</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> String <span class="title">sap</span><span class="params">(String nounA, String nounB)</span></span></span><br><span class="line"><span class="function">   <span class="comment">// do unit testing of this class</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>最后一个问题是找出wordnet当中和其他单词关联性最小的一个单词，换句话说，我们要找出一个单词Ai使得</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">di   &#x3D;   dist(Ai, A1)   +   dist(Ai, A2)   +   ...   +   dist(Ai, An)</span><br></pre></td></tr></table></figure>
+<p>最大。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Outcast</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Outcast</span><span class="params">(WordNet wordnet)</span>         <span class="comment">// constructor takes a WordNet object</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> String <span class="title">outcast</span><span class="params">(String[] nouns)</span>   <span class="comment">// given an array of WordNet nouns, return an outcast</span></span></span><br><span class="line"><span class="function">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  <span class="comment">// see test client below</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>更具体的题目描述，请看：<a href="http://coursera.cs.princeton.edu/algs4/assignments/wordnet.html" target="_blank" rel="noopener">http://coursera.cs.princeton.edu/algs4/assignments/wordnet.html</a></p>
+<p>输入数据格式<br>wordnet输入有两个文件，一个是synsets，存储了wordnet当中所有单词，主要有三部分，第一部分是一个整数，是sysnets中的id，第二部分是一组单词，第三部分是这组单词的解释。如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; 36,AND_circuit AND_gate,a circuit in a computer that fires only when all of its inputs fire </span><br><span class="line">&gt;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+<p>表示单词集合{AND_circuit, AND_gate}在sysnet中的id是36，他们有个共同的解释就是a circuit in a computer that fires only when all of its inputs fire 。</p>
+<p>wordnet第二个输入文件是hypernyms，存储了synsets之间的关系，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; 164,21012,56099</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+<p>表示sysnet 164 (“Actifed”)有两个子类，21012(“antihistamine”)和56099 (“nasal_decongestant”)，这和sysnets文件的输入是对应的</p>
+<p>164,Actifed,trade name for a drug containing an antihistamine and a decongestant…<br>21012,antihistamine,a medicine used to treat allergies…<br>56099,nasal_decongestant,a decongestant that provides temporary relief of nasal…</p>
+<h3 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h3><p>从哪里入手呢？官方很贴心地给出了步骤(Possible progress steps)：<a href="http://coursera.cs.princeton.edu/algs4/checklists/wordnet.html" target="_blank" rel="noopener">http://coursera.cs.princeton.edu/algs4/checklists/wordnet.html</a></p>
+<ul>
+<li>Create the data type SAP</li>
+<li>Implement the remaining WordNet methods.</li>
+<li>Implement Outcast.</li>
+<li>如果没有思路，可以先看下官方给的checklists，非常有用。</li>
+</ul>
+<p>我们看SAP，求最短路径和公共祖先。因为wordnet是一个有向图，并且不会有环（这点题目中已说明），因此求最短路径只需要走一遍bfs即可，同时记录下可达点。有了SAP后，求wordnet中的distance其实就是直接套用SAP的代码。wordnet中最关键的还是数据如何存储。如果是以id来作为key的话，遇到一个id对应多个单词的情况处理起来比较麻烦，因此我们以单词为key，存储单词对应的id(可能有多个)，求wordnet中的distance(String nounA, String nounB)，其实就是求单词对应id的最短路径，直接用SAP来求即可。Outcast应该是好实现的了。直接遍历wordnet当中所有单词两两之间的距离，求一个最小的即可。时间复杂度是O(N^2)。</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><h4 id="SAP"><a href="#SAP" class="headerlink" title="SAP"></a>SAP</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.Digraph;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.In;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.StdIn;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.StdOut;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SAP</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INFINITY = Integer.MAX_VALUE;</span><br><span class="line">    <span class="keyword">private</span> Digraph G;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SAP</span><span class="params">(Digraph G)</span> </span>&#123;</span><br><span class="line">        checkCondition(G == <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">this</span>.G = <span class="keyword">new</span> Digraph(G);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// length of shortest ancestral path between v and w; -1 if no such path</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">length</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</span><br><span class="line">        checkCondition(v &lt; <span class="number">0</span> || v &gt;= G.V());</span><br><span class="line">        checkCondition(w &lt; <span class="number">0</span> || w &gt;= G.V());</span><br><span class="line">        <span class="keyword">return</span> getLengthOf(v, w);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">ancestor</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</span><br><span class="line">        checkCondition(v &lt; <span class="number">0</span> || v &gt;= G.V());</span><br><span class="line">        checkCondition(w &lt; <span class="number">0</span> || w &gt;= G.V());</span><br><span class="line">        <span class="keyword">return</span> getAncestorOf(v, w);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">length</span><span class="params">(Iterable&lt;Integer&gt; v, Iterable&lt;Integer&gt; w)</span> </span>&#123;</span><br><span class="line">        checkCondition(v == <span class="keyword">null</span>);</span><br><span class="line">        checkCondition(w == <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v1 : v) checkCondition(v1 &lt; <span class="number">0</span> || v1 &gt;= G.V());</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> w1 : w) checkCondition(w1 &lt; <span class="number">0</span> || w1 &gt;= G.V());</span><br><span class="line">        <span class="keyword">return</span> getLengthOf(v, w);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// a common ancestor that participates in shortest ancestral path; -1 if no such path</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">ancestor</span><span class="params">(Iterable&lt;Integer&gt; v, Iterable&lt;Integer&gt; w)</span> </span>&#123;</span><br><span class="line">        checkCondition(v == <span class="keyword">null</span>);</span><br><span class="line">        checkCondition(w == <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v1 : v) checkCondition(v1 &lt; <span class="number">0</span> || v1 &gt;= G.V());</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> w1 : w) checkCondition(w1 &lt; <span class="number">0</span> || w1 &gt;= G.V());</span><br><span class="line">        <span class="keyword">return</span> getAncestorOf(v, w);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getAncestorOf</span><span class="params">(Object v, Object w)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> ancestor = -<span class="number">1</span>;</span><br><span class="line">        DeluxeBFS uv = <span class="keyword">new</span> DeluxeBFS(G, v);</span><br><span class="line">        DeluxeBFS uw = <span class="keyword">new</span> DeluxeBFS(G, w);</span><br><span class="line">        <span class="keyword">int</span> result = INFINITY;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.V(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(uv.hasPathTo(i) &amp;&amp; uw.hasPathTo(i)) &#123;</span><br><span class="line">                <span class="keyword">int</span> distance = uv.distTo(i) + uw.distTo(i);</span><br><span class="line">                <span class="keyword">if</span>(distance &lt; result) &#123;</span><br><span class="line">                    result = distance;</span><br><span class="line">                    ancestor = i;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ancestor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getLengthOf</span><span class="params">(Object v, Object w)</span> </span>&#123;</span><br><span class="line">        DeluxeBFS uv = <span class="keyword">new</span> DeluxeBFS(G, v);</span><br><span class="line">        DeluxeBFS uw = <span class="keyword">new</span> DeluxeBFS(G, w);</span><br><span class="line">        <span class="keyword">int</span> result = INFINITY;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.V(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(uv.hasPathTo(i) &amp;&amp; uw.hasPathTo(i)) &#123;</span><br><span class="line">                <span class="keyword">int</span> distance = uv.distTo(i) + uw.distTo(i);</span><br><span class="line">                <span class="keyword">if</span>(distance &lt; result) &#123;</span><br><span class="line">                    result = distance;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result == INFINITY ? -<span class="number">1</span> : result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkCondition</span><span class="params">(<span class="keyword">boolean</span> inValid)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (inValid)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"param must be not null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        In in = <span class="keyword">new</span> In(args[<span class="number">0</span>]);</span><br><span class="line">        Digraph G = <span class="keyword">new</span> Digraph(in);</span><br><span class="line">        SAP sap = <span class="keyword">new</span> SAP(G);</span><br><span class="line">        <span class="keyword">while</span> (!StdIn.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">int</span> v = StdIn.readInt();</span><br><span class="line">            <span class="keyword">int</span> w = StdIn.readInt();</span><br><span class="line">            <span class="keyword">int</span> length   = sap.length(v, w);</span><br><span class="line">            <span class="keyword">int</span> ancestor = sap.ancestor(v, w);</span><br><span class="line">            StdOut.printf(<span class="string">"length = %d, ancestor = %d\n"</span>, length, ancestor);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="WordNet"><a href="#WordNet" class="headerlink" title="WordNet"></a>WordNet</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.DirectedCycle;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.Bag;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.Digraph;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.In;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.ST;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordNet</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ST&lt;String, Bag&lt;Integer&gt;&gt; mDataSet = <span class="keyword">new</span> ST&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;String&gt; mAllNouns = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> Digraph mDigraph;</span><br><span class="line">    <span class="keyword">private</span> SAP mSAP;</span><br><span class="line">    <span class="comment">// constructor takes the name of the two input files</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WordNet</span><span class="params">(String synsets, String hypernyms)</span> </span>&#123;</span><br><span class="line">        validateParam(hypernyms);</span><br><span class="line">        validateParam(synsets);</span><br><span class="line">        In synsetsIn = <span class="keyword">new</span> In(synsets);</span><br><span class="line">        <span class="keyword">int</span> V = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (synsetsIn.hasNextLine()) &#123;</span><br><span class="line">            String[] data = synsetsIn.readLine().split(<span class="string">","</span>);</span><br><span class="line">            <span class="keyword">int</span> id = Integer.parseInt(data[<span class="number">0</span>]);</span><br><span class="line">            String[] nouns = data[<span class="number">1</span>].split(<span class="string">" "</span>);</span><br><span class="line">            <span class="keyword">for</span> (String noun : nouns) &#123;</span><br><span class="line">                <span class="keyword">if</span> (mDataSet.contains(noun)) &#123;</span><br><span class="line">                    mDataSet.get(noun).add(id);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    Bag&lt;Integer&gt; bag = <span class="keyword">new</span> Bag&lt;Integer&gt;();</span><br><span class="line">                    bag.add(id);</span><br><span class="line">                    mDataSet.put(noun, bag);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            V++;</span><br><span class="line">            mAllNouns.add(data[<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        mDigraph = <span class="keyword">new</span> Digraph(V);</span><br><span class="line">        <span class="keyword">boolean</span>[] isNotRoots = <span class="keyword">new</span> <span class="keyword">boolean</span>[V];</span><br><span class="line">        In hypernymsIn = <span class="keyword">new</span> In(hypernyms);</span><br><span class="line">        <span class="keyword">while</span> (hypernymsIn.hasNextLine()) &#123;</span><br><span class="line">            String[] data = hypernymsIn.readLine().split(<span class="string">","</span>);</span><br><span class="line">            <span class="keyword">int</span> childId = Integer.parseInt(data[<span class="number">0</span>]);</span><br><span class="line">            isNotRoots[childId] = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>; i&lt; data.length; i++) &#123;</span><br><span class="line">                <span class="keyword">int</span> parentId = Integer.parseInt(data[i]);</span><br><span class="line">                mDigraph.addEdge(childId, parentId);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mSAP == <span class="keyword">null</span>) &#123;</span><br><span class="line">            mSAP = <span class="keyword">new</span> SAP(mDigraph);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> rootCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">boolean</span> notRoot : isNotRoots)</span><br><span class="line">            <span class="keyword">if</span> (!notRoot) rootCount++;</span><br><span class="line">        DirectedCycle cycle = <span class="keyword">new</span> DirectedCycle(mDigraph);</span><br><span class="line">        cycle.hasCycle();</span><br><span class="line">        <span class="keyword">if</span> (rootCount &gt; <span class="number">1</span> || cycle.hasCycle())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"not a valid WordNet! "</span> +</span><br><span class="line">                    <span class="string">"please check your input!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// returns all WordNet nouns</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">nouns</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mDataSet.keys();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// is the word a WordNet noun?</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isNoun</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        validateParam(word);</span><br><span class="line">        <span class="keyword">return</span> mDataSet.contains(word);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// distance between nounA and nounB (defined below)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">distance</span><span class="params">(String nounA, String nounB)</span> </span>&#123;</span><br><span class="line">        validateParam(nounA);</span><br><span class="line">        validateParam(nounB);</span><br><span class="line">        Bag&lt;Integer&gt; bagOfNounA = mDataSet.get(nounA);</span><br><span class="line">        Bag&lt;Integer&gt; bagOfNounB = mDataSet.get(nounB);</span><br><span class="line">        <span class="keyword">return</span> mSAP.length(bagOfNounA, bagOfNounB);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB</span></span><br><span class="line">    <span class="comment">// in a shortest ancestral path (defined below)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sap</span><span class="params">(String nounA, String nounB)</span> </span>&#123;</span><br><span class="line">        validateParam(nounA);</span><br><span class="line">        validateParam(nounB);</span><br><span class="line">        Bag&lt;Integer&gt; bagOfNounA = mDataSet.get(nounA);</span><br><span class="line">        Bag&lt;Integer&gt; bagOfNounB = mDataSet.get(nounB);</span><br><span class="line">        <span class="keyword">int</span> ancestor = mSAP.ancestor(bagOfNounA, bagOfNounB);</span><br><span class="line">        <span class="keyword">return</span> mAllNouns.get(ancestor);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateParam</span><span class="params">(Object param)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (param == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"param must be not null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// do unit testing of this class</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Outcast"><a href="#Outcast" class="headerlink" title="Outcast"></a>Outcast</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.In;</span><br><span class="line"><span class="keyword">import</span> edu.princeton.cs.algs4.StdOut;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Outcast</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> WordNet mWordNet;</span><br><span class="line">    <span class="comment">// constructor takes a WordNet object</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Outcast</span><span class="params">(WordNet wordnet)</span> </span>&#123;</span><br><span class="line">        validateParam(wordnet);</span><br><span class="line">        mWordNet = wordnet;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// given an array of WordNet nouns, return an outcast</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">outcast</span><span class="params">(String[] nouns)</span> </span>&#123;</span><br><span class="line">        validateParam(nouns);</span><br><span class="line">        <span class="keyword">int</span>[] distance = <span class="keyword">new</span> <span class="keyword">int</span>[nouns.length];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;nouns.length-<span class="number">1</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j=i+<span class="number">1</span>; j&lt;nouns.length; j++)&#123;</span><br><span class="line">                <span class="keyword">int</span> dist = mWordNet.distance(nouns[i], nouns[j]);</span><br><span class="line">                <span class="keyword">if</span> (i != j) distance[j] += dist;</span><br><span class="line">                            distance[i] += dist;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> maxDistance = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> maxIndex = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; distance.length; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span> (distance[i] &gt; maxDistance)&#123;</span><br><span class="line">                maxDistance = distance[i];</span><br><span class="line">                maxIndex = i;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nouns[maxIndex];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateParam</span><span class="params">(Object param)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (param == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"param must be not null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// see test client below</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        WordNet wordnet = <span class="keyword">new</span> WordNet(args[<span class="number">0</span>], args[<span class="number">1</span>]);</span><br><span class="line">        Outcast outcast = <span class="keyword">new</span> Outcast(wordnet);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> t = <span class="number">2</span>; t &lt; args.length; t++) &#123;</span><br><span class="line">            In in = <span class="keyword">new</span> In(args[t]);</span><br><span class="line">            String[] nouns = in.readAllStrings();</span><br><span class="line">            StdOut.println(args[t] + <span class="string">": "</span> + outcast.outcast(nouns));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>不得不说官方的API设计得非常好，甚至连test case都帮你搞定，让学生可以专注于算法的设计而不用去考虑其他琐碎的事情，你需要做的仅仅是想如何数据结构，使用什么算法去实现。checklists也很详细，做题目之前把checklists看一遍可以省掉你不少时间。更令人称赞的是他们设计得这套评分系统，不仅仅考察输出结果的正确性，包括对于不合法的输入检查，时间复杂度和内存的使用都在考察范围之内，要想一次拿100分还真不容易。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Coursera/" rel="tag"># Coursera</a>
+              <a href="/tags/WordNet/" rel="tag"># WordNet</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/" rel="prev" title="使用Android Studio查看gradle源码">
+      <i class="fa fa-chevron-left"></i> 使用Android Studio查看gradle源码
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/24/Coursera-Algorithm-Part-One-Percolation/" rel="next" title="Coursera公开课-Algorithm-Percolation">
+      Coursera公开课-Algorithm-Percolation <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#思路分析"><span class="nav-number">2.</span> <span class="nav-text">思路分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现"><span class="nav-number">3.</span> <span class="nav-text">代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SAP"><span class="nav-number">3.1.</span> <span class="nav-text">SAP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WordNet"><span class="nav-number">3.2.</span> <span class="nav-text">WordNet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Outcast"><span class="nav-number">3.3.</span> <span class="nav-text">Outcast</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

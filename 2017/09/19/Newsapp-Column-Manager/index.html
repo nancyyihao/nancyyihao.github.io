@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言最近app准备大改版，整体视觉全部换新。栏目管理功能也需要进行全新设计和改变，新版中加了不少动画效果。因为老版架构使用GridView进行栏目展示，但是GridView在栏目增加和删除时播放动画比较困难，而且老架构中栏目管理功能代码混乱，到底是重构还是重写？经过认真评估，最终决定重写该功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-栏目管理">
+<meta property="og:url" content="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="前言最近app准备大改版，整体视觉全部换新。栏目管理功能也需要进行全新设计和改变，新版中加了不少动画效果。因为老版架构使用GridView进行栏目展示，但是GridView在栏目增加和删除时播放动画比较困难，而且老架构中栏目管理功能代码混乱，到底是重构还是重写？经过认真评估，最终决定重写该功能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/p1.gif">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/p2.gif">
+<meta property="og:image" content="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/p3.png">
+<meta property="article:published_time" content="2017-09-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:20:39.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/p1.gif">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Android-栏目管理 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/09/19/Newsapp-Column-Manager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-栏目管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-19 00:00:00" itemprop="dateCreated datePublished" datetime="2017-09-19T00:00:00+08:00">2017-09-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:20:39" itemprop="dateModified" datetime="2020-01-05T23:20:39+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/09/19/Newsapp-Column-Manager/" class="post-meta-item leancloud_visitors" data-flag-title="Android-栏目管理" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/09/19/Newsapp-Column-Manager/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/09/19/Newsapp-Column-Manager/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近app准备大改版，整体视觉全部换新。栏目管理功能也需要进行全新设计和改变，新版中加了不少动画效果。因为老版架构使用GridView进行栏目展示，但是GridView在栏目增加和删除时播放动画比较困难，而且老架构中栏目管理功能代码混乱，到底是重构还是重写？经过认真评估，最终决定重写该功能。</p>
+<a id="more"></a>
+<p>设计师要求的效果图如下：</p>
+<p><img src="/2017/09/19/Newsapp-Column-Manager/p1.gif" alt></p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>该模块主要有三个部分：</p>
+<ul>
+<li>栏目添加、删除</li>
+<li>栏目排序（拖拽）</li>
+<li>动画<h3 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h3>在具体实现之前，有不少问题是需要确认或者是探索的。</li>
+</ul>
+<h4 id="问题1-GridView-or-RecyclerView"><a href="#问题1-GridView-or-RecyclerView" class="headerlink" title="问题1 GridView or RecyclerView ?"></a>问题1 GridView or RecyclerView ?</h4><p>首先，对于栏目元素的展示，用GridView、RecyclerView都可以，但是GridView做添加删除动画比较困难，而RecyclerView本身就支持添加删除动画，因此这里选RecyclerView作为栏目元素的展示。</p>
+<h4 id="问题2-一个RecylerView-or-三个RecylerView"><a href="#问题2-一个RecylerView-or-三个RecylerView" class="headerlink" title="问题2 一个RecylerView or 三个RecylerView ?"></a>问题2 一个RecylerView or 三个RecylerView ?</h4><p>一开始，我把三个模块（我的栏目、最近删除、更多栏目）都放在一个RecylerView上，后来发现把所有的逻辑都放在一个RecylerView和一个Adapter中是非常不明智的：1、会使代码更加臃肿；2、需要不断计算位置来判断某个栏目是属于我的栏目、最近删除还是更多栏目，逻辑十分复杂；3、代码扩展性不高，如果哪天产品说不想要最近删除这个功能了，又得大改。基于如上几个因素，选用三个RecylerView。</p>
+<h4 id="问题3-动画如何实现？"><a href="#问题3-动画如何实现？" class="headerlink" title="问题3 动画如何实现？"></a>问题3 动画如何实现？</h4><p>对于添加和删除动画，RecylcerView无缝支持，使用notifyItemInserted()和nofifyItemRemove()即可，对于漂移动画，就有点棘手了。一个比较简单的思路是：动画之前，先获取View截图，计算出起始坐标和终止坐标，然后添加到Activity根布局(contentView)中，做一个位移动画，然后再把该View截图从根布局中移除即可。</p>
+<h4 id="问题4-拖拽排序功能如何实现？"><a href="#问题4-拖拽排序功能如何实现？" class="headerlink" title="问题4 拖拽排序功能如何实现？"></a>问题4 拖拽排序功能如何实现？</h4><p>类似于ListView、GridView的ViewDragHelper，RecyclerView也有对应的拖拽帮助类ItemTouchHelper，只需要实现Callback，并重写一些简单的方法，便可以轻松实现拖拽排序功能。</p>
+<p>想清楚了上面几个问题，完成整个功能已经不在话下了。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>具体实现效果如下（为了压缩gif，丢了不少帧，真机效果要流畅很多）：<br><img src="/2017/09/19/Newsapp-Column-Manager/p2.gif" alt></p>
+<p>主要功能已经实现了，剩下的就是迁移业务逻辑了。</p>
+<p>代码架构如下：</p>
+<p><img src="/2017/09/19/Newsapp-Column-Manager/p3.png" alt></p>
+<p>adapter作为数据适配器而存在，为了更好地灵活的区分不同点击事件的不同行为，抽象出clickhandler专门处理栏目点击事件，每个adapter都持有一个clickhandler对象。clickhandler代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by jasonkent27 on 2017/9/14.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ClickHandler</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Call when item click</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> holder which holder that user click.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> isForbidMove true if this holder can be moved, false otherwise.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> isInEditMode true if Adapter in Edit Mode, false otherwise.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder, <span class="keyword">boolean</span> isForbidMove, <span class="keyword">boolean</span> isInEditMode)</span></span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Call when item long click</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> holder which holder that user click.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> isForbidMove true if this holder can be moved, false otherwise.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> isInEditMode true if Adapter in Edit Mode, false otherwise.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">onItemLongClick</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder, <span class="keyword">boolean</span> isForbidMove, <span class="keyword">boolean</span> isInEditMode)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是具体的点击事件单单由clickhandler来处理的话，需要传很多参数进去（如topRecyclerVIew，deleteRecyclerVIew，moreRecyclerView等），因此抽象出一个Controller，用来代理处理具体业务请求，Cotroller代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by jasonkent27 on 2017/9/13.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ColumnController</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> COLUMN_TYPE_TOP = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> COLUMN_TYPE_RECENT_DELETED = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> COLUMN_TYPE_MORE = <span class="number">3</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">moveMoreToTop</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">gotoColumn</span><span class="params">(<span class="keyword">int</span> columnType, ColumnBaseAdapter.ItemViewHolder holder)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">moveRecentDeletedToTop</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">startDrag</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">moveTopToRecentDeleted</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>显然，clickhandler也不需要做太多工作，比如MoreClickHandler代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by jasonkent27 on 2017/9/14.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MoreClickHandler</span> <span class="keyword">implements</span> <span class="title">ClickHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ColumnController mController;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MoreClickHandler</span><span class="params">(ColumnController controller)</span> </span>&#123;</span><br><span class="line">        mController = controller;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder, <span class="keyword">boolean</span> isForbidMove, <span class="keyword">boolean</span> isInEditMode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isInEditMode) &#123;</span><br><span class="line">            <span class="comment">// step 1: remove more data and animation.</span></span><br><span class="line">            <span class="comment">// step 2: start translate animation.</span></span><br><span class="line">            <span class="comment">// step 3: add top data and animation.</span></span><br><span class="line">            mController.moveMoreToTop(holder);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mController.gotoColumn(ColumnController.COLUMN_TYPE_MORE, holder);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onItemLongClick</span><span class="params">(ColumnBaseAdapter.ItemViewHolder holder, <span class="keyword">boolean</span> isForbidMove, <span class="keyword">boolean</span> isInEditMode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而真正具体的逻辑（添加、删除栏目、位移动画等）由谁来做比较合适呢？显然是ColumnTopEditFragment，因为ColumnTopEditFragment本身就持有topRecyclerVIew，deleteRecyclerVIew，moreRecyclerView这些对象，通过这些对象来实现具体逻辑是比较合适的。当然如果以后ColumnTopEditFragment代码越来越多，可以考虑把写另一个类实现ColumnController接口，并把需要的参数(topRecyclerVIew，deleteRecyclerVIew，moreRecyclerView)传进去，这样就可以把添加、删除、位移动画这部分逻辑挪出来。因此这里抽象出ColumnController是非常明智的，如果改天产品说更多栏目砍掉，现有代码框架也不需要做太多调整。</p>
+<h3 id="源码下载"><a href="#源码下载" class="headerlink" title="源码下载"></a>源码下载</h3><p><a href="https://github.com/nancyyihao/ColumnManager" target="_blank" rel="noopener">ColumnManager</a></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/09/17/Android-Custom-View-Three/" rel="prev" title="网易新闻-日夜间切换动画">
+      <i class="fa fa-chevron-left"></i> 网易新闻-日夜间切换动画
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/09/24/Latex-in-Markdown/" rel="next" title="Latex-in-Hexo">
+      Latex-in-Hexo <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现方案"><span class="nav-number">3.</span> <span class="nav-text">实现方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题1-GridView-or-RecyclerView"><span class="nav-number">3.1.</span> <span class="nav-text">问题1 GridView or RecyclerView ?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2-一个RecylerView-or-三个RecylerView"><span class="nav-number">3.2.</span> <span class="nav-text">问题2 一个RecylerView or 三个RecylerView ?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题3-动画如何实现？"><span class="nav-number">3.3.</span> <span class="nav-text">问题3 动画如何实现？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题4-拖拽排序功能如何实现？"><span class="nav-number">3.4.</span> <span class="nav-text">问题4 拖拽排序功能如何实现？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">4.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码下载"><span class="nav-number">5.</span> <span class="nav-text">源码下载</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

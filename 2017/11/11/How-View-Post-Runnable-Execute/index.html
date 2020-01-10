@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言在上一篇文章自定义字体选择控件中，我们使用了View.post(Runnable)的方法获取了View的测量宽高，为什么这样是可行的呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View.post(Runnable)为何能拿到View的测量宽高">
+<meta property="og:url" content="http://nancyyihao.github.io/2017/11/11/How-View-Post-Runnable-Execute/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="前言在上一篇文章自定义字体选择控件中，我们使用了View.post(Runnable)的方法获取了View的测量宽高，为什么这样是可行的呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-11-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:18:25.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="View">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2017/11/11/How-View-Post-Runnable-Execute/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>View.post(Runnable)为何能拿到View的测量宽高 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/11/11/How-View-Post-Runnable-Execute/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          View.post(Runnable)为何能拿到View的测量宽高
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-11-11 00:00:00" itemprop="dateCreated datePublished" datetime="2017-11-11T00:00:00+08:00">2017-11-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:18:25" itemprop="dateModified" datetime="2020-01-05T23:18:25+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/View/" itemprop="url" rel="index">
+                    <span itemprop="name">View</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/11/11/How-View-Post-Runnable-Execute/" class="post-meta-item leancloud_visitors" data-flag-title="View.post(Runnable)为何能拿到View的测量宽高" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/11/11/How-View-Post-Runnable-Execute/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/11/11/How-View-Post-Runnable-Execute/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在上一篇文章<a href="https://nancyyihao.github.io/2017/10/29/Android-Font-Selector/">自定义字体选择控件</a>中，我们使用了View.post(Runnable)的方法获取了View的测量宽高，为什么这样是可行的呢？</p>
+<a id="more"></a>
+
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>下面，就让我们从源码角度来分析一下吧。注：本文所用源码为Android 7.0 （API 24）</p>
+<h4 id="View-post"><a href="#View-post" class="headerlink" title="View.post"></a>View.post</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Causes the Runnable to be added to the message queue.</span></span><br><span class="line"><span class="comment"> * The runnable will be run on the user interface thread.&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> action The Runnable that will be executed.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Returns true if the Runnable was successfully placed in to the</span></span><br><span class="line"><span class="comment"> *         message queue.  Returns false on failure, usually because the</span></span><br><span class="line"><span class="comment"> *         looper processing the message queue is exiting.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> #postDelayed</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> #removeCallbacks</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">post</span><span class="params">(Runnable action)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> AttachInfo attachInfo = mAttachInfo;</span><br><span class="line">    <span class="keyword">if</span> (attachInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> attachInfo.mHandler.post(action);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Postpone the runnable until we know on which thread it needs to run.</span></span><br><span class="line">    <span class="comment">// Assume that the runnable will be successfully placed after attach.</span></span><br><span class="line">    getRunQueue().post(action);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="View-getRunQueue"><a href="#View-getRunQueue" class="headerlink" title="View.getRunQueue()"></a>View.getRunQueue()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the queue of runnable for this view.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the queue of runnables for this view</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> HandlerActionQueue <span class="title">getRunQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mRunQueue == <span class="keyword">null</span>) &#123;</span><br><span class="line">        mRunQueue = <span class="keyword">new</span> HandlerActionQueue();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> mRunQueue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="HandlerActionQueue"><a href="#HandlerActionQueue" class="headerlink" title="HandlerActionQueue"></a>HandlerActionQueue</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">post</span><span class="params">(Runnable action)</span> </span>&#123;</span><br><span class="line">    postDelayed(action, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postDelayed</span><span class="params">(Runnable action, <span class="keyword">long</span> delayMillis)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> HandlerAction handlerAction = <span class="keyword">new</span> HandlerAction(action, delayMillis);</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mActions == <span class="keyword">null</span>) &#123;</span><br><span class="line">            mActions = <span class="keyword">new</span> HandlerAction[<span class="number">4</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        mActions = GrowingArrayUtils.append(mActions, mCount, handlerAction);</span><br><span class="line">        mCount++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到，这些Runnable其实是没有被立即执行，而是保存到了HandlerActionQueue的mActions中，那它们什么时候被执行呢？答案是executeActions</p>
+<h4 id="HandlerActionQueue-executeActions"><a href="#HandlerActionQueue-executeActions" class="headerlink" title="HandlerActionQueue.executeActions()"></a>HandlerActionQueue.executeActions()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeActions</span><span class="params">(Handler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">final</span> HandlerAction[] actions = mActions;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, count = mCount; i &lt; count; i++) &#123;</span><br><span class="line">            <span class="keyword">final</span> HandlerAction handlerAction = actions[i];</span><br><span class="line">            handler.postDelayed(handlerAction.action, handlerAction.delay);</span><br><span class="line">        &#125;</span><br><span class="line">        mActions = <span class="keyword">null</span>;</span><br><span class="line">        mCount = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实就是调用了Handler.postDelayed()，那什么时候调用executeActions(Handler handler)呢？我们回到View中，搜索executeActions，发现只有一处调用了该方法</p>
+<h4 id="View-dispatchAttachedToWindow"><a href="#View-dispatchAttachedToWindow" class="headerlink" title="View.dispatchAttachedToWindow()"></a>View.dispatchAttachedToWindow()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> info the &#123;<span class="doctag">@link</span> android.view.View.AttachInfo&#125; to associated with</span></span><br><span class="line"><span class="comment"> *        this view</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispatchAttachedToWindow</span><span class="params">(AttachInfo info, <span class="keyword">int</span> visibility)</span> </span>&#123;</span><br><span class="line">    mAttachInfo = info;</span><br><span class="line">    <span class="keyword">if</span> (mOverlay != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mOverlay.getOverlayView().dispatchAttachedToWindow(info, visibility);</span><br><span class="line">    &#125;</span><br><span class="line">    mWindowAttachCount++;</span><br><span class="line">    <span class="comment">// We will need to evaluate the drawable state at least once.</span></span><br><span class="line">    mPrivateFlags |= PFLAG_DRAWABLE_STATE_DIRTY;</span><br><span class="line">    <span class="keyword">if</span> (mFloatingTreeObserver != <span class="keyword">null</span>) &#123;</span><br><span class="line">        info.mTreeObserver.merge(mFloatingTreeObserver);</span><br><span class="line">        mFloatingTreeObserver = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    registerPendingFrameMetricsObservers();</span><br><span class="line">    <span class="keyword">if</span> ((mPrivateFlags&amp;PFLAG_SCROLL_CONTAINER) != <span class="number">0</span>) &#123;</span><br><span class="line">        mAttachInfo.mScrollContainers.add(<span class="keyword">this</span>);</span><br><span class="line">        mPrivateFlags |= PFLAG_SCROLL_CONTAINER_ADDED;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Transfer all pending runnables.</span></span><br><span class="line">    <span class="keyword">if</span> (mRunQueue != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mRunQueue.executeActions(info.mHandler);</span><br><span class="line">        mRunQueue = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    performCollectViewAttributes(mAttachInfo, visibility);</span><br><span class="line">    onAttachedToWindow();</span><br><span class="line">    ListenerInfo li = mListenerInfo;</span><br><span class="line">    <span class="keyword">final</span> CopyOnWriteArrayList&lt;OnAttachStateChangeListener&gt; listeners =</span><br><span class="line">            li != <span class="keyword">null</span> ? li.mOnAttachStateChangeListeners : <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (listeners != <span class="keyword">null</span> &amp;&amp; listeners.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// <span class="doctag">NOTE:</span> because of the use of CopyOnWriteArrayList, we *must* use an iterator to</span></span><br><span class="line">        <span class="comment">// perform the dispatching. The iterator is a safe guard against listeners that</span></span><br><span class="line">        <span class="comment">// could mutate the list by calling the various add/remove methods. This prevents</span></span><br><span class="line">        <span class="comment">// the array from being modified while we iterate it.</span></span><br><span class="line">        <span class="keyword">for</span> (OnAttachStateChangeListener listener : listeners) &#123;</span><br><span class="line">            listener.onViewAttachedToWindow(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> vis = info.mWindowVisibility;</span><br><span class="line">    <span class="keyword">if</span> (vis != GONE) &#123;</span><br><span class="line">        onWindowVisibilityChanged(vis);</span><br><span class="line">        <span class="keyword">if</span> (isShown()) &#123;</span><br><span class="line">            <span class="comment">// Calling onVisibilityChanged directly here since the subtree will also</span></span><br><span class="line">            <span class="comment">// receive dispatchAttachedToWindow and this same call</span></span><br><span class="line">            onVisibilityAggregated(vis == VISIBLE);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Send onVisibilityChanged directly instead of dispatchVisibilityChanged.</span></span><br><span class="line">    <span class="comment">// As all views in the subtree will already receive dispatchAttachedToWindow</span></span><br><span class="line">    <span class="comment">// traversing the subtree again here is not desired.</span></span><br><span class="line">    onVisibilityChanged(<span class="keyword">this</span>, visibility);</span><br><span class="line">    <span class="keyword">if</span> ((mPrivateFlags&amp;PFLAG_DRAWABLE_STATE_DIRTY) != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// If nobody has evaluated the drawable state yet, then do it now.</span></span><br><span class="line">        refreshDrawableState();</span><br><span class="line">    &#125;</span><br><span class="line">    needGlobalAttributesUpdate(<span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里，好像我们的线索断了，因为我们发现这里只是把哪些Runnable添加到了info.handler中，就没了。显然我们对这个结果是不满意的。接下来我们再看一下这个handler之前到底有么有添加其他的Runnable.</p>
+<p>全局搜索了一下，发现mAttachInfo只有在View.dispatchAttachedToWindow()的时候赋非空值，而在View.dispatchDetachedFromWindow()的时候赋值为空。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * A set of information given to a view when it is attached to its parent</span></span><br><span class="line"><span class="comment"> * window.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AttachInfo</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ... 省略部分代码</span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * A Handler supplied by a view's &#123;<span class="doctag">@link</span> android.view.ViewRootImpl&#125;. This</span></span><br><span class="line"><span class="comment">     * handler can be used to pump events in the UI events queue.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">final</span> Handler mHandler;</span><br><span class="line">    <span class="comment">// ... 省略部分代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看了AttachInfo类中mHandler的定义，我们发现这个Handler就是主线程的Handler。到这里，显然还没有没有发现Handler之前到底有没有其他的Runnable。不甘心，于是又去Debug源码，发现是ViewRootImpl这个类里调用了View.dispatchAttachedToWindow()，而且只有一处，真是天助我也！</p>
+<h4 id="ViewRootImpl-performTraversals"><a href="#ViewRootImpl-performTraversals" class="headerlink" title="ViewRootImpl.performTraversals()"></a>ViewRootImpl.performTraversals()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// cache mView since it is used so much below...</span></span><br><span class="line">        <span class="keyword">final</span> View host = mView;</span><br><span class="line">        <span class="comment">// ... 省略部分源码</span></span><br><span class="line">        <span class="keyword">if</span> (mFirst) &#123;</span><br><span class="line">            <span class="comment">// ... 省略部分源码</span></span><br><span class="line">            <span class="comment">// We used to use the following condition to choose 32 bits drawing caches:</span></span><br><span class="line">            <span class="comment">// PixelFormat.hasAlpha(lp.format) || lp.format == PixelFormat.RGBX_8888</span></span><br><span class="line">            <span class="comment">// However, windows are now always 32 bits by default, so choose 32 bits</span></span><br><span class="line">            mAttachInfo.mUse32BitDrawingCache = <span class="keyword">true</span>;</span><br><span class="line">            mAttachInfo.mHasWindowFocus = <span class="keyword">false</span>;</span><br><span class="line">            mAttachInfo.mWindowVisibility = viewVisibility;</span><br><span class="line">            mAttachInfo.mRecomputeGlobalAttributes = <span class="keyword">false</span>;</span><br><span class="line">            mLastConfiguration.setTo(host.getResources().getConfiguration());</span><br><span class="line">            mLastSystemUiVisibility = mAttachInfo.mSystemUiVisibility;</span><br><span class="line">            <span class="comment">// Set the layout direction if it has not been set before (inherit is the default)</span></span><br><span class="line">            <span class="keyword">if</span> (mViewLayoutDirectionInitial == View.LAYOUT_DIRECTION_INHERIT) &#123;</span><br><span class="line">                host.setLayoutDirection(mLastConfiguration.getLayoutDirection());</span><br><span class="line">            &#125;</span><br><span class="line">            host.dispatchAttachedToWindow(mAttachInfo, <span class="number">0</span>);</span><br><span class="line">            mAttachInfo.mTreeObserver.dispatchOnWindowAttachedChange(<span class="keyword">true</span>);</span><br><span class="line">            dispatchApplyInsets(host);</span><br><span class="line">            <span class="comment">//Log.i(mTag, "Screen on initialized: " + attachInfo.mKeepScreenOn);</span></span><br><span class="line">            <span class="comment">// ... 省略部分源码</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ... 省略部分源码</span></span><br><span class="line">        peformMeasure();</span><br><span class="line">        <span class="comment">// ... 省略部分源码</span></span><br><span class="line">        peformLayout();</span><br><span class="line">        <span class="comment">// ... 省略部分源码</span></span><br><span class="line">        peformDraw();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// ... 省略部分源码</span></span><br><span class="line">        </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>继续看mAttachInfo在哪里初始化，我们发现mAttachInfo在构造方法里被赋值了。</p>
+<h4 id="ViewRootImpl-ViewRootImpl"><a href="#ViewRootImpl-ViewRootImpl" class="headerlink" title="ViewRootImpl.ViewRootImpl()"></a>ViewRootImpl.ViewRootImpl()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewRootImpl</span><span class="params">(Context context, Display display)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ... 省略部分源码</span></span><br><span class="line">    mAttachInfo = <span class="keyword">new</span> View.AttachInfo(mWindowSession, mWindow, display, <span class="keyword">this</span>, mHandler, <span class="keyword">this</span>);</span><br><span class="line">    <span class="comment">// ... 省略部分源码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>继续看Handler在哪里赋值，直接就在成员变量中赋值了。</p>
+<p>final ViewRootHandler mHandler = new ViewRootHandler();<br>到这里，我们该关心mHandler什么时候往消息队列中发消息了。还记得之前说的performTraversals吗？再继续看，哪个地方调用了该方法。</p>
+<h4 id="ViewRootImpl-doTraversal"><a href="#ViewRootImpl-doTraversal" class="headerlink" title="ViewRootImpl.doTraversal()"></a>ViewRootImpl.doTraversal()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doTraversal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mTraversalScheduled) &#123;</span><br><span class="line">        mTraversalScheduled = <span class="keyword">false</span>;</span><br><span class="line">        mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);</span><br><span class="line">        <span class="keyword">if</span> (mProfile) &#123;</span><br><span class="line">            Debug.startMethodTracing(<span class="string">"ViewAncestor"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        performTraversals();</span><br><span class="line">        <span class="keyword">if</span> (mProfile) &#123;</span><br><span class="line">            Debug.stopMethodTracing();</span><br><span class="line">            mProfile = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>又是哪里调用了doTraversal()呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TraversalRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        doTraversal();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">final</span> TraversalRunnable mTraversalRunnable = <span class="keyword">new</span> TraversalRunnable();</span><br></pre></td></tr></table></figure>
+<p>到这里，你应该有点眉目了，是放在一个Runnable中。</p>
+<p>调用这个Runnable，也即往主线程队列发消息的地方有两处</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduleTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!mTraversalScheduled) &#123;</span><br><span class="line">        mTraversalScheduled = <span class="keyword">true</span>;</span><br><span class="line">        mTraversalBarrier = mHandler.getLooper().getQueue().postSyncBarrier();</span><br><span class="line">        mChoreographer.postCallback(</span><br><span class="line">                Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">if</span> (!mUnbufferedInputDispatch) &#123;</span><br><span class="line">            scheduleConsumeBatchedInput();</span><br><span class="line">        &#125;</span><br><span class="line">        notifyRendererOfFramePending();</span><br><span class="line">        pokeDrawLockIfNeeded();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unscheduleTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mTraversalScheduled) &#123;</span><br><span class="line">        mTraversalScheduled = <span class="keyword">false</span>;</span><br><span class="line">        mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);</span><br><span class="line">        mChoreographer.removeCallbacks(</span><br><span class="line">                Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里又不得不提一下Android的消息驱动模型了。我们知道，Android程序的入口其实是在ActivityThread里面的main方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"ActivityThreadMain"</span>);</span><br><span class="line">    SamplingProfilerIntegration.start();</span><br><span class="line">    <span class="comment">// CloseGuard defaults to true and can be quite spammy.  We</span></span><br><span class="line">    <span class="comment">// disable it here, but selectively enable it later (via</span></span><br><span class="line">    <span class="comment">// StrictMode) on debug builds, but using DropBox, not logs.</span></span><br><span class="line">    CloseGuard.setEnabled(<span class="keyword">false</span>);</span><br><span class="line">    Environment.initForCurrentUser();</span><br><span class="line">    <span class="comment">// Set the reporter for event logging in libcore</span></span><br><span class="line">    EventLogger.setReporter(<span class="keyword">new</span> EventLoggingReporter());</span><br><span class="line">    <span class="comment">// Make sure TrustedCertificateStore looks in the right place for CA certificates</span></span><br><span class="line">    <span class="keyword">final</span> File configDir = Environment.getUserConfigDirectory(UserHandle.myUserId());</span><br><span class="line">    TrustedCertificateStore.setDefaultUserDirectory(configDir);</span><br><span class="line">    Process.setArgV0(<span class="string">"&lt;pre-initialized&gt;"</span>);</span><br><span class="line">    Looper.prepareMainLooper();</span><br><span class="line">    ActivityThread thread = <span class="keyword">new</span> ActivityThread();</span><br><span class="line">    thread.attach(<span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">if</span> (sMainThreadHandler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        sMainThreadHandler = thread.getHandler();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</span><br><span class="line">        Looper.myLooper().setMessageLogging(<span class="keyword">new</span></span><br><span class="line">                LogPrinter(Log.DEBUG, <span class="string">"ActivityThread"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// End of event ActivityThreadMain.</span></span><br><span class="line">    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</span><br><span class="line">    Looper.loop();</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里创建了主线程的Handler和Looper，并且最后执行了Looper.loop()进入循环。它一直在等待消息去驱动它继续执行下去。而像我们post的那个Runnable就是消息的一种了。</p>
+<p>讲到这里，你大概明白了。因为Android应用程序是靠消息驱动的，当前运行的performTraversals()其实是通过一个mTraversalRunnable投递到主线程的消息队列中执行的，因为performTraversals()中又执行了peformMeasure()、peformLayout()、peformDraw()，因此执行完performTraversals()之后是可以拿到View的宽高的。而通过View.post(Runnable)投递过来的消息需要等到当前消息（即mTraversalRunnable，当中执行了performTraversals()）执行完成之后，才能接着执行。因此是能够拿到View的宽高的。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><p><a href="http://blog.csdn.net/scnuxisan225/article/details/49815269" target="_blank" rel="noopener">post的Runnable何时被执行</a></p>
+</li>
+<li><p><a href="http://www.jianshu.com/p/dc35cb7f04ff" target="_blank" rel="noopener">android View onMeasure/onLayout/onDraw的来龙去脉</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/farmer_cc/article/details/31454803" target="_blank" rel="noopener">源码分析：onAttach, onMeasure, onLayout, onDraw 的顺序</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/luoshengyang/article/details/8661317/" target="_blank" rel="noopener">Android视图SurfaceView的实现原理分析</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/scnuxisan225/article/details/50448996" target="_blank" rel="noopener">Android进阶-如何写一个很屌的动画（1）—先实现一个简易的自定义动画框架</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/View/" rel="tag"># View</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/10/29/Android-Font-Selector/" rel="prev" title="Android-Font-Selector">
+      <i class="fa fa-chevron-left"></i> Android-Font-Selector
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/19/Some-Problems-On-Milk/" rel="next" title="新项目问题汇总">
+      新项目问题汇总 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#View-post"><span class="nav-number">2.1.</span> <span class="nav-text">View.post</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#View-getRunQueue"><span class="nav-number">2.2.</span> <span class="nav-text">View.getRunQueue()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HandlerActionQueue"><span class="nav-number">2.3.</span> <span class="nav-text">HandlerActionQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HandlerActionQueue-executeActions"><span class="nav-number">2.4.</span> <span class="nav-text">HandlerActionQueue.executeActions()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#View-dispatchAttachedToWindow"><span class="nav-number">2.5.</span> <span class="nav-text">View.dispatchAttachedToWindow()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewRootImpl-performTraversals"><span class="nav-number">2.6.</span> <span class="nav-text">ViewRootImpl.performTraversals()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewRootImpl-ViewRootImpl"><span class="nav-number">2.7.</span> <span class="nav-text">ViewRootImpl.ViewRootImpl()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewRootImpl-doTraversal"><span class="nav-number">2.8.</span> <span class="nav-text">ViewRootImpl.doTraversal()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="1. 前言今年，公司加大了对app性能优化的投入，把性能优化作为技术部门的KPI之一。在做需求的同时，我们也会分析并解决app中存在的内存泄漏。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android内存泄漏分析">
+<meta property="og:url" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="1. 前言今年，公司加大了对app性能优化的投入，把性能优化作为技术部门的KPI之一。在做需求的同时，我们也会分析并解决app中存在的内存泄漏。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p1.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p2.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p3.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p4.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p5.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p6.png">
+<meta property="article:published_time" content="2018-02-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:07:13.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Memory-Leak">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/p1.png">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Android内存泄漏分析 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android内存泄漏分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-03-01 00:00:00" itemprop="dateCreated datePublished" datetime="2018-03-01T00:00:00+08:00">2018-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:07:13" itemprop="dateModified" datetime="2020-01-05T23:07:13+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/03/01/Android-Memory-Leak-Analysis/" class="post-meta-item leancloud_visitors" data-flag-title="Android内存泄漏分析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/03/01/Android-Memory-Leak-Analysis/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/03/01/Android-Memory-Leak-Analysis/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>今年，公司加大了对app性能优化的投入，把性能优化作为技术部门的KPI之一。在做需求的同时，我们也会分析并解决app中存在的内存泄漏。</p>
+<a id="more"></a>
+
+<h3 id="2-内存泄漏"><a href="#2-内存泄漏" class="headerlink" title="2. 内存泄漏"></a>2. 内存泄漏</h3><p>内存泄漏主要是指程序运行过程中，动态分配内存之后，而没有及时将不再使用的内存释放，造成系统内存浪费，严重会影响程序性能，甚至会导致程序崩溃。这也是C/C++语言饱受诟病的特性之一。虽然Java语言引用了GC机制，使得内存泄漏的可能性大大降低，但是在某些情况下，还是有可能导致垃圾内存无法及时释放。下面分析几种Android开发过程中有可能导致的内存泄漏。</p>
+<h4 id="2-1-静态变量引用"><a href="#2-1-静态变量引用" class="headerlink" title="2.1 静态变量引用"></a>2.1 静态变量引用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> MainUtils ourInstance ;</span><br><span class="line">    <span class="keyword">private</span> Context mContext;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MainUtils <span class="title">getInstance</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ourInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            ourInstance = <span class="keyword">new</span> MainUtils(context);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ourInstance;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">MainUtils</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        mContext = context;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        MainUtils utils = MainUtils.getInstance(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在横竖屏切换的时候，会先导致MainActivity销毁重建，然而MainUtils有一个静态变量引用了MainActivity，因此会导致内存泄漏，具体原因后面分析。</p>
+<h4 id="2-2-多线程"><a href="#2-2-多线程" class="headerlink" title="2.2 多线程"></a>2.2 多线程</h4><p>多线程也是Android中导致内存泄漏的原因之一。常见的因为多线程导致内存泄漏有如下几种</p>
+<h5 id="2-2-1-Handler"><a href="#2-2-1-Handler" class="headerlink" title="2.2.1 Handler"></a>2.2.1 Handler</h5><p>在Activity、Fragment或者View用Handler.PostDelayed(Runnable, 2000)执行定时操作（如每隔一分钟刷新二维码），在Activity、Fragment或者View销毁时，没有把Handler中的Message和Callback销毁导致内存泄漏。</p>
+<h5 id="2-2-2-AsyncTask"><a href="#2-2-2-AsyncTask" class="headerlink" title="2.2.2 AsyncTask"></a>2.2.2 AsyncTask</h5><p>在Activity或者Fragment甚至是View、Adapter（正常来说View和Adapter不应该有AsyncTask）中使用了AsyncTask，在类被销毁时没有及时把AsyncTask销毁掉，导致内存泄漏。</p>
+<h5 id="2-2-3-TimerTask"><a href="#2-2-3-TimerTask" class="headerlink" title="2.2.3 TimerTask"></a>2.2.3 TimerTask</h5><p>使用了TimerTask作为定时任务，如定期查看某个文件夹或文件是否存在，但是传入了MainActivity这个实例（如2.1）导致泄漏。</p>
+<h5 id="2-2-4-网络操作"><a href="#2-2-4-网络操作" class="headerlink" title="2.2.4 网络操作"></a>2.2.4 网络操作</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        findViewById(R.id.btn_start).setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                            <span class="keyword">try</span> &#123;</span><br><span class="line">                                start();</span><br><span class="line">                            &#125; <span class="keyword">catch</span> (IOException | InterruptedException e) &#123;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;).start();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//https://api.github.com/users/octocat/repos</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        Retrofit retrofit = <span class="keyword">new</span> Retrofit.Builder()</span><br><span class="line">                .baseUrl(<span class="string">"https://api.github.com/"</span>)</span><br><span class="line">                .addConverterFactory(GsonConverterFactory.create())</span><br><span class="line">                .build();</span><br><span class="line">        GitHubService service = retrofit.create(GitHubService<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        Call&lt;List&lt;Repo&gt;&gt; call = service.listRepos(<span class="string">"octocat"</span>);</span><br><span class="line">        List&lt;Repo&gt; repos = call.execute().body();</span><br><span class="line">        System.out.println(repos.toString());</span><br><span class="line">		<span class="comment">// 模拟网络耗时</span></span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述例子中，执行网络操作过程中，如果用户退出Acitvity，便会导致内存泄漏。</p>
+<h4 id="2-3-动画"><a href="#2-3-动画" class="headerlink" title="2.3 动画"></a>2.3 动画</h4><p>最常见的场景Activity、Fragment持有了View，在View动画还没有执行完之前退出了Fragment或者Activity，此时便会产生内存泄漏（如轮播图）。</p>
+<h3 id="3-分析工具"><a href="#3-分析工具" class="headerlink" title="3. 分析工具"></a>3. 分析工具</h3><h4 id="3-1-Android-Monitors"><a href="#3-1-Android-Monitors" class="headerlink" title="3.1 Android Monitors"></a>3.1 Android Monitors</h4><p>使用Android Monitors来查看内存抖动，并结合代码分析来解决内存泄漏问题是一个比较好的方案。关于hprof文件中的信息是从哪里的(JVMTI)和hprof文件的格式可以参考以下两篇文章</p>
+<ul>
+<li><a href="http://docs.oracle.com/javase/7/docs/technotes/samples/hprof.html" target="_blank" rel="noopener">HPROF: A Heap/CPU Profiling Tool</a></li>
+<li><a href="https://www.ibm.com/support/knowledgecenter/zh/SSYKE2_7.0.0/com.ibm.java.aix.70.doc/diag/tools/hprof_output.html" target="_blank" rel="noopener">HPROF 输出文件的说明</a><br>Android Studio中hprof文件各个字段的含义，可以参考这里：HPROF Viewer and Analyzer。<br>需要注意的是Android Mionitor导出的hprof文件不是标准的hprof文件，需要切换到captures，然后右键—&gt;Export to standard hprof才能导出标准hptof文件，才能被MAT工具识别。如下图</li>
+</ul>
+<p><img src="/2018/03/01/Android-Memory-Leak-Analysis/p1.png" alt></p>
+<p>下面我们结合Android Monitors分析例子2.1中导致的内存泄漏。假设我们怀疑某个操作会导致内存泄漏（拿旋转屏幕作为例子）<br>刚开始运行时，内存图如下，占用内存为2.49M：</p>
+<p><img src="/2018/03/01/Android-Memory-Leak-Analysis/p2.png" alt></p>
+<p>旋转2次之后，内存发现内存发生了微小抖动，内存图如下：</p>
+<p><img src="/2018/03/01/Android-Memory-Leak-Analysis/p3.png" alt></p>
+<p>之后再点几次GC</p>
+<p><img src="/2018/03/01/Android-Memory-Leak-Analysis/p4.png" alt></p>
+<p>我们发现使用内存为2.55M，比操作前(2.49M)增加了0.06M，结合hprof文件就可以知道MainActivity在内存中有两个实例，但是按照正常逻辑，应该只有一个MainActivity实例，者说明发生了内存泄漏。再继续查看两个MainActivity的引领链，发现0号MainActivity实例被MainUtils一个静态变量实例引用了，这就找到了问题的根源。</p>
+<p><img src="/2018/03/01/Android-Memory-Leak-Analysis/p5.png" alt></p>
+<h4 id="3-2-LeakCanary"><a href="#3-2-LeakCanary" class="headerlink" title="3.2 LeakCanary"></a>3.2 LeakCanary</h4><p>LeakCanary是square公司推出的一个Android和Java内存泄漏检测工具。其官方介绍为<strong>A memory leak detection library for Android and Java.</strong>。使用非常简单</p>
+<ol>
+<li>在build.gradle文件中添加<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">debugCompile <span class="string">'com.squareup.leakcanary:leakcanary-android:1.5.1'</span></span><br><span class="line">releaseCompile <span class="string">'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'</span></span><br></pre></td></tr></table></figure></li>
+<li>在Application中添加<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate();</span><br><span class="line">    <span class="keyword">if</span> (LeakCanary.isInAnalyzerProcess(<span class="keyword">this</span>)) &#123;</span><br><span class="line">        <span class="comment">// This process is dedicated to LeakCanary for heap analysis.</span></span><br><span class="line">        <span class="comment">// You should not init your app in this process.</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    LeakCanary.install(<span class="keyword">this</span>);</span><br><span class="line">    <span class="comment">// Normal app init code...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+重新运行2.1中代码，旋转几次屏幕后，leakCanary便能检测出MainActivity发生了泄漏，如下图</li>
+</ol>
+<p><img src="/2018/03/01/Android-Memory-Leak-Analysis/p6.png" alt></p>
+<p>并且把泄漏类及路径都标记出来了！其内部主要是用类似于MAT的内存检测工具haha，其主要原理如下：</p>
+<ol>
+<li>RefWatcher.watch() creates a <a href="https://github.com/square/leakcanary/blob/master/leakcanary-watcher/src/main/java/com/squareup/leakcanary/KeyedWeakReference.java" target="_blank" rel="noopener">KeyedWeakReference</a> to the watched object.</li>
+<li>Later, in a background thread, it checks if the reference has been cleared and if not it triggers a GC.</li>
+<li>If the reference is still not cleared, it then dumps the heap into a .hprof file stored on the file system.</li>
+<li>HeapAnalyzerService is started in a separate process and HeapAnalyzer parses the heap dump using &gt; <a href="https://github.com/square/haha" target="_blank" rel="noopener">HAHA</a>.</li>
+<li>eapAnalyzer finds the KeyedWeakReference in the heap dump thanks to a unique reference key and &gt; locates the leaking reference.</li>
+<li>HeapAnalyzer computes the shortest strong reference path to the GC Roots to determine if there is a leak, and then builds the chain of references causing the leak.</li>
+<li>The result is passed back to DisplayLeakService in the app process, and the leak notification is shown.</li>
+</ol>
+<p>看了下源码，核心原理是在每个Activity.onDestroy的时候封装成带key弱引用KeyedWeakReference，然后如下处理：</p>
+<ol>
+<li>key对应弱引用是否存在，若是，转2。若否，不存在内存泄漏</li>
+<li>手动触发Gc，再次判断key对应弱引用是否存在，若是，转3。若否，不存在内存泄漏</li>
+<li>分析hprof文件，再次判断key对应弱引用是否存在，若是，转4。若否，不存在内存泄漏</li>
+<li>生成分析报告<br>就不上代码分析了，想了解更多请参考：</li>
+</ol>
+<ul>
+<li><a href="https://github.com/square/leakcanary/wiki/FAQ#how-does-it-work" target="_blank" rel="noopener">https://github.com/square/leakcanary/wiki/FAQ#how-does-it-work</a></li>
+<li><a href="http://www.jianshu.com/p/5ee6b471970e" target="_blank" rel="noopener">LeakCanary 内存泄露监测原理研究</a></li>
+<li><a href="http://blog.csdn.net/cloud_huan/article/details/53081120" target="_blank" rel="noopener">LeakCanary核心原理源码浅析</a></li>
+</ul>
+<h4 id="3-3-MAT"><a href="#3-3-MAT" class="headerlink" title="3.3 MAT"></a>3.3 MAT</h4><p>MAT工具使用相对简单，具体用法可以参考文章：<a href="http://www.jianshu.com/p/bfb9a40a16e5" target="_blank" rel="noopener">使用MAT分析应用的内存信息</a></p>
+<h3 id="4-几点建议"><a href="#4-几点建议" class="headerlink" title="4. 几点建议"></a>4. 几点建议</h3><ul>
+<li>对于使用Handler的类，在销毁前中调用Handler.removeCallbacksAndMessages(null);</li>
+<li>对于使用动画的View，在销毁前调用View..clearAnimation();</li>
+<li>使用多线程的类，销毁时需要把线程给stop.</li>
+<li>对于Cursor、Bitmap、Broadcast、系统监听（如传感器监听、网络状态监听等）IO流等资源，使用完后关闭或反注册。<h3 id="5-参考"><a href="#5-参考" class="headerlink" title="5. 参考"></a>5. 参考</h3><a href="http://www.jianshu.com/p/7d958959cf33" target="_blank" rel="noopener">Android Studio - HPROF文件查看和分析工具</a><br><a href="https://www.liaohuqiu.net/cn/posts/memory-and-profile-analysis-in-android/" target="_blank" rel="noopener">Android 内存使用分析和程序性能分析</a><br><a href="https://www.ibm.com/support/knowledgecenter/zh/SSYKE2_7.0.0/com.ibm.java.aix.70.doc/diag/tools/hprof_output.html" target="_blank" rel="noopener">HPROF 输出文件的说明</a><br><a href="https://www.ibm.com/developerworks/cn/java/j-lo-jpda2/" target="_blank" rel="noopener">JVMTI 和 Agent 实现</a><br><a href="https://nancyyihao.github.io/2018/03/01/Android-Memory-Leak-Analysis/%E5%9F%BA%E4%BA%8E%20JVMTI%20%E5%AE%9E%E7%8E%B0%20Java%20%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%9B%91%E6%8E%A7">基于 JVMTI 实现 Java 线程的监控</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Memory-Leak/" rel="tag"># Memory-Leak</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/10/Coursera-Algorithm-Part-One-Deques-and-Randomized-Queues/" rel="prev" title="Coursera-Algorithm-Part-One-Deques-and-Randomized-Queues">
+      <i class="fa fa-chevron-left"></i> Coursera-Algorithm-Part-One-Deques-and-Randomized-Queues
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/10/About-Android-ViewStub/" rel="next" title="使用ViewStub延迟加载布局">
+      使用ViewStub延迟加载布局 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-内存泄漏"><span class="nav-number">2.</span> <span class="nav-text">2. 内存泄漏</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-静态变量引用"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 静态变量引用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-多线程"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-1-Handler"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 Handler</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-2-AsyncTask"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 AsyncTask</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-3-TimerTask"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3 TimerTask</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-4-网络操作"><span class="nav-number">2.2.4.</span> <span class="nav-text">2.2.4 网络操作</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-动画"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 动画</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-分析工具"><span class="nav-number">3.</span> <span class="nav-text">3. 分析工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Android-Monitors"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 Android Monitors</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-LeakCanary"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 LeakCanary</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-MAT"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 MAT</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-几点建议"><span class="nav-number">4.</span> <span class="nav-text">4. 几点建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-参考"><span class="nav-number">5.</span> <span class="nav-text">5. 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

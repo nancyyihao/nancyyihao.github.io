@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="1. 前言PC时代，把某些软件卸载后会弹出一个网页，用来收集反馈信息，以便产品更好决策。在移动时代，Android其实也可以做到同样的功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-卸载反馈">
+<meta property="og:url" content="http://nancyyihao.github.io/2017/03/06/Android-uninstall-feedback/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="1. 前言PC时代，把某些软件卸载后会弹出一个网页，用来收集反馈信息，以便产品更好决策。在移动时代，Android其实也可以做到同样的功能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-03-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:08:55.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="卸载反馈">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2017/03/06/Android-uninstall-feedback/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Android-卸载反馈 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/03/06/Android-uninstall-feedback/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-卸载反馈
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2017-03-06T00:00:00+08:00">2017-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:08:55" itemprop="dateModified" datetime="2020-01-05T23:08:55+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/03/06/Android-uninstall-feedback/" class="post-meta-item leancloud_visitors" data-flag-title="Android-卸载反馈" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/03/06/Android-uninstall-feedback/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/03/06/Android-uninstall-feedback/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>PC时代，把某些软件卸载后会弹出一个网页，用来收集反馈信息，以便产品更好决策。在移动时代，Android其实也可以做到同样的功能。</p>
+<a id="more"></a>
+<h3 id="2-分析"><a href="#2-分析" class="headerlink" title="2. 分析"></a>2. 分析</h3><p>当用户卸载app时，Android系统会自动杀掉app所在进程，在framework层，并没有提供app卸载监听方法。我们知道Android是基于Linux的，Linux内核提供了许多进程管理的方法，通过fork函数我们可以轻松创建一个子进程，结合Java语言的JNI机制，就可以在app启动时创建一个子进程实时监测当前app的包名是否被删除，当包名被删除时，通过命令打开网页即可。</p>
+<h3 id="3-实现"><a href="#3-实现" class="headerlink" title="3. 实现"></a>3. 实现</h3><p>先通过JNI调用，fork一个子进程实时监控包名</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line">Java_com_netease_uninstallmonitor_MainActivity_monitorUsingPoll(JNIEnv *env, jobject instance,</span><br><span class="line">                                                                jstring pkgDir_, jint sdkVersion_,</span><br><span class="line">                                                                jstring openUrl_) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pkgDir = env-&gt;GetStringUTFChars(pkgDir_, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *openUrl = env-&gt;GetStringUTFChars(openUrl_, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// need to clear old process</span></span><br><span class="line">    clearOldProcessByName(monitorProcessName);</span><br><span class="line">    <span class="keyword">int</span> state = fork();</span><br><span class="line">    <span class="keyword">if</span> (state &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"parent process = %d"</span>, state);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (state == <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"child process = %d"</span>, state);</span><br><span class="line">        <span class="keyword">int</span> stop = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (!stop) &#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">            FILE *file = fopen(pkgDir, <span class="string">"r"</span>);</span><br><span class="line">            <span class="keyword">if</span> (file == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                LOGD(<span class="string">"app uninstalled already!"</span>);</span><br><span class="line">                loadUrl(sdkVersion_, openUrl);</span><br><span class="line">                stop = <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGD(<span class="string">"Error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(pkgDir_, pkgDir);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(openUrl_, openUrl);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当包名被删除时打开url即可</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loadUrl</span><span class="params">(<span class="keyword">int</span> sdkVersion, <span class="keyword">const</span> <span class="keyword">char</span> *url)</span> </span>&#123;</span><br><span class="line">    LOGD(<span class="string">"start open url...."</span>);</span><br><span class="line">    <span class="keyword">if</span> (sdkVersion &lt; <span class="number">17</span>) &#123;</span><br><span class="line">        execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"start"</span>, <span class="string">"-a"</span>, <span class="string">"android.intent.action.VIEW"</span>, <span class="string">"-d"</span>, url, <span class="literal">NULL</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"start"</span>, <span class="string">"--user"</span>, <span class="string">"0"</span>, <span class="string">"-a"</span>,</span><br><span class="line">               <span class="string">"android.intent.action.VIEW"</span>, <span class="string">"-d"</span>, url, (<span class="keyword">char</span> *) <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    LOGD(<span class="string">"stop open url...."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-优化"><a href="#4-优化" class="headerlink" title="4. 优化"></a>4. 优化</h3><p>上述方案使用while语句一直循环监听，浪费资源，我们可以基于linux的文件删除通知机制来进行优化。</p>
+<h4 id="优化点一："><a href="#优化点一：" class="headerlink" title="优化点一："></a>优化点一：</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line">Java_com_netease_uninstallmonitor_MainActivity_monitorUsingNotify(JNIEnv *env, jobject instance,</span><br><span class="line">                                                                  jstring pkgDir_, jint sdkVersion,</span><br><span class="line">                                                                  jstring openUrl_) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pkgDir = env-&gt;GetStringUTFChars(pkgDir_, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *openUrl = env-&gt;GetStringUTFChars(openUrl_, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">int</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"parent process = %d"</span>, pid);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"child process = %d"</span>, pid);</span><br><span class="line">        prctl(PR_SET_NAME, monitorProcessName);</span><br><span class="line">        <span class="comment">// register notify listener</span></span><br><span class="line">        <span class="keyword">int</span> fd = inotify_init();</span><br><span class="line">        <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            LOGD(<span class="string">"inofity_init failed!!!"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> wd = inotify_add_watch(fd, pkgDir, IN_DELETE);</span><br><span class="line">        <span class="keyword">if</span> (wd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            LOGD(<span class="string">"inotify_add_watch failed !!!"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// handle an event once a time</span></span><br><span class="line">        <span class="keyword">void</span> *p_buf = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(inotify_event));</span><br><span class="line">        <span class="keyword">if</span> (p_buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            LOGD(<span class="string">"malloc failed!!!"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        LOGD(<span class="string">"start listen"</span>);</span><br><span class="line">        <span class="comment">// block session until file delete</span></span><br><span class="line">        read(fd, p_buf, <span class="keyword">sizeof</span>(struct inotify_event));</span><br><span class="line">        <span class="built_in">free</span>(p_buf);</span><br><span class="line">        inotify_rm_watch(fd, IN_DELETE);</span><br><span class="line">        loadUrl(sdkVersion, openUrl);</span><br><span class="line">        LOGD(<span class="string">"end listen"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGD(<span class="string">"Error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(pkgDir_, pkgDir);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(openUrl_, openUrl);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="优化点二："><a href="#优化点二：" class="headerlink" title="优化点二："></a>优化点二：</h4><p>上述放方案中，当app卸载重装后，之前的监听进程可能没有被系统杀死，因此可能导致系统中可能同时存在多个监听进程，浪费资源。因此在创建监听进程前最好把之前的监听进程杀死。</p>
+<h3 id="5-最终代码"><a href="#5-最终代码" class="headerlink" title="5. 最终代码"></a>5. 最终代码</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/inotify.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/prctl.h&gt;          /*for prctl function*/</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;dirent.h&gt;             /*for DIR struct*/</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;android/log.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOG_TAG <span class="meta-string">"uninstall_tag"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">char</span> monitorProcessName[] = <span class="string">"ntes_uninstall"</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loadUrl</span><span class="params">(<span class="keyword">int</span> sdkVersion, <span class="keyword">const</span> <span class="keyword">char</span> *url)</span> </span>&#123;</span><br><span class="line">    LOGD(<span class="string">"start open url...."</span>);</span><br><span class="line">    <span class="keyword">if</span> (sdkVersion &lt; <span class="number">17</span>) &#123;</span><br><span class="line">        execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"start"</span>, <span class="string">"-a"</span>, <span class="string">"android.intent.action.VIEW"</span>, <span class="string">"-d"</span>, url, <span class="literal">NULL</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"start"</span>, <span class="string">"--user"</span>, <span class="string">"0"</span>, <span class="string">"-a"</span>,</span><br><span class="line">               <span class="string">"android.intent.action.VIEW"</span>, <span class="string">"-d"</span>, url, (<span class="keyword">char</span> *) <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    LOGD(<span class="string">"stop open url...."</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find_pid_by_name</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *ProcName, <span class="keyword">int</span> *foundpid)</span> </span>&#123;</span><br><span class="line">    DIR *dir;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dirent</span> *<span class="title">d</span>;</span></span><br><span class="line">    <span class="keyword">int</span> pid, i;</span><br><span class="line">    <span class="keyword">char</span> *s;</span><br><span class="line">    <span class="keyword">int</span> pnlen;</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    foundpid[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">    pnlen = <span class="built_in">strlen</span>(ProcName);</span><br><span class="line">    <span class="comment">/* Open the /proc directory. */</span></span><br><span class="line">    dir = opendir(<span class="string">"/proc"</span>);</span><br><span class="line">    <span class="keyword">if</span> (!dir) &#123;</span><br><span class="line">        LOGE(<span class="string">"cannot open /proc"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* Walk through the directory. */</span></span><br><span class="line">    <span class="keyword">while</span> ((d = readdir(dir)) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">char</span> exe[PATH_MAX + <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">char</span> path[PATH_MAX + <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">int</span> len;</span><br><span class="line">        <span class="keyword">int</span> namelen;</span><br><span class="line">        <span class="comment">/* See if this is a process */</span></span><br><span class="line">        <span class="keyword">if</span> ((pid = atoi(d-&gt;d_name)) == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">snprintf</span>(exe, <span class="keyword">sizeof</span>(exe), <span class="string">"/proc/%s/exe"</span>, d-&gt;d_name);</span><br><span class="line">        <span class="keyword">if</span> ((len = readlink(exe, path, PATH_MAX)) &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        path[len] = <span class="string">'\0'</span>;</span><br><span class="line">        <span class="comment">/* Find ProcName */</span></span><br><span class="line">        s = <span class="built_in">strrchr</span>(path, <span class="string">'/'</span>);</span><br><span class="line">        <span class="keyword">if</span> (s == <span class="literal">NULL</span>) <span class="keyword">continue</span>;</span><br><span class="line">        s++;</span><br><span class="line">        <span class="comment">/* we don't need small name len */</span></span><br><span class="line">        namelen = <span class="built_in">strlen</span>(s);</span><br><span class="line">        <span class="keyword">if</span> (namelen &lt; pnlen) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strncmp</span>(ProcName, s, pnlen)) &#123;</span><br><span class="line">            <span class="comment">/* to avoid subname like search proc tao but proc taolinke matched */</span></span><br><span class="line">            <span class="keyword">if</span> (s[pnlen] == <span class="string">' '</span> || s[pnlen] == <span class="string">'\0'</span>) &#123;</span><br><span class="line">                foundpid[i] = pid;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    foundpid[i] = <span class="number">0</span>;</span><br><span class="line">    closedir(dir);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clearOldProcessByName</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *monitorProcessName)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, killFailed, findResult, oldPids[<span class="number">128</span>];</span><br><span class="line">    findResult = find_pid_by_name(monitorProcessName, oldPids);</span><br><span class="line">    <span class="keyword">if</span> (!findResult) &#123;</span><br><span class="line">        <span class="keyword">if</span> (oldPids[<span class="number">0</span>] == <span class="number">0</span>)</span><br><span class="line">            LOGD(<span class="string">"have no old process!"</span>);</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; oldPids[i] != <span class="number">0</span>; i++) &#123;</span><br><span class="line">            LOGD(<span class="string">"old process pid=%d "</span>, oldPids[i]);</span><br><span class="line">            <span class="comment">// return zero if kill process successfully</span></span><br><span class="line">            killFailed = kill(oldPids[i], SIGKILL);</span><br><span class="line">            <span class="keyword">if</span> (killFailed) &#123;</span><br><span class="line">                LOGD(<span class="string">"kill old process pid=%d failed!"</span>, oldPids[i]);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                LOGD(<span class="string">"kill old process pid=%d success!"</span>, oldPids[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGE(<span class="string">"clear old process failed!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line">Java_com_netease_uninstallmonitor_MainActivity_monitorUsingPoll(JNIEnv *env, jobject instance,</span><br><span class="line">                                                                jstring pkgDir_, jint sdkVersion_,</span><br><span class="line">                                                                jstring openUrl_) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pkgDir = env-&gt;GetStringUTFChars(pkgDir_, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *openUrl = env-&gt;GetStringUTFChars(openUrl_, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// need to clear old process</span></span><br><span class="line">    clearOldProcessByName(monitorProcessName);</span><br><span class="line">    <span class="keyword">int</span> state = fork();</span><br><span class="line">    <span class="keyword">if</span> (state &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"parent process = %d"</span>, state);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (state == <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"child process = %d"</span>, state);</span><br><span class="line">        <span class="keyword">int</span> stop = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (!stop) &#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">            FILE *file = fopen(pkgDir, <span class="string">"r"</span>);</span><br><span class="line">            <span class="keyword">if</span> (file == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                LOGD(<span class="string">"app uninstalled already!"</span>);</span><br><span class="line">                loadUrl(sdkVersion_, openUrl);</span><br><span class="line">                stop = <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGD(<span class="string">"Error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(pkgDir_, pkgDir);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(openUrl_, openUrl);</span><br><span class="line">&#125;</span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line">Java_com_netease_uninstallmonitor_MainActivity_monitorUsingNotify(JNIEnv *env, jobject instance,</span><br><span class="line">                                                                  jstring pkgDir_, jint sdkVersion,</span><br><span class="line">                                                                  jstring openUrl_) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pkgDir = env-&gt;GetStringUTFChars(pkgDir_, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *openUrl = env-&gt;GetStringUTFChars(openUrl_, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// need to clear old process</span></span><br><span class="line">    clearOldProcessByName(monitorProcessName);</span><br><span class="line">    <span class="keyword">int</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"parent process = %d"</span>, pid);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        LOGD(<span class="string">"child process = %d"</span>, pid);</span><br><span class="line">        prctl(PR_SET_NAME, monitorProcessName);</span><br><span class="line">        <span class="comment">// register notify listener</span></span><br><span class="line">        <span class="keyword">int</span> fd = inotify_init();</span><br><span class="line">        <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            LOGD(<span class="string">"inofity_init failed!!!"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> wd = inotify_add_watch(fd, pkgDir, IN_DELETE);</span><br><span class="line">        <span class="keyword">if</span> (wd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            LOGD(<span class="string">"inotify_add_watch failed !!!"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// handle an event once a time</span></span><br><span class="line">        <span class="keyword">void</span> *p_buf = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(inotify_event));</span><br><span class="line">        <span class="keyword">if</span> (p_buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            LOGD(<span class="string">"malloc failed!!!"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        LOGD(<span class="string">"start listen"</span>);</span><br><span class="line">        <span class="comment">// block session until file delete</span></span><br><span class="line">        read(fd, p_buf, <span class="keyword">sizeof</span>(struct inotify_event));</span><br><span class="line">        <span class="built_in">free</span>(p_buf);</span><br><span class="line">        inotify_rm_watch(fd, IN_DELETE);</span><br><span class="line">        loadUrl(sdkVersion, openUrl);</span><br><span class="line">        LOGD(<span class="string">"end listen"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGD(<span class="string">"Error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(pkgDir_, pkgDir);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(openUrl_, openUrl);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.netease.uninstallmonitor;</span><br><span class="line"><span class="keyword">import</span> android.os.Build;</span><br><span class="line"><span class="keyword">import</span> android.support.v7.app.AppCompatActivity;</span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.widget.TextView;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        TextView tv = (TextView) findViewById(R.id.sample_text);</span><br><span class="line">        tv.setText(<span class="string">"hello world!"</span>);</span><br><span class="line">        String pkgDir = <span class="string">"/data/data/"</span> + getPackageName();</span><br><span class="line">        monitorUsingNotify(pkgDir, Build.VERSION.SDK_INT, <span class="string">"https://www.google.com"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">monitorUsingPoll</span><span class="params">(String pkgDir, <span class="keyword">int</span> sdkVersion, String openUrl)</span></span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * recommend using this way</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> pkgDir</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sdkVersion</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> openUrl</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">monitorUsingNotify</span><span class="params">(String pkgDir, <span class="keyword">int</span> sdkVersion, String openUrl)</span></span>;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.loadLibrary(<span class="string">"uninstall_feedback"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="6-缺陷"><a href="#6-缺陷" class="headerlink" title="6. 缺陷"></a>6. 缺陷</h3><p>Android 5.0之后，对后台进程的限制更加严格。当应用卸载后，和应用同在一个用户组的进程也会被杀掉，这意味着通过fork函数创建出来的子进程在app卸载时，也会同时被系统杀死，导致方法失效。</p>
+<h3 id="7-源码"><a href="#7-源码" class="headerlink" title="7. 源码"></a>7. 源码</h3><p><a href="https://github.com/nancyyihao/UninstallMonitor" target="_blank" rel="noopener">UninstallMonitor</a></p>
+<h3 id="8-参考"><a href="#8-参考" class="headerlink" title="8. 参考"></a>8. 参考</h3><p><a href="http://blog.csdn.net/wang_shaner/article/details/41543787" target="_blank" rel="noopener">android卸载反馈实现</a></p>
+<p><a href="http://blog.csdn.net/jiangwei0910410003/article/details/42177117" target="_blank" rel="noopener">Android卸载程序之后跳转到指定的反馈页面</a></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%8D%B8%E8%BD%BD%E5%8F%8D%E9%A6%88/" rel="tag"># 卸载反馈</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/02/27/Android-Change-Theme-Dynamically/" rel="prev" title="Android-动态切换主题">
+      <i class="fa fa-chevron-left"></i> Android-动态切换主题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/04/03/Android-package-flow/" rel="next" title="Android打包流程">
+      Android打包流程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-分析"><span class="nav-number">2.</span> <span class="nav-text">2. 分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-实现"><span class="nav-number">3.</span> <span class="nav-text">3. 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-优化"><span class="nav-number">4.</span> <span class="nav-text">4. 优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优化点一："><span class="nav-number">4.1.</span> <span class="nav-text">优化点一：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#优化点二："><span class="nav-number">4.2.</span> <span class="nav-text">优化点二：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-最终代码"><span class="nav-number">5.</span> <span class="nav-text">5. 最终代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-缺陷"><span class="nav-number">6.</span> <span class="nav-text">6. 缺陷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-源码"><span class="nav-number">7.</span> <span class="nav-text">7. 源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-参考"><span class="nav-number">8.</span> <span class="nav-text">8. 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

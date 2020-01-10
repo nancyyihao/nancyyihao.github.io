@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言关于RemoteViews，官方是这么定义的： A class that describes a view hierarchy that can be displayed in another process. The hierarchy is inflated from a layout resource file, and this class provides some basic op">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-RemoteViews介绍">
+<meta property="og:url" content="http://nancyyihao.github.io/2016/11/06/Understand-Android-RemoteViews/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="前言关于RemoteViews，官方是这么定义的： A class that describes a view hierarchy that can be displayed in another process. The hierarchy is inflated from a layout resource file, and this class provides some basic op">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-11-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:24:34.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="RemoteView">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2016/11/06/Understand-Android-RemoteViews/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Android-RemoteViews介绍 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2016/11/06/Understand-Android-RemoteViews/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-RemoteViews介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-11-06 00:00:00" itemprop="dateCreated datePublished" datetime="2016-11-06T00:00:00+08:00">2016-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:24:34" itemprop="dateModified" datetime="2020-01-05T23:24:34+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2016/11/06/Understand-Android-RemoteViews/" class="post-meta-item leancloud_visitors" data-flag-title="Android-RemoteViews介绍" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2016/11/06/Understand-Android-RemoteViews/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2016/11/06/Understand-Android-RemoteViews/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>关于RemoteViews，官方是这么定义的：</p>
+<pre><code>A class that describes a view hierarchy that can be displayed in
+another process. The hierarchy is inflated from a layout resource
+file, and this class provides some basic operations for modifying the
+content of the inflated hierarchy.</code></pre><p>简单来说就是一个可以提供在其他进程中的展示、修改View的类。从类的定义上看，RemoteViews是直接继承Object而不是View，因此它不能像普通View一样提供setOnClickListener（有替代方案）、setEnable()等操作。在实际开发中，主要用在展示notification和widget。</p>
+<a id="more"></a>
+
+<h3 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h3><h4 id="发默认系统通知"><a href="#发默认系统通知" class="headerlink" title="发默认系统通知"></a>发默认系统通知</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startNotify</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Uri smsToUri = Uri.parse(<span class="string">"smsto:10086"</span>);</span><br><span class="line">    Intent mIntent = <span class="keyword">new</span> Intent( android.content.Intent.ACTION_SENDTO, smsToUri );</span><br><span class="line">    mIntent.putExtra(<span class="string">"sms_body"</span>, <span class="string">"The SMS text"</span>);</span><br><span class="line">    PendingIntent pendingIntent = PendingIntent.getActivity(<span class="keyword">this</span>, <span class="number">0</span>, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);</span><br><span class="line">    Notification notification = <span class="keyword">null</span>;</span><br><span class="line">        notification = <span class="keyword">new</span> Notification</span><br><span class="line">                .Builder(<span class="keyword">this</span>)</span><br><span class="line">                .setTicker(<span class="string">"hello"</span>)</span><br><span class="line">                .setSmallIcon(R.mipmap.ic_launcher)</span><br><span class="line">                .setWhen(System.currentTimeMillis())</span><br><span class="line">                .setContentIntent(pendingIntent)</span><br><span class="line">                .build();</span><br><span class="line">    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);</span><br><span class="line">    manager.notify(<span class="number">1</span>, notification);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="发自定义通知"><a href="#发自定义通知" class="headerlink" title="发自定义通知"></a>发自定义通知</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startCustomNotify</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Uri smsToUri = Uri.parse(<span class="string">"smsto:10086"</span>);</span><br><span class="line">        Intent mIntent = <span class="keyword">new</span> Intent( android.content.Intent.ACTION_SENDTO, smsToUri ); <span class="comment">// 发短信</span></span><br><span class="line">        mIntent.putExtra(<span class="string">"sms_body"</span>, <span class="string">"The SMS text"</span>);</span><br><span class="line">        PendingIntent pendingIntent = PendingIntent.getActivity(<span class="keyword">this</span>, <span class="number">0</span>, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);</span><br><span class="line">        Intent callIntent = <span class="keyword">new</span> Intent( Intent.ACTION_DIAL, Uri.parse(<span class="string">"tel:10086"</span>) ); <span class="comment">//打电话</span></span><br><span class="line">        PendingIntent callPendingIntent = PendingIntent.getActivity(<span class="keyword">this</span>, <span class="number">0</span>, callIntent, PendingIntent.FLAG_UPDATE_CURRENT);</span><br><span class="line">        RemoteViews remoteViews = <span class="keyword">new</span> RemoteViews(getPackageName(), R.layout.widget_layout);</span><br><span class="line">        remoteViews.setTextViewText(R.id.tv_now, String.valueOf(System.currentTimeMillis()));</span><br><span class="line">        remoteViews.setOnClickPendingIntent(R.id.tv_now, pendingIntent);</span><br><span class="line">        remoteViews.setOnClickPendingIntent(R.id.btn_call, callPendingIntent);</span><br><span class="line">        Notification notification = <span class="keyword">new</span> Notification</span><br><span class="line">                .Builder(<span class="keyword">this</span>)</span><br><span class="line">                .setTicker(<span class="string">"hello"</span>)</span><br><span class="line">                .setSmallIcon(R.mipmap.ic_launcher)</span><br><span class="line">                .setWhen(System.currentTimeMillis())</span><br><span class="line">                .setContentIntent(callPendingIntent)</span><br><span class="line">                .setCustomContentView(remoteViews)</span><br><span class="line">                .build();</span><br><span class="line">        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);</span><br><span class="line">        manager.notify(<span class="number">1</span>, notification);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="widget"><a href="#widget" class="headerlink" title="widget"></a>widget</h4><p>使用widget则相比notification要麻烦一些，分三步走。</p>
+<ol>
+<li><p>自定义布局</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">".CustomAppwidgetProvider"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:name</span>=<span class="string">"android.appwidget.provider"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:resource</span>=<span class="string">"@xml/widget_provider_info"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">meta-data</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"change_time_action"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.appwidget.action.APPWIDGET_UPDATE"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>widget_provider_info是用来描述Widget的。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">appwidget-provider</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:initialLayout</span>=<span class="string">"@layout/widget_layout"</span> </span></span><br><span class="line"><span class="tag">    <span class="attr">android:updatePeriodMillis</span>=<span class="string">"60000"</span>/&gt;</span> <span class="comment">&lt;!-- 更新时间 --&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>自定义WidgetProvider</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomAppwidgetProvider</span> <span class="keyword">extends</span> <span class="title">AppWidgetProvider</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CHANGE_TIME_ACTION = <span class="string">"change_time_action"</span>;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onReceive(context, intent);</span><br><span class="line">        <span class="keyword">if</span> (intent.getAction().equals(CHANGE_TIME_ACTION)) &#123;</span><br><span class="line">            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);</span><br><span class="line">            RemoteViews remoteViews = <span class="keyword">new</span> RemoteViews(context.getPackageName(), R.layout.widget_layout);</span><br><span class="line">            remoteViews.setTextViewText(R.id.tv_now, <span class="keyword">new</span> Date().toString());</span><br><span class="line">            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, <span class="number">0</span>, <span class="keyword">new</span> Intent(CHANGE_TIME_ACTION), <span class="number">0</span>);</span><br><span class="line">            remoteViews.setOnClickPendingIntent(R.id.tv_now, pendingIntent);</span><br><span class="line">            appWidgetManager.updateAppWidget(<span class="keyword">new</span> ComponentName(context, CustomAppwidgetProvider<span class="class">.<span class="keyword">class</span>), <span class="title">remoteViews</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpdate</span><span class="params">(Context context, AppWidgetManager appWidgetManager, <span class="keyword">int</span>[] appWidgetIds)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onUpdate(context, appWidgetManager, appWidgetIds);</span><br><span class="line">        <span class="keyword">int</span> len = appWidgetIds.length;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span> ; i&lt;len ; i++) &#123;</span><br><span class="line">            updateWidgetInfo(context, appWidgetManager, appWidgetIds[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateWidgetInfo</span><span class="params">(Context context, AppWidgetManager appWidgetManager, <span class="keyword">int</span> appWidgetId)</span> </span>&#123;</span><br><span class="line">        RemoteViews remoteViews = <span class="keyword">new</span> RemoteViews(context.getPackageName(), R.layout.widget_layout);</span><br><span class="line">        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, <span class="number">0</span>, <span class="keyword">new</span> Intent(CHANGE_TIME_ACTION), <span class="number">0</span>);</span><br><span class="line">        remoteViews.setOnClickPendingIntent(R.id.tv_now, pendingIntent);</span><br><span class="line">        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然AppWidgetProvider不只有onUpdate和onReceive两个回调，还有onDeleted、onEnabled、onDisabled等方法，当一条广播到来时，onReceive会自动根据intent中的Action来决定调用哪个（onDeleted、onEnabled、onDisabled、onUpdate）方法。</p>
+</li>
+<li><p>在menifest中注册<br>因为AppWidgetPovider本质上是一个receiver，因此需要在menifest中注册。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">".CustomAppwidgetProvider"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:name</span>=<span class="string">"android.appwidget.provider"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:resource</span>=<span class="string">"@xml/widget_provider_info"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">meta-data</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"change_time_action"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.appwidget.action.APPWIDGET_UPDATE"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>通过上面的例子不难看出，不管是自定义Notification还是Widget，都需要RemoteViews来协助完成。由于进程隔离的存在，要想操作直接其他进程的View，显然是不可能的。RemoteViews提供了操作远程View的方法，其内部是通过Binder跨进程通信实现的。<br>Notification和Widget是分别通过NotificationManager和AppWidgetManager进行管理的。通过查看源码可知，NotificationManager和AppWidgetManager其实是使用了Binder和SystemServer进程中的NotificationManagerService、AppWidgetManagerService两个服务进行通信。其实不光是NotificationManager和AppWidgetManager，使用了Context.getSystemService(ServiceName)这种方式获取到的系统服务都是使用Binder和系统进程进行通信的。<br>以AppWidgetManager为例，通信的步骤如下：</p>
+</li>
+<li><p>AppWidgetManager通过Binder把RemoteVews传送到SystemServer（别忘了，RemoteViews 实现了parcelable接口）</p>
+</li>
+<li><p>SystemServer会根据RemoteViews携带过来的信息（如intent、layoutID等），使用LayoutInflater把View加载出来，该View对SystemServer来说就是普通的View，但是对于我们的App来说是RemoteViews。</p>
+</li>
+<li><p>用户添加widget时，会展示 android:initialLayout=”@layout/widget_layout” 指示的初始布局.</p>
+</li>
+<li><p>用户使用RemoteViews的set方法(如setTextViewText)来更新布局。注意，这里不是每次set就马上生效，而是把每次对View的操作抽象成一个Action，保存在一个列表中，在使用AppWidgetManager.updateAppWidget之后才通过Binder一次性提交这些操作。这样做的好处是可以节省大量的Binder IPC操作，从而提高程序性能。</p>
+<h4 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h4><p>以RemoteViews的SetTextViewText为例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTextViewText</span><span class="params">(<span class="keyword">int</span> viewId, CharSequence text)</span> </span>&#123;</span><br><span class="line">    setCharSequence(viewId, <span class="string">"setText"</span>, text);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用了setCharSequence</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCharSequence</span><span class="params">(<span class="keyword">int</span> viewId, String methodName, CharSequence value)</span> </span>&#123;</span><br><span class="line">    addAction(<span class="keyword">new</span> ReflectionAction(viewId, methodName, ReflectionAction.CHAR_SEQUENCE, value));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>和上面分析中一致，把操作抽象成了Action，然后调用AddAction方法保存到Action列表mActions中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addAction</span><span class="params">(Action a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (hasLandscapeAndPortraitLayouts()) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"RemoteViews specifying separate landscape and portrait"</span> +</span><br><span class="line">                <span class="string">" layouts cannot be modified. Instead, fully configure the landscape and"</span> +</span><br><span class="line">                <span class="string">" portrait layouts individually before constructing the combined layout."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (mActions == <span class="keyword">null</span>) &#123;</span><br><span class="line">        mActions = <span class="keyword">new</span> ArrayList&lt;Action&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    mActions.add(a);</span><br><span class="line">    <span class="comment">// update the memory usage stats</span></span><br><span class="line">    a.updateMemoryUsageEstimate(mMemoryUsageCounter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过代码我们可以看到，这些操作是通过反射来进行的。因为View的方法众多，而且名字又不一样，使用反射可以优雅地设置各种View的属性（如LinearLayout、FrameLayout、TextView等），非常精妙。上面已经说过，set方法不会立即更新，那么真正的更新操作在哪里呢？我们来看看AppWidgetManager的updateAppWidget方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> IAppWidgetService mService;</span><br><span class="line">   ......</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateAppWidget</span><span class="params">(<span class="keyword">int</span>[] appWidgetIds, RemoteViews views)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (mService == <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           mService.updateAppWidgetIds(mPackageName, appWidgetIds, views);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"system server dead?"</span>, e);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>调用IAppWidgetService的updateAppWidgetIds方法跨进程通信</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateAppWidgetIds</span><span class="params">(java.lang.String callingPackage,<span class="keyword">int</span>[]appWidgetIds,android.widget.RemoteViews views)</span><span class="keyword">throws</span> android.os.RemoteException  </span>&#123;</span><br><span class="line">        android.os.Parcel _data=android.os.Parcel.obtain();</span><br><span class="line">        android.os.Parcel _reply=android.os.Parcel.obtain();</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">        _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">        _data.writeString(callingPackage);</span><br><span class="line">        _data.writeIntArray(appWidgetIds);</span><br><span class="line">        <span class="keyword">if</span>((views!=<span class="keyword">null</span>))&#123;</span><br><span class="line">        _data.writeInt(<span class="number">1</span>);</span><br><span class="line">        views.writeToParcel(_data,<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">        _data.writeInt(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        mRemote.transact(Stub.TRANSACTION_updateAppWidgetIds,_data,_reply,<span class="number">0</span>);</span><br><span class="line">        _reply.readException();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span>&#123;</span><br><span class="line">        _reply.recycle();</span><br><span class="line">        _data.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>再来看看服务端AppWidgetService做了什么工作。AppWidgetService主要由AppWidgetServiceImpl.java实现。看看AppWidgetServiceImpl的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateAppWidgetIds</span><span class="params">(String callingPackage, <span class="keyword">int</span>[] appWidgetIds,</span></span></span><br><span class="line"><span class="function"><span class="params">            RemoteViews views, <span class="keyword">boolean</span> partially)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> userId = UserHandle.getCallingUserId();</span><br><span class="line">        <span class="keyword">if</span> (appWidgetIds == <span class="keyword">null</span> || appWidgetIds.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Make sure the package runs under the caller uid.</span></span><br><span class="line">        mSecurityPolicy.enforceCallFromPackage(callingPackage);</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> bitmapMemoryUsage = (views != <span class="keyword">null</span>) ? views.estimateMemoryUsage() : <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (bitmapMemoryUsage &gt; mMaxWidgetBitmapMemory) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"RemoteViews for widget update exceeds"</span></span><br><span class="line">                    + <span class="string">" maximum bitmap memory usage (used: "</span> + bitmapMemoryUsage</span><br><span class="line">                    + <span class="string">", max: "</span> + mMaxWidgetBitmapMemory + <span class="string">")"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">            ensureGroupStateLoadedLocked(userId);</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> N = appWidgetIds.length;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> appWidgetId = appWidgetIds[i];</span><br><span class="line">                <span class="comment">// <span class="doctag">NOTE:</span> The lookup is enforcing security across users by making</span></span><br><span class="line">                <span class="comment">// sure the caller can only access widgets it hosts or provides.</span></span><br><span class="line">                Widget widget = lookupWidgetLocked(appWidgetId,</span><br><span class="line">                        Binder.getCallingUid(), callingPackage);</span><br><span class="line">                <span class="keyword">if</span> (widget != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    updateAppWidgetInstanceLocked(widget, views, partially);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>继续看updateAppWidgetInstanceLocked</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateAppWidgetInstanceLocked</span><span class="params">(Widget widget, RemoteViews views,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> isPartialUpdate)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (widget != <span class="keyword">null</span> &amp;&amp; widget.provider != <span class="keyword">null</span></span><br><span class="line">            &amp;&amp; !widget.provider.zombie &amp;&amp; !widget.host.zombie) &#123;</span><br><span class="line">        <span class="keyword">if</span> (isPartialUpdate &amp;&amp; widget.views != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// For a partial update, we merge the new RemoteViews with the old.</span></span><br><span class="line">            widget.views.mergeRemoteViews(views);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// For a full update we replace the RemoteViews completely.</span></span><br><span class="line">            widget.views = views;</span><br><span class="line">        &#125;</span><br><span class="line">        scheduleNotifyUpdateAppWidgetLocked(widget, views);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>继续看scheduleNotifyUpdateAppWidgetLocked</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduleNotifyUpdateAppWidgetLocked</span><span class="params">(Widget widget, RemoteViews updateViews)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (widget == <span class="keyword">null</span> || widget.provider == <span class="keyword">null</span> || widget.provider.zombie</span><br><span class="line">            || widget.host.callbacks == <span class="keyword">null</span> || widget.host.zombie) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    SomeArgs args = SomeArgs.obtain();</span><br><span class="line">    args.arg1 = widget.host;</span><br><span class="line">    args.arg2 = widget.host.callbacks;</span><br><span class="line">    args.arg3 = updateViews;</span><br><span class="line">    args.argi1 = widget.appWidgetId;</span><br><span class="line">    mCallbackHandler.obtainMessage(</span><br><span class="line">            CallbackHandler.MSG_NOTIFY_UPDATE_APP_WIDGET,</span><br><span class="line">            args).sendToTarget();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用Handler发送了一条消息，最后会走到handleNotifyUpdateAppWidget</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleNotifyUpdateAppWidget</span><span class="params">(Host host, IAppWidgetHost callbacks,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> appWidgetId, RemoteViews views)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        callbacks.updateAppWidget(appWidgetId, views);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RemoteException re) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">            Slog.e(TAG, <span class="string">"Widget host dead: "</span> + host.id, re);</span><br><span class="line">            host.callbacks = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我靠，这个callbacks又是一次Binder通信！！！是SystemServer和AppWidgetHost（通常来说是launcher）的一次通信，此时SystemServer是客户端，AppWidgetHost是服务端。继续看下IAppWidgetHost对应的实现类AppWidgetHost.updateAppWidget方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">updateAppWidgetView</span><span class="params">(<span class="keyword">int</span> appWidgetId, RemoteViews views)</span> </span>&#123;</span><br><span class="line">    AppWidgetHostView v;</span><br><span class="line">    <span class="keyword">synchronized</span> (mViews) &#123;</span><br><span class="line">        v = mViews.get(appWidgetId);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (v != <span class="keyword">null</span>) &#123;</span><br><span class="line">        v.updateAppWidget(views);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>又继续调用AppWidgetHostView.updateAppWidget</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateAppWidget</span><span class="params">(RemoteViews remoteViews)</span> </span>&#123;</span><br><span class="line">......<span class="comment">// 省略部分代码</span></span><br><span class="line">      <span class="keyword">if</span> (remoteViews == <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="keyword">if</span> (mViewMode == VIEW_MODE_DEFAULT) &#123;</span><br><span class="line">              <span class="comment">// We've already done this -- nothing to do.</span></span><br><span class="line">              <span class="keyword">return</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          content = getDefaultView();</span><br><span class="line">          mLayoutId = -<span class="number">1</span>;</span><br><span class="line">          mViewMode = VIEW_MODE_DEFAULT;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// Prepare a local reference to the remote Context so we're ready to</span></span><br><span class="line">          <span class="comment">// inflate any requested LayoutParams.</span></span><br><span class="line">          mRemoteContext = getRemoteContext(remoteViews);</span><br><span class="line">          <span class="keyword">int</span> layoutId = remoteViews.getLayoutId();</span><br><span class="line">          <span class="comment">// If our stale view has been prepared to match active, and the new</span></span><br><span class="line">          <span class="comment">// layout matches, try recycling it</span></span><br><span class="line">          <span class="keyword">if</span> (content == <span class="keyword">null</span> &amp;&amp; layoutId == mLayoutId) &#123;</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line">                  remoteViews.reapply(mContext, mView, mOnClickHandler);</span><br><span class="line">                  content = mView;</span><br><span class="line">                  recycled = <span class="keyword">true</span>;</span><br><span class="line">                  <span class="keyword">if</span> (LOGD) Log.d(TAG, <span class="string">"was able to recycled existing layout"</span>);</span><br><span class="line">              &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</span><br><span class="line">                  exception = e;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="comment">// Try normal RemoteView inflation</span></span><br><span class="line">          <span class="keyword">if</span> (content == <span class="keyword">null</span>) &#123;</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line">                  content = remoteViews.apply(mContext, <span class="keyword">this</span>, mOnClickHandler);</span><br><span class="line">                  <span class="keyword">if</span> (LOGD) Log.d(TAG, <span class="string">"had to inflate new layout"</span>);</span><br><span class="line">              &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</span><br><span class="line">                  exception = e;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          mLayoutId = layoutId;</span><br><span class="line">          mViewMode = VIEW_MODE_CONTENT;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (content == <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="keyword">if</span> (mViewMode == VIEW_MODE_ERROR) &#123;</span><br><span class="line">              <span class="comment">// We've already done this -- nothing to do.</span></span><br><span class="line">              <span class="keyword">return</span> ;</span><br><span class="line">          &#125;</span><br><span class="line">          Log.w(TAG, <span class="string">"updateAppWidget couldn't find any view, using error view"</span>, exception);</span><br><span class="line">          content = getErrorView();</span><br><span class="line">          mViewMode = VIEW_MODE_ERROR;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (!recycled) &#123;</span><br><span class="line">          prepareView(content);</span><br><span class="line">          addView(content);</span><br><span class="line">      &#125;</span><br><span class="line">      ......<span class="comment">//省略部分代码</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>基本逻辑是调用RemoteViews的reapply和apply方法生成新的View，通知栏和widget小控件在初始化时会调用apply方法，而后面的更新操作会调用reapply方法。我们继续来看RemoteViews.apply方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** <span class="doctag">@hide</span> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">apply</span><span class="params">(Context context, ViewGroup parent, OnClickHandler handler)</span> </span>&#123;</span><br><span class="line">    RemoteViews rvToApply = getRemoteViewsToApply(context);</span><br><span class="line">    View result;</span><br><span class="line">    Context c = prepareContext(context);</span><br><span class="line">    LayoutInflater inflater = (LayoutInflater)</span><br><span class="line">            c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span><br><span class="line">    inflater = inflater.cloneInContext(c);</span><br><span class="line">    inflater.setFilter(<span class="keyword">this</span>);</span><br><span class="line">    result = inflater.inflate(rvToApply.getLayoutId(), parent, <span class="keyword">false</span>);</span><br><span class="line">    rvToApply.performApply(result, parent, handler);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里终于把View生成了。result就是我们的初始布局。至此，分析算是结束了。<br>如果再继续往下看的话，流程和上面分析的差不多，继续看performApply方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performApply</span><span class="params">(View v, ViewGroup parent, OnClickHandler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mActions != <span class="keyword">null</span>) &#123;</span><br><span class="line">        handler = handler == <span class="keyword">null</span> ? DEFAULT_ON_CLICK_HANDLER : handler;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> count = mActions.size();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            Action a = mActions.get(i);</span><br><span class="line">            a.apply(v, parent, handler);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>又调用了Action的apply方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Base class for all actions that can be performed on an</span></span><br><span class="line"><span class="comment">  * inflated view.</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  *  SUBCLASSES MUST BE IMMUTABLE SO CLONE WORKS!!!!!</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">abstract</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Action</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(View root, ViewGroup rootParent,</span></span></span><br><span class="line"><span class="function"><span class="params">             OnClickHandler handler)</span> <span class="keyword">throws</span> ActionException</span>;</span><br><span class="line">             ......<span class="comment">//省略部分代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然而是个抽象方法，找个子类TextViewSizeAction看下实现方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(View root, ViewGroup rootParent, OnClickHandler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> TextView target = (TextView) root.findViewById(viewId);</span><br><span class="line">    <span class="keyword">if</span> (target == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    target.setTextSize(units, size);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>ViewId和units还有size在构造的时候就会传进来。是通过setTextViewTextSize方法传进来的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Equivalent to calling &#123;<span class="doctag">@link</span> TextView#setTextSize(int, float)&#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> viewId The id of the view whose text size should change</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> units The units of size (e.g. COMPLEX_UNIT_SP)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> size The size of the text</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTextViewTextSize</span><span class="params">(<span class="keyword">int</span> viewId, <span class="keyword">int</span> units, <span class="keyword">float</span> size)</span> </span>&#123;</span><br><span class="line">    addAction(<span class="keyword">new</span> TextViewSizeAction(viewId, units, size));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为setTextViewSize比较特殊，有两个参数units和zise，所以重新写了个Action。如果只有一个参数，就可以直接复用ReflectionAction。apply之后，如果有更新操作（mActions不为空）则更新。至此分析结束。</p>
+</li>
+</ol>
+<h4 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h4><p>App中的layout文件是怎么传输的AppWidgetHost(Launcher)中的？<br>有待研究。</p>
+<h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><p>为何不直接使用App和Launcher进行通信，而需要通过AppWidgetService作为媒介呢？<br>本人猜测：可能是为了App和Widget之间的解耦，使用AppWidgetService，App不需要关心App的Widget放在哪个进程，反正AppWidgetService会帮我弄好，甚至App的Widget放在另外一个App（非Launcher）中也没有任何问题。不过话说回来，如果直接使用App与AppWidgetHost进行通信，虽然不能把Widget放在App（非Launcher）中，个人感觉也没啥问题。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><p><a href="http://blog.csdn.net/thl789/article/details/7893292" target="_blank" rel="noopener">Android中Launcher对于AppWidget处理的分析：AppWidgetHost角色</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/luoshengyang/article/details/6767736" target="_blank" rel="noopener">Android系统默认Home应用程序（Launcher）的启动过程源代码分析</a></p>
+</li>
+<li><p>《Android开发艺术探索》</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/RemoteView/" rel="tag"># RemoteView</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/21/build-Android-Develop-Eenvironment-On-Ubuntu-16-04/" rel="prev" title="Ubuntu-16-04上搭建Android开发环境">
+      <i class="fa fa-chevron-left"></i> Ubuntu-16-04上搭建Android开发环境
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/12/03/how-https-works/" rel="next" title="HTTPS的基本原理">
+      HTTPS的基本原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo"><span class="nav-number">2.</span> <span class="nav-text">Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#发默认系统通知"><span class="nav-number">2.1.</span> <span class="nav-text">发默认系统通知</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#发自定义通知"><span class="nav-number">2.2.</span> <span class="nav-text">发自定义通知</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#widget"><span class="nav-number">2.3.</span> <span class="nav-text">widget</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">3.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码分析"><span class="nav-number">3.1.</span> <span class="nav-text">代码分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题1"><span class="nav-number">3.2.</span> <span class="nav-text">问题1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题2"><span class="nav-number">3.3.</span> <span class="nav-text">问题2</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

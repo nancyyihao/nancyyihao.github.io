@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="准备工作源码下载Android-5.1.1源码 链接：http:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1bQ8aBk 密码：mc6l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu-16-04 编译 Android 5.1">
+<meta property="og:url" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="准备工作源码下载Android-5.1.1源码 链接：http:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1bQ8aBk 密码：mc6l">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p1.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p2.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p3.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p4.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p5.png">
+<meta property="article:published_time" content="2016-10-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-01-05T15:16:01.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="编译Android源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p1.png">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Ubuntu-16-04 编译 Android 5.1 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu-16-04 编译 Android 5.1
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-10-07 00:00:00" itemprop="dateCreated datePublished" datetime="2016-10-07T00:00:00+08:00">2016-10-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-05 23:16:01" itemprop="dateModified" datetime="2020-01-05T23:16:01+08:00">2020-01-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/" class="post-meta-item leancloud_visitors" data-flag-title="Ubuntu-16-04 编译 Android 5.1" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><h4 id="源码下载"><a href="#源码下载" class="headerlink" title="源码下载"></a>源码下载</h4><p>Android-5.1.1源码 链接：<a href="http://pan.baidu.com/s/1bQ8aBk" target="_blank" rel="noopener">http://pan.baidu.com/s/1bQ8aBk</a> 密码：mc6l</p>
+<a id="more"></a>
+
+<h4 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h4><p>推荐环境 Ubuntu14.04，本文使用Ubuntu16.04( 64位)</p>
+<h4 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h4><p>参考官网，同时需要注意以下几点</p>
+<ul>
+<li>Open-JDK-7（不要用 Oracle JDK，卸载安装参考此处）<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository ppa:openjdk-r/ppa  </span><br><span class="line">sudo apt-get update   </span><br><span class="line">sudo apt-get install openjdk-<span class="number">7</span>-jdk</span><br></pre></td></tr></table></figure></li>
+<li>gcc-4.7 （千万别用Ubuntu16.04自带的gcc，安装参考此处）<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install -y gcc-4.7</span><br><span class="line">sudo apt-get install -y g++-4.7</span><br><span class="line">//建立软链接</span><br><span class="line"><span class="built_in">cd</span> /usr/bin</span><br><span class="line">sudo rm -r gcc</span><br><span class="line">sudo ln -sf gcc-4.7 gcc</span><br><span class="line">sudo rm -r g++</span><br><span class="line">sudo ln -sf g++-4.7 g++</span><br></pre></td></tr></table></figure></li>
+<li>程序库<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install git-core gnupg flex bison gperf build-essential \</span><br><span class="line">  zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \</span><br><span class="line">  lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache \</span><br><span class="line">  libgl1-mesa-dev libxml2-utils xsltproc unzip</span><br></pre></td></tr></table></figure></li>
+<li>使用缓存（可选）<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export USE_CCACHE=<span class="number">1</span></span><br><span class="line">prebuilts/misc/linux-x86/ccache/ccache -M <span class="number">50</span>G</span><br></pre></td></tr></table></figure>
+<h4 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h4>参考官网，编译前，建议把后面的错误看一下，然后把该装的库都装上，能省不少麻烦。准备工作一定要做足，不然后面编译到一半就会出问题。通常情况下没有一次就能成功编译，遇到问题直接把错误贴到Google上，一般都能找到答案。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make clobber</span><br><span class="line">$ <span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">$ lunch aosp_arm-eng</span><br><span class="line">$ make -j8</span><br><span class="line">$ emulator</span><br></pre></td></tr></table></figure>
+输入完make -j8 后就是漫长的等待，等编译完成后，输入emulator能正常启动Android模拟器，那么恭喜你，编译成功了！</li>
+</ul>
+<p>build成功的截图：</p>
+<p><img src="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p1.png" alt="图1"></p>
+<p>make sdk成功截图</p>
+<p><img src="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p2.png" alt="图2"></p>
+<p>启动模拟器截图</p>
+<p><img src="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p3.png" alt="图3"></p>
+<p>注：<br>编译完后输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">source</span> ./build/envsetup.sh</span><br><span class="line">$ lunch sdk-eng </span><br><span class="line">$ make sdk</span><br></pre></td></tr></table></figure>
+<h3 id="遇到的错误"><a href="#遇到的错误" class="headerlink" title="遇到的错误"></a>遇到的错误</h3><h4 id="错误1"><a href="#错误1" class="headerlink" title="错误1"></a>错误1</h4><p>prebuilts/misc/linux-x86/bison/bison: 没有那个文件或目录<br>编译Android-5.1.1时出现bison找不到，但ls可以看的到。<br>解决方法：<br>ubuntu 64位系统运行32位程序的问题，需要安装运行32位程序的兼容库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install lib32ncurses5</span><br><span class="line">sudo apt-get install lib32stdc++6</span><br></pre></td></tr></table></figure>
+<h4 id="错误2"><a href="#错误2" class="headerlink" title="错误2"></a>错误2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">frameworks&#x2F;base&#x2F;tools&#x2F;aidl&#x2F;aidl_language_l.l:55: warning, 无法匹配规则</span><br><span class="line">build&#x2F;core&#x2F;binary.mk:539: recipe for target &#39;out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;aidl_intermediates&#x2F;aidl_language_y.cpp&#39; failed</span><br><span class="line">make: *** [out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;aidl_intermediates&#x2F;aidl_language_y.cpp] 断开的管道</span><br><span class="line">make: *** 正在等待未完成的任务....</span><br><span class="line">frameworks&#x2F;base&#x2F;tools&#x2F;aidl&#x2F;aidl_language_l.l:55: warning, 无法匹配规则</span><br><span class="line">flex-2.5.39：严重内部错误，exec of &#x2F;usr&#x2F;bin&#x2F;m4 failed</span><br><span class="line">build&#x2F;core&#x2F;binary.mk:576: recipe for target &#39;out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;aidl_intermediates&#x2F;aidl_language_l.cpp&#39; failed</span><br><span class="line">make: *** [out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;aidl_intermediates&#x2F;aidl_language_l.cpp] 断开的管道</span><br><span class="line">make: *** Deleting file &#39;out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;aidl_intermediates&#x2F;aidl_language_l.cpp&#39;</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:8: warning: tag &quot;sysui_statusbar_touch&quot; (36000) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:8</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:9: warning: tag &quot;sysui_heads_up_status&quot; (36001) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:9</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:10: warning: tag &quot;sysui_fullscreen_notification&quot; (36002) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:10</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:11: warning: tag &quot;sysui_heads_up_escalation&quot; (36003) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:11</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:19: warning: tag &quot;sysui_status_bar_state&quot; (36004) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:19</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:24: warning: tag &quot;sysui_panelbar_touch&quot; (36010) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:24</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:29: warning: tag &quot;sysui_notificationpanel_touch&quot; (36020) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:29</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:38: warning: tag &quot;sysui_lockscreen_gesture&quot; (36021) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:38</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:43: warning: tag &quot;sysui_quickpanel_touch&quot; (36030) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:43</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:48: warning: tag &quot;sysui_panelholder_touch&quot; (36040) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:48</span><br><span class="line">frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;tests&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:53: warning: tag &quot;sysui_searchpanel_touch&quot; (36050) duplicated in frameworks&#x2F;base&#x2F;packages&#x2F;SystemUI&#x2F;src&#x2F;com&#x2F;android&#x2F;systemui&#x2F;EventLogTags.logtags:53</span><br><span class="line">注: 某些输入文件使用或覆盖了已过时的 API。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。</span><br><span class="line">注: 某些输入文件使用了未经检查或不安全的操作。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install flex bison</span><br></pre></td></tr></table></figure>
+<h4 id="错误3"><a href="#错误3" class="headerlink" title="错误3"></a>错误3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Export includes file: external&#x2F;chromium_org&#x2F;GypAndroid.linux-arm.mk -- out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;STATIC_LIBRARIES&#x2F;third_party_WebKit_Source_platform_blink_arm_neon_gyp_intermediates&#x2F;export_includes</span><br><span class="line">&#x2F;bin&#x2F;bash: gperf: 未找到命令</span><br><span class="line">external&#x2F;chromium_org&#x2F;third_party&#x2F;WebKit&#x2F;Source&#x2F;platform&#x2F;make_platform_generated.target.linux-arm.mk:47: recipe for target &#39;out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;GYP&#x2F;shared_intermediates&#x2F;blink&#x2F;platform&#x2F;ColorData.cpp&#39; failed</span><br><span class="line">make: *** [out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;GYP&#x2F;shared_intermediates&#x2F;blink&#x2F;platform&#x2F;ColorData.cpp] Error 127</span><br><span class="line">make: *** 正在等待未完成的任务....</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install gperf</span><br></pre></td></tr></table></figure>
+<h4 id="错误4"><a href="#错误4" class="headerlink" title="错误4"></a>错误4</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">libnativehelper&#x2F;JniInvocation.cpp:165: error: unsupported reloc 43</span><br><span class="line">clang: error: linker command failed with exit code 1 (use -v to see invocation)</span><br><span class="line">build&#x2F;core&#x2F;host_shared_library_internal.mk:44: recipe for target &#39;out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;lib&#x2F;libnativehelper.so&#39; failed</span><br><span class="line">make: *** [out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;lib&#x2F;libnativehelper.so] Error 1</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">修改 build&#x2F;core&#x2F;clang&#x2F;HOST_x86_common.mk，找到 CLANG_CONFIG_x86_LINUX_HOST_EXTRA_ASFLAGS ，在</span><br><span class="line"></span><br><span class="line">--sysroot&#x3D;$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG)&#x2F;sysroot \</span><br><span class="line">下面添加一行：</span><br><span class="line"></span><br><span class="line">-B$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG)&#x2F;x86_64-linux&#x2F;bin \</span><br></pre></td></tr></table></figure>
+<p>参考<a href="http://oopsmonk.github.io/blog/2016/06/07/android-build-error-on-ubuntu-16-04-lts" target="_blank" rel="noopener">这里</a></p>
+<h4 id="错误5"><a href="#错误5" class="headerlink" title="错误5"></a>错误5</h4><p>error while loading shared libraries: libz.so.1<br>解决方法，参考这里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5</span><br><span class="line">sudo apt-get install lib32z1</span><br></pre></td></tr></table></figure>
+<h4 id="错误6"><a href="#错误6" class="headerlink" title="错误6"></a>错误6</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">build&#x2F;core&#x2F;binary.mk:620: recipe for target &#39;out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;dex2oat_intermediates&#x2F;dex2oat.o&#39; failed</span><br><span class="line">make: *** [out&#x2F;host&#x2F;linux-x86&#x2F;obj32&#x2F;EXECUTABLES&#x2F;dex2oat_intermediates&#x2F;dex2oat.o] Error 1</span><br></pre></td></tr></table></figure>
+<p>gcc 版本问题，解决方法：把gcc版本改成4.7即可。参考<a href="http://www.xuebuyuan.com/2181579.html" target="_blank" rel="noopener">这里</a>：</p>
+<h4 id="错误7"><a href="#错误7" class="headerlink" title="错误7"></a>错误7</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Copy xml: out&#x2F;target&#x2F;product&#x2F;generic&#x2F;system&#x2F;etc&#x2F;apns-conf.xml</span><br><span class="line">Copy: out&#x2F;target&#x2F;product&#x2F;generic&#x2F;system&#x2F;media&#x2F;audio&#x2F;alarms&#x2F;Alarm_Beep_01.ogg</span><br><span class="line">Copy: out&#x2F;target&#x2F;product&#x2F;generic&#x2F;system&#x2F;media&#x2F;audio&#x2F;alarms&#x2F;Alarm_Beep_02.ogg</span><br><span class="line">&#x2F;bin&#x2F;bash: xmllint: 未找到命令</span><br><span class="line">make: *** [out&#x2F;target&#x2F;product&#x2F;generic&#x2F;system&#x2F;etc&#x2F;apns-conf.xml] 错误 127</span><br><span class="line">make: *** 正在等待未完成的任务....</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get  install libxml2-utils</span><br></pre></td></tr></table></figure>
+<h4 id="错误8"><a href="#错误8" class="headerlink" title="错误8"></a>错误8</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">rosalloc_space_base_test (out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;EXECUTABLES&#x2F;rosalloc_space_base_test_intermediates&#x2F;LINKED&#x2F;rosalloc_space_base_test)</span><br><span class="line">&#x2F;home&#x2F;jason&#x2F;Desktop&#x2F;new&#x2F;android-5.1.1_r1&#x2F;prebuilts&#x2F;gcc&#x2F;linux-x86&#x2F;arm&#x2F;arm-linux-androideabi-4.8&#x2F;bin&#x2F;..&#x2F;lib&#x2F;gcc&#x2F;arm-linux-androideabi&#x2F;4.8&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;arm-linux-androideabi&#x2F;bin&#x2F;ld: error: out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;EXECUTABLES&#x2F;rosalloc_space_base_test_intermediates&#x2F;runtime&#x2F;gc&#x2F;space&#x2F;rosalloc_space_base_test.o: file is empty</span><br><span class="line">collect2: error: ld returned 1 exit status</span><br><span class="line">build&#x2F;core&#x2F;executable_internal.mk:69: recipe for target &#39;out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;EXECUTABLES&#x2F;rosalloc_space_base_test_intermediates&#x2F;LINKED&#x2F;rosalloc_space_base_test&#39; failed</span><br><span class="line">make: *** [out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;EXECUTABLES&#x2F;rosalloc_space_base_test_intermediates&#x2F;LINKED&#x2F;rosalloc_space_base_test] Error 1</span><br><span class="line">make: *** 正在等待未完成的任务....</span><br><span class="line">target Executable: rosalloc_space_static_test (out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;EXECUTABLES&#x2F;rosalloc_space_static_test_intermediates&#x2F;LINKED&#x2F;rosalloc_space_static_test)</span><br><span class="line">target Executable: rosalloc_space_random_test (out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;EXECUTABLES&#x2F;rosalloc_space_random_test_intermediates&#x2F;LINKED&#x2F;rosalloc_space_random_test)</span><br><span class="line">Preparing output jar [&#x2F;home&#x2F;jason&#x2F;Desktop&#x2F;new&#x2F;android-5.1.1_r1&#x2F;out&#x2F;target&#x2F;common&#x2F;obj&#x2F;APPS&#x2F;SystemUI_intermediates&#x2F;proguard.classes.jar]</span><br><span class="line">  Copying resources from program jar [&#x2F;home&#x2F;jason&#x2F;Desktop&#x2F;new&#x2F;android-5.1.1_r1&#x2F;out&#x2F;target&#x2F;common&#x2F;obj&#x2F;APPS&#x2F;SystemUI_intermediates&#x2F;classes.jar]</span><br><span class="line">DroidDoc took 113 sec. to write docs to out&#x2F;target&#x2F;common&#x2F;docs&#x2F;system-api-stubs</span><br><span class="line">DroidDoc took 127 sec. to write docs to out&#x2F;target&#x2F;common&#x2F;docs&#x2F;api-stubs</span><br></pre></td></tr></table></figure>
+<p>解决方法，参考<a href="https://groups.google.com/forum/#!topic/android-building/KE0q0rFG8gc" target="_blank" rel="noopener">这里</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~&#x2F;.ccache</span><br></pre></td></tr></table></figure>
+<ul>
+<li>原因<br>I got the same problem today and I resolved it by deleting the cache folder(rm -rf ~/.ccache) and deleting the files *.o that were empty.<br>This problem may occur if your PC shutdown in the middle of a build.</li>
+</ul>
+<h4 id="错误9"><a href="#错误9" class="headerlink" title="错误9"></a>错误9</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">build&#x2F;core&#x2F;tasks&#x2F;apicheck.mk:62: recipe for target &#39;out&#x2F;target&#x2F;common&#x2F;obj&#x2F;PACKAGING&#x2F;checkpublicapi-current-timestamp&#39; failed</span><br><span class="line">make: *** [out&#x2F;target&#x2F;common&#x2F;obj&#x2F;PACKAGING&#x2F;checkpublicapi-current-timestamp] Error 38</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make update-api</span><br><span class="line">make -j8</span><br></pre></td></tr></table></figure>
+<h4 id="错误10"><a href="#错误10" class="headerlink" title="错误10"></a>错误10</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target SharedLib: libwebviewchromium (out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;SHARED_LIBRARIES&#x2F;libwebviewchromium_intermediates&#x2F;LINKED&#x2F;libwebviewchromium.so)</span><br></pre></td></tr></table></figure>
+<p>解决方法，参考这里</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;&#x2F;opt&#x2F;other&#x2F;swapfile bs&#x3D;1024 count&#x3D;512K</span><br><span class="line"># mkswap &#x2F;opt&#x2F;other&#x2F;swapfile</span><br><span class="line"># swapon &#x2F;opt&#x2F;other&#x2F;swapfile</span><br><span class="line"># swapon -s</span><br><span class="line"># sudo gedit &#x2F;etc&#x2F;fstab</span><br><span class="line">&#x2F;opt&#x2F;other&#x2F;swapfile                     file        524280    0    -1</span><br></pre></td></tr></table></figure>
+<h4 id="错误11"><a href="#错误11" class="headerlink" title="错误11"></a>错误11</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">development&#x2F;build&#x2F;sdk.atree:47: couldn&#39;t locate source file: bin&#x2F;sqlite3</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:49: couldn&#39;t locate source file: bin&#x2F;etc1tool</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:82: couldn&#39;t locate source file: bin&#x2F;split-select</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:87: couldn&#39;t locate source file: bin&#x2F;bcc_compat</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:174: couldn&#39;t locate source file: framework&#x2F;layoutlib.jar</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:175: couldn&#39;t locate source file: framework&#x2F;icu4j.jar</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:499: couldn&#39;t locate source file: framework&#x2F;layoutlib-tests.jar</span><br><span class="line">development&#x2F;build&#x2F;sdk.atree:500: couldn&#39;t locate source file: system&#x2F;app&#x2F;EmulatorSmokeTests&#x2F;EmulatorSmokeTests.apk</span><br><span class="line">build&#x2F;core&#x2F;Makefile:1711: recipe for target &#39;out&#x2F;host&#x2F;linux-x86&#x2F;sdk&#x2F;full&#x2F;android-sdk_eng.root_linux-x86.zip&#39; failed</span><br><span class="line">make: *** [out&#x2F;host&#x2F;linux-x86&#x2F;sdk&#x2F;full&#x2F;android-sdk_eng.root_linux-x86.zip] Error 44</span><br></pre></td></tr></table></figure>
+<p>解决方法：把development/build/sdk.atree文件包含以下文本的行前加上#</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;sqlite3</span><br><span class="line">bin&#x2F;etc1tool</span><br><span class="line">bin&#x2F;split-select</span><br><span class="line">bin&#x2F;bcc_compat</span><br><span class="line">framework&#x2F;layoutlib.jar</span><br><span class="line">framework&#x2F;icu4j.jar</span><br><span class="line">framework&#x2F;layoutlib-tests.jar</span><br><span class="line">system&#x2F;app&#x2F;EmulatorSmokeTests&#x2F;EmulatorSmokeTests.apk</span><br></pre></td></tr></table></figure>
+<p>错误12</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prebuilts&#x2F;gcc&#x2F;linux-x86&#x2F;host&#x2F;x86_64-linux-glibc2.15-4.8&#x2F;&#x2F;x86_64-linux&#x2F;bin&#x2F;ld: error: out&#x2F;host&#x2F;linux-x86&#x2F;obj&#x2F;SHARED_LIBRARIES&#x2F;libart_intermediates&#x2F;arch&#x2F;x86_64&#x2F;quick_entrypoints_x86_64.o: unsupported reloc 42 against global symbol art::Runtime::instance_</span><br></pre></td></tr></table></figure>
+<p>解决方法，参考这里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">try this in your android root path:</span><br><span class="line"></span><br><span class="line">cp &#x2F;usr&#x2F;bin&#x2F;ld.gold prebuilts&#x2F;gcc&#x2F;linux-x86&#x2F;host&#x2F;x86_64-linux-glibc2.11-4.6&#x2F;x86_64-linux&#x2F;bin&#x2F;ld</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>编译Android源码可能会遇到各种各样的问题，一定要有耐心，遇到问题Google之。</p>
+<h3 id="编译Android-4-4"><a href="#编译Android-4-4" class="headerlink" title="编译Android 4.4"></a>编译Android 4.4</h3><p>有了前面的基础，编译Android-4.4也不是什么难事了。下面记录有可能遇到的错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;bin&#x2F;bash: jar: command not found</span><br><span class="line">make: *** [out&#x2F;host&#x2F;common&#x2F;obj&#x2F;JAVA_LIBRARIES&#x2F;antlr-runtime_intermediates&#x2F;javalib.jar] Error 127</span><br></pre></td></tr></table></figure>
+<p>解决方法，参考这里：<a href="http://xiaoluozhi.blog.163.com/blog/static/4233482720146293381665/" target="_blank" rel="noopener">http://xiaoluozhi.blog.163.com/blog/static/4233482720146293381665/</a></p>
+<h4 id="错误1-1"><a href="#错误1-1" class="headerlink" title="错误1"></a>错误1</h4><ul>
+<li><strong>jar、javadoc或者javah命令找不到</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;bin&#x2F;bash: jar: command not found</span><br><span class="line">make: *** [out&#x2F;host&#x2F;common&#x2F;obj&#x2F;JAVA_LIBRARIES&#x2F;antlr-runtime_intermediates&#x2F;javalib.jar] Error 127</span><br><span class="line">或者</span><br><span class="line">&#x2F;bin&#x2F;bash: javah: command not found</span><br></pre></td></tr></table></figure>
+可以执行以下命令：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;bin</span><br><span class="line">ln -s -f &#x2F;usr&#x2F;lib&#x2F;jvm&#x2F;jdk1.6.0_45&#x2F;bin&#x2F;javah</span><br><span class="line">ln -s -f &#x2F;usr&#x2F;lib&#x2F;jvm&#x2F;jdk1.6.0_45&#x2F;bin&#x2F;javadoc</span><br><span class="line">ln -s -f &#x2F;usr&#x2F;lib&#x2F;jvm&#x2F;jdk1.6.0_45&#x2F;bin&#x2F;jar</span><br></pre></td></tr></table></figure></li>
+<li><strong>[out/target/common/docs/api-stubs-timestamp] Error 45</strong></li>
+</ul>
+<p>执行以下命令：<code>make clean
+make</code></p>
+<h4 id="错误2-1"><a href="#错误2-1" class="headerlink" title="错误2"></a>错误2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> Traceback (most recent call last):</span><br><span class="line">  File &quot;..&#x2F;..&#x2F;base&#x2F;android&#x2F;jni_generator&#x2F;jni_generator.py&quot;, line 1103, in &lt;module&gt;</span><br><span class="line">    sys.exit(main(sys.argv))</span><br><span class="line">  File &quot;..&#x2F;..&#x2F;base&#x2F;android&#x2F;jni_generator&#x2F;jni_generator.py&quot;, line 1099, in main</span><br><span class="line">    GenerateJNIHeader(input_file, output_file, options)</span><br><span class="line">  File &quot;..&#x2F;..&#x2F;base&#x2F;android&#x2F;jni_generator&#x2F;jni_generator.py&quot;, line 1012, in GenerateJNIHeader</span><br><span class="line">    jni_from_javap &#x3D; JNIFromJavaP.CreateFromClass(input_file, options)</span><br><span class="line">  File &quot;..&#x2F;..&#x2F;base&#x2F;android&#x2F;jni_generator&#x2F;jni_generator.py&quot;, line 520, in CreateFromClass</span><br><span class="line">    stderr&#x3D;subprocess.PIPE)</span><br><span class="line">  File &quot;&#x2F;usr&#x2F;lib&#x2F;python2.7&#x2F;subprocess.py&quot;, line 711, in __init__</span><br><span class="line">    errread, errwrite)</span><br><span class="line">  File &quot;&#x2F;usr&#x2F;lib&#x2F;python2.7&#x2F;subprocess.py&quot;, line 1340, in _execute_child</span><br><span class="line">    raise child_exception</span><br><span class="line">OSError: [Errno 2] No such file or directory</span><br><span class="line">make: *** [out&#x2F;target&#x2F;product&#x2F;generic&#x2F;obj&#x2F;GYP&#x2F;shared_intermediates&#x2F;ui&#x2F;gl&#x2F;jni&#x2F;Surface_jni.h] Error 1</span><br></pre></td></tr></table></figure>
+<p>原因：没有配置javap</p>
+<h4 id="错误3-1"><a href="#错误3-1" class="headerlink" title="错误3"></a>错误3</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">No command &#39;emulator&#39; found, did you mean:</span><br><span class="line"> Command &#39;qemulator&#39; from package &#39;qemulator&#39; (universe)</span><br><span class="line">emulator: command not found</span><br></pre></td></tr></table></figure>
+<p>编译成功后，模拟器启动失败</p>
+<p>解决方法：到源码根目录下执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source build&#x2F;envsetup.sh</span><br><span class="line">lunch aosp_arm-eng</span><br></pre></td></tr></table></figure>
+<p>lunch的目标和build的目标要一致，最后输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">emulator -partition-size 1024 &amp;</span><br><span class="line">partition-size</span><br></pre></td></tr></table></figure>
+<p>指定虚拟机内存， 去掉也可以</p>
+<h4 id="截图"><a href="#截图" class="headerlink" title="截图"></a>截图</h4><p>Android4.4编译成功</p>
+<p><img src="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p4.png" alt="图4"></p>
+<p>Android4.4启动模拟器</p>
+<p><img src="/2016/10/07/complie-Android-5-1-on-Ubuntu-16-04/p5.png" alt="图5"></p>
+<h4 id="编译4-4参考资料"><a href="#编译4-4参考资料" class="headerlink" title="编译4.4参考资料"></a>编译4.4参考资料</h4><ul>
+<li><p>安装jdk1.6(编译Android-4.4)<br><a href="http://blog.csdn.net/gobitan/article/details/24322561" target="_blank" rel="noopener">http://blog.csdn.net/gobitan/article/details/24322561</a></p>
+</li>
+<li><p>编译Android-4.4<br><a href="http://blog.csdn.net/gobitan/article/details/24367439/" target="_blank" rel="noopener">http://blog.csdn.net/gobitan/article/details/24367439/</a><br><a href="http://www.jianshu.com/p/6d97b4a10b18" target="_blank" rel="noopener">http://www.jianshu.com/p/6d97b4a10b18</a></p>
+</li>
+</ul>
+<h3 id="编译Android-6-0"><a href="#编译Android-6-0" class="headerlink" title="编译Android 6.0"></a>编译Android 6.0</h3><p>方法是一样的，不过为了编译顺利，可能需要做下面两件事</p>
+<ul>
+<li>设置swap区<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;&#x2F;opt&#x2F;swap1 bs&#x3D;1024 count&#x3D;1024000</span><br><span class="line">sudo mkswap &#x2F;opt&#x2F;swap1</span><br><span class="line">sudo swapon &#x2F;opt&#x2F;swap1</span><br><span class="line">sudo vi &#x2F;etc&#x2F;fstab</span><br><span class="line">打开&#x2F;etc&#x2F;fstab，在最后一行增加如下内容</span><br><span class="line">&#x2F;opt&#x2F;swap1 swap swap defaults 0 0</span><br></pre></td></tr></table></figure></li>
+<li>bug fix，参考这里<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">in file &#x2F;art&#x2F;build&#x2F;Android.common_build.mk, find out:emphasized text</span><br><span class="line"># Host.</span><br><span class="line">ART_HOST_CLANG :&#x3D; false</span><br><span class="line">ifneq ($(WITHOUT_HOST_CLANG),true)</span><br><span class="line">  # By default, host builds use clang for better warnings.</span><br><span class="line">  ART_HOST_CLANG :&#x3D; true</span><br><span class="line">endif</span><br><span class="line">change to :</span><br><span class="line"># Host.</span><br><span class="line">ART_HOST_CLANG :&#x3D; false</span><br><span class="line">ifeq ($(WITHOUT_HOST_CLANG),false)</span><br><span class="line">  # By default, host builds use clang for better warnings.</span><br><span class="line">  ART_HOST_CLANG :&#x3D; true</span><br><span class="line">endif</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="Ubuntu使用笔记"><a href="#Ubuntu使用笔记" class="headerlink" title="Ubuntu使用笔记"></a>Ubuntu使用笔记</h3><h4 id="删除Amazon"><a href="#删除Amazon" class="headerlink" title="删除Amazon"></a>删除Amazon</h4><figure class="highlight plain"><figcaption><span>remove unity-webapps-common```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#### 删除office</span><br><span class="line">&#96;&#96;&#96;sudo apt-get remove --purge libreoffice</span><br></pre></td></tr></table></figure>
+<h3 id="删除jdk"><a href="#删除jdk" class="headerlink" title="删除jdk"></a>删除jdk</h3><p><a href="https://my.oschina.net/lxrm/blog/110638" target="_blank" rel="noopener">https://my.oschina.net/lxrm/blog/110638</a></p>
+<h4 id="AS查看Android全部源码"><a href="#AS查看Android全部源码" class="headerlink" title="AS查看Android全部源码"></a>AS查看Android全部源码</h4><p>检查out/host/Linux-x86/framework/目录下是否有idegen.jar<br>如果idegen.jar不存在，根目录下执行执行</p>
+<figure class="highlight plain"><figcaption><span>development/tools/idegen/```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">把这个文件copy到out&#x2F;host&#x2F;linux-x86&#x2F;framework&#x2F;目录下，在根目录下执行</span><br><span class="line"></span><br><span class="line">development&#x2F;tools&#x2F;idegen&#x2F;idegen.sh</span><br><span class="line">过了几分钟之后跟目录下应该会有android.ipr和android.iml两个文件，此时用Android Studio导入ipr即可。</span><br><span class="line"></span><br><span class="line">参考这里：http:&#x2F;&#x2F;blog.csdn.net&#x2F;sinat_22657459&#x2F;article&#x2F;details&#x2F;51227602</span><br><span class="line"></span><br><span class="line">### 备份Ubuntu</span><br><span class="line">#### 操作环境为Ubuntu14.04</span><br><span class="line">LTS，近日在Ubuntu上搭建了Git服务器及很多其他配置，想将已安装好的系统转换为ISO文件，这样可以实现备份具体步骤如下：</span><br><span class="line"></span><br><span class="line">1. 首先，打开在&#x2F;etc&#x2F;apt&#x2F;sources.list文件（使用vim或者gedit均可）；</span><br><span class="line"></span><br><span class="line">2. 根据具体的环境在sources.list中加入如下相应语句，并保存：</span><br></pre></td></tr></table></figure>
+<p>#Remastersys Precise deb <a href="http://www.remastersys.com/ubuntu" target="_blank" rel="noopener">http://www.remastersys.com/ubuntu</a> precise main</p>
+<p>#Remastersys Quantal deb <a href="http://www.remastersys.com/ubuntu" target="_blank" rel="noopener">http://www.remastersys.com/ubuntu</a> quantal main</p>
+<p>#Remastersys Squeeze deb <a href="http://www.remastersys.com/debian" target="_blank" rel="noopener">http://www.remastersys.com/debian</a> squeeze main</p>
+<p>#Remastersys Wheezy deb <a href="http://www.remastersys.com/debian" target="_blank" rel="noopener">http://www.remastersys.com/debian</a> wheezy main</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">3. 更新数据源： 在终端中输入：sudo apt-get update</span><br><span class="line"></span><br><span class="line">4. 更新完成后，安装remastersys: sudo apt-get install remastersys</span><br><span class="line"></span><br><span class="line">5. 安装成功后，输入sudo remastersys会出现remastersys Examples，根据这些命令行提示你可以实现不同功能，此处需要输入命令： sudo remastersys dist</span><br><span class="line">然后等待完成，此时会在终端窗口所提示的目录下生成ISO文件及MD5文件，如果需要刻盘只需要验证MD5就可以了。</span><br><span class="line"></span><br><span class="line">#### ubuntu14.04忽然不能登录</span><br><span class="line">ubuntu14.04忽然不能登录，输入密码一直返回登录界面</span><br><span class="line">解决方法：</span><br><span class="line">1. ctrl + alt + F1进入命令终端</span><br><span class="line">2. 重装gdm，sudo apt-get install gdm</span><br><span class="line">3. 修改启动顺序：dpkg -reconfigure gdm</span><br><span class="line">4. 重启reboot可登录。</span><br><span class="line"></span><br><span class="line">编辑&#x2F;etc&#x2F;profile要使用的命令应该这样写：　</span><br><span class="line">&#96;&#96;&#96;&#x2F;usr&#x2F;bin&#x2F;sudo </span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;vim </span><br><span class="line">&#x2F;etc&#x2F;profile</span><br></pre></td></tr></table></figure>
+<p>正常状态下重启使用：<code>sudo reboot</code><br>当然现在也不行，要使用 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;bin&#x2F;sudo　</span><br><span class="line">&#x2F;sbin&#x2F;reboot</span><br></pre></td></tr></table></figure>
+<p>参考这里：<a href="http://blog.163.com/shao_yuru/blog/static/130517606201010310581842/" target="_blank" rel="noopener">http://blog.163.com/shao_yuru/blog/static/130517606201010310581842/</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://source.android.com/source/requirements.html" target="_blank" rel="noopener">Android官网</a></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E7%BC%96%E8%AF%91Android%E6%BA%90%E7%A0%81/" rel="tag"># 编译Android源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/25/Android-Using-Https/" rel="prev" title="Android-HTTPS请求">
+      <i class="fa fa-chevron-left"></i> Android-HTTPS请求
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/21/build-Android-Develop-Eenvironment-On-Ubuntu-16-04/" rel="next" title="Ubuntu-16-04上搭建Android开发环境">
+      Ubuntu-16-04上搭建Android开发环境 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#源码下载"><span class="nav-number">1.1.</span> <span class="nav-text">源码下载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#系统"><span class="nav-number">1.2.</span> <span class="nav-text">系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装环境"><span class="nav-number">1.3.</span> <span class="nav-text">安装环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开始编译"><span class="nav-number">1.4.</span> <span class="nav-text">开始编译</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遇到的错误"><span class="nav-number">2.</span> <span class="nav-text">遇到的错误</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#错误1"><span class="nav-number">2.1.</span> <span class="nav-text">错误1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误2"><span class="nav-number">2.2.</span> <span class="nav-text">错误2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误3"><span class="nav-number">2.3.</span> <span class="nav-text">错误3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误4"><span class="nav-number">2.4.</span> <span class="nav-text">错误4</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误5"><span class="nav-number">2.5.</span> <span class="nav-text">错误5</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误6"><span class="nav-number">2.6.</span> <span class="nav-text">错误6</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误7"><span class="nav-number">2.7.</span> <span class="nav-text">错误7</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误8"><span class="nav-number">2.8.</span> <span class="nav-text">错误8</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误9"><span class="nav-number">2.9.</span> <span class="nav-text">错误9</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误10"><span class="nav-number">2.10.</span> <span class="nav-text">错误10</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误11"><span class="nav-number">2.11.</span> <span class="nav-text">错误11</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译Android-4-4"><span class="nav-number">4.</span> <span class="nav-text">编译Android 4.4</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#错误1-1"><span class="nav-number">4.1.</span> <span class="nav-text">错误1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误2-1"><span class="nav-number">4.2.</span> <span class="nav-text">错误2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误3-1"><span class="nav-number">4.3.</span> <span class="nav-text">错误3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#截图"><span class="nav-number">4.4.</span> <span class="nav-text">截图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编译4-4参考资料"><span class="nav-number">4.5.</span> <span class="nav-text">编译4.4参考资料</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译Android-6-0"><span class="nav-number">5.</span> <span class="nav-text">编译Android 6.0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ubuntu使用笔记"><span class="nav-number">6.</span> <span class="nav-text">Ubuntu使用笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#删除Amazon"><span class="nav-number">6.1.</span> <span class="nav-text">删除Amazon</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除jdk"><span class="nav-number">7.</span> <span class="nav-text">删除jdk</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AS查看Android全部源码"><span class="nav-number">7.1.</span> <span class="nav-text">AS查看Android全部源码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
