@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://nancyyihao.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="原文一直想写一篇Linux启动过程的文章，看到这篇讲得不错，于是打算翻译出来。水平有限，不足之处欢迎指正。原文在此：https:&#x2F;&#x2F;www.crybit.com&#x2F;linux-boot-process&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译】Linux启动过程分析">
+<meta property="og:url" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/index.html">
+<meta property="og:site_name" content="Jasonkent27">
+<meta property="og:description" content="原文一直想写一篇Linux启动过程的文章，看到这篇讲得不错，于是打算翻译出来。水平有限，不足之处欢迎指正。原文在此：https:&#x2F;&#x2F;www.crybit.com&#x2F;linux-boot-process&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/Linux-booting-process_2.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/bios.jpg">
+<meta property="og:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/Linux-booting-process-MBR.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/mbr.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/boot-stages.png">
+<meta property="og:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/select-linux-kernel-in-grub2-boot-loader-on-ubuntu-14.04.png">
+<meta property="article:published_time" content="2020-04-10T13:50:47.000Z">
+<meta property="article:modified_time" content="2020-07-19T14:01:02.000Z">
+<meta property="article:author" content="Jasonkent27">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/Linux-booting-process_2.png">
+
+<link rel="canonical" href="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>【译】Linux启动过程分析 | Jasonkent27</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jasonkent27</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger">搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2020/04/10/Linux-Boot-Process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【译】Linux启动过程分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-10 21:50:47" itemprop="dateCreated datePublished" datetime="2020-04-10T21:50:47+08:00">2020-04-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/04/10/Linux-Boot-Process/" class="post-meta-item leancloud_visitors" data-flag-title="【译】Linux启动过程分析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/10/Linux-Boot-Process/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/10/Linux-Boot-Process/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h3><p>一直想写一篇Linux启动过程的文章，看到这篇讲得不错，于是打算翻译出来。水平有限，不足之处欢迎指正。原文在此：<a href="https://www.crybit.com/linux-boot-process/" target="_blank" rel="noopener">https://www.crybit.com/linux-boot-process/</a></p>
+<a id="more"></a>
+
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>你曾经想了解过系统启动的流程吗？做一个系统管理员，了解机器的启动每一个步骤和流程事非常重要的。如果你是一个系统管理员，你应该对启动流程有更好的了解。这篇文章将一步一步讲解Linux的启动流程。我向你保证，你读完这篇文章之后，你会对linux的启动流程有更好的了解。我把Linux启动流程分成了5步：<br><img src="/2020/04/10/Linux-Boot-Process/Linux-booting-process_2.png" alt="image"><br>从加电到登录界面，我们可以大致把Linux启动流程分成五部分：BIOS, Boot Loader第一阶段，BootLoader第二阶段，内核和初始化，这些都是启动过程的重要流程，让我们从Linux的BIOS阶段开始吧。</p>
+<h3 id="第一步-BIOS"><a href="#第一步-BIOS" class="headerlink" title="第一步 BIOS"></a>第一步 BIOS</h3><p>在这篇文章里，我把BIOS（而不是UEFI）作为Linux启动过程分析的第一步。UEFI和BIOS都是启动操作系统之前的低层软件，UEFI是更现代化的方案，支持更大的硬盘，更快的启动时间，更安全的特性和更方便的图形鼠标。至于BIOS，这个一个预先安装在主板上的固件，BIOS控制计算机硬件。BIOS在启动过程中的主要工作是硬件初始化，最主要的工作是POST(Power On Self Test，硬件自检)。POST测试主要是检查一些硬件的读写是否正常。POST 主要不是用来做硬件诊断，它只是检查系统硬件是否存在并且加载一个BootLoader。POST过程中主要有两类错误：1.致命错误，主要是硬件原因；2.非致命错误，主要是软件原因。</p>
+<h4 id="POST的主要职责"><a href="#POST的主要职责" class="headerlink" title="POST的主要职责"></a>POST的主要职责</h4><ol>
+<li>检查CPU寄存器</li>
+<li>检查BIOS代码的完整性</li>
+<li>检查基本组件如DMA，计时器，中断控制器</li>
+<li>搜寻，确定系统主存大小</li>
+<li>初始化BIOS</li>
+<li>识别，组织，选择出哪些设备是可以启动的</li>
+</ol>
+<p>POST之后会有Beep声表示POST检查结果。一声简短的beep声意味着系统是OK的。两声beep则表示检查失败，错误码会显示在屏幕上。想看更多详细信息参考POST手册。BIOS工作在CPU和IO设备之间，因此他总是能知道计算机的所有硬件信息。如果任何的硬盘或IO设备发生变化，只需更新BIOS即可。BIOS被存储在RRPROM/FLASH内存中，BIOS不能存储在硬盘或者其他设备中，因为BIOS是管理这些设备的。BIOS使用汇编语言编写。</p>
+<p><img src="/2020/04/10/Linux-Boot-Process/bios.jpg" alt="image"></p>
+<p>请记住，POST是BIOS启动阶段的主要事情，接下来我们把目光转移到boot loader的第一阶段，MBR阶段</p>
+<h3 id="第二步-boot-load第一阶段-MBR"><a href="#第二步-boot-load第一阶段-MBR" class="headerlink" title="第二步 boot load第一阶段(MBR)"></a>第二步 boot load第一阶段(MBR)</h3><p>Master Boot Record, 是boot loader启动的起始位置。MBR是磁盘上第一个扇区，占512字节。MBR包含程序代码和分区表信息，请看下方图片：<br><img src="/2020/04/10/Linux-Boot-Process/Linux-booting-process-MBR.png" alt="image"><br>当我们给硬盘分区时，每个分区的第一个扇区或者数据单元总是保留下来存放一些启动代码，硬盘的第一个分区则叫MBR，也是因为一样的原因保留下来，比如机械硬盘的1扇区，0柱面，0磁道。<br><img src="/2020/04/10/Linux-Boot-Process/mbr.png" alt="image"><br>MBR的前446字节是主要的boot loader包含可执行代码和错误信息，接下来的64字节包含四个分区表信息，如上图所示，P1表示分区1，P2表示分区2，等等。<br>4 * 16 bytes = 64 bytes，最后两个字节就是众所周知的魔法数(0xAA55)，主要用来检查MBR的合法性。</p>
+<p>当我们从硬盘开始启动时，BIOS开始加载并执行boot loader里面的代码，MBR容量太小，有时候没法执行完整的boot loader代码，所以启动要转移到另外的阶段进行。这些阶段在不同的boot loader上不一样，是时候转移到boot loader的第二阶段了。</p>
+<h3 id="第三步-boot-loader第二阶段"><a href="#第三步-boot-loader第二阶段" class="headerlink" title="第三步 boot loader第二阶段"></a>第三步 boot loader第二阶段</h3><p>也叫内核加载阶段，这个阶段的主要任务是加载Linux 内核。<br>有不同类型的 boot loader </p>
+<ul>
+<li>LILO: Linux Loader</li>
+<li>GRUB: Grand Unified Boot Loader<br>我们这里主要用GRUB，因为LILO有些缺点。GRUB的一个好处是它能识别Linux文件系统，GRUB能从格式为ext2/ext3的文件系统中加载内核。</li>
+</ul>
+<p>就像我们之前提到，boot loader代码执行在不同的阶段，因为MBR容量限制。当前阶段执行的代码因GRUB版本不同而不同。下面是主要的阶段：</p>
+<ol>
+<li>阶段1和阶段2：这两个阶段是必要的</li>
+<li>阶段1.5: 可选的</li>
+</ol>
+<p>阶段1是一个启动Linux机器的必要必要镜像。通常这部分代码会被嵌入到MBR中，或者启动分区的第一个扇区。这个镜像大小不能超过512字节，因为这是MBR的限制。在阶段1，没法识别文件系统，阶段1从磁盘中加载阶段1.5或者阶段2，此时能识别Linux文件系统细节。<br><img src="/2020/04/10/Linux-Boot-Process/boot-stages.png" alt="image"></p>
+<p>阶段2是GRUB的主要镜像。通常你能在文件系统中找到这个镜像。阶段1.5则是连接阶段1和阶段2的桥梁，阶段1.5会被安装到MBR的右边。</p>
+<p>Boot Loaders主要是从阶段2开始加载，所以你需要知道Linux boot loader的一些细节。通用的Linux中的Boot Loader主要有：</p>
+<ol>
+<li>LILO (Linux Loader)</li>
+<li>GRUB (Grand Unified Boot Loader)</li>
+</ol>
+<p>现在几乎所有的Linux发行版本都用GRUB作为boot loader. 最新的GRUB版本为 GRUB v2.</p>
+<p>LILO和GRUB都能作为MBR上的首要boot loader，或者第二个boot loadeer（分区上），都用来支持引导Linux、FreeBSD、NetBSD这样的操作系统，也可以引导Windows。<br>LILO配置文件存放在/etc/lilo.conf，Demo如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">boot&#x3D;&#x2F;dev&#x2F;hda</span><br><span class="line">map&#x3D;&#x2F;boot&#x2F;map</span><br><span class="line">install&#x3D;&#x2F;boot&#x2F;boot.b</span><br><span class="line">prompt</span><br><span class="line">timeout&#x3D;50</span><br><span class="line">message&#x3D;&#x2F;boot&#x2F;message</span><br><span class="line">lba32</span><br><span class="line">default&#x3D;linux</span><br><span class="line"></span><br><span class="line">image&#x3D;&#x2F;boot&#x2F;vmlinuz-2.4.0-0.43.6</span><br><span class="line">	label&#x3D;linux</span><br><span class="line">	initrd&#x3D;&#x2F;boot&#x2F;initrd-2.4.0-0.43.6.img</span><br><span class="line">	read-only</span><br><span class="line">	root&#x3D;&#x2F;dev&#x2F;hda5</span><br><span class="line"></span><br><span class="line">other&#x3D;&#x2F;dev&#x2F;hda1</span><br><span class="line">	label&#x3D;dos</span><br></pre></td></tr></table></figure>
+<p>通常像GRUB这样的boot loader配置文件也放在etc目录下。<br>GRUB有两个版本，v1和v2.</p>
+<h4 id="GRUB-v1"><a href="#GRUB-v1" class="headerlink" title="GRUB v1"></a>GRUB v1</h4><p>GRUB v1存放在/etc/grub.conf，目录下，它其实事/boot/grub/grub.conf的一个软链接。Demo如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># grub.conf generated by anaconda</span><br><span class="line">#</span><br><span class="line"># Note that you do not have to rerun grub after making changes to this file</span><br><span class="line"># NOTICE: You have a &#x2F;boot partition. This means that</span><br><span class="line"># all kernel and initrd paths are relative to &#x2F;boot&#x2F;, eg.</span><br><span class="line"># root (hd0,0)</span><br><span class="line"># kernel &#x2F;vmlinuz-version ro root&#x3D;&#x2F;dev&#x2F;sda3</span><br><span class="line"># initrd &#x2F;initrd-[generic-]version.img</span><br><span class="line">#boot&#x3D;&#x2F;dev&#x2F;sda</span><br><span class="line">default&#x3D;0</span><br><span class="line">timeout&#x3D;5</span><br><span class="line">splashimage&#x3D;(hd0,0)&#x2F;grub&#x2F;splash.xpm.gz</span><br><span class="line">hiddenmenu</span><br><span class="line">title CloudLinux Server (2.6.32-673.26.1.lve1.4.27.el6.x86_64)</span><br><span class="line">root (hd0,0)</span><br><span class="line">kernel &#x2F;vmlinuz-2.6.32-673.26.1.lve1.4.27.el6.x86_64 ro root&#x3D;UUID&#x3D;15f2bf27-2e16-4b6f-bc86-fa74314aa8d5 rd_NO_LUKS rd_NO_LVM LANG&#x3D;en_US.UTF-8 rd_NO_MD SYSFONT&#x3D;latarcyrheb-sun16 crashkernel&#x3D;auto KEYBOARDTYPE&#x3D;pc KEYTABLE&#x3D;us rd_NO_DM rhgb quiet nohz&#x3D;off</span><br><span class="line">initrd &#x2F;initramfs-2.6.32-673.26.1.lve1.4.27.el6.x86_64.img</span><br></pre></td></tr></table></figure>
+<h4 id="GRUB-v2"><a href="#GRUB-v2" class="headerlink" title="GRUB v2"></a>GRUB v2</h4><p>grub v2存放在/etc/grub2.cfg，它其实是/boot/grub2/grub.cfg的软链接。<br>v2和v1主要的不同是，我们不能修改配置文件和其他配置。然而，你可以使用不同的grub2-*命令来修改GRUB配置。<br>一个v2的Demo如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">terminal_output console</span><br><span class="line">if [ x$feature_timeout_style &#x3D; xy ] ; then</span><br><span class="line">set timeout_style&#x3D;menu</span><br><span class="line">set timeout&#x3D;5</span><br><span class="line"># Fallback normal timeout code in case the timeout_style feature is</span><br><span class="line"># unavailable.</span><br><span class="line">else</span><br><span class="line">set timeout&#x3D;5</span><br><span class="line">fi</span><br><span class="line">### END &#x2F;etc&#x2F;grub.d&#x2F;00_header ###</span><br><span class="line">BEGIN &#x2F;etc&#x2F;grub.d&#x2F;10_linux ###</span><br><span class="line">menuentry &#39;CentOS Linux (3.10.0-123.4.2.el7.x86_64) 7 (Core)&#39; --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option &#39;gnulinux-3.10.0-123.el7.x86_64-advanced-fe0109f2-6f34-48ae-b51e-1f5fa78305b5&#39; &#123;</span><br><span class="line">load_video</span><br><span class="line">set gfxpayload&#x3D;keep</span><br><span class="line">insmod gzio</span><br><span class="line">insmod part_msdos</span><br><span class="line">insmod ext2</span><br><span class="line">set root&#x3D;&#39;hd0,msdos1&#39;</span><br></pre></td></tr></table></figure>
+<p>以”menuentry”开始的行来定义内核。这比v1要复杂一些，但是我们可以从命令行修改它。我们会在另外一篇文章讨论GRUB配置。</p>
+<p>不要忘记我们现在在Linux启动过程的第二阶段，在阶段二，会把GRUB从一个已知的位置加载进来(/boot/grub)，同时在读GRUB配置文件和展示启动入口之前，会把其他必要的驱动和内核模块加载进来。下图就是熟悉的GRUB配置页面，你可以从下方选择加载不同的内核。<br><img src="/2020/04/10/Linux-Boot-Process/select-linux-kernel-in-grub2-boot-loader-on-ubuntu-14.04.png" alt="image"></p>
+<h3 id="第四步-内核阶段"><a href="#第四步-内核阶段" class="headerlink" title="第四步 内核阶段"></a>第四步 内核阶段</h3><p>终于到了内核阶段，内核镜像是压缩的，我们可以从GRUB入口选择不同的内核，如果没有选择，GRUB会自动选择默认的那个去加载，我们当然也可以修改默认配置。</p>
+<p>你选择的内核会先加载到内存中，一个镜像文件会包含基本的根文件系统以及内核的所有模块，之后都会被加载到内存中。这个镜像文件的位置是/boot，也即我们所知道的initramfs.</p>
+<p>initramfs，是”initial RAM file sytem”的简写，它的前身是initrd “initial ramdisk”. 这个镜像文件包含原始的文件系统。GRUB加载内核的时候会告诉内核这个镜像文件的内存地址，然后内核会挂载这个镜像文件到内存中作为Linux的根文件系统。</p>
+<p>之后内核会开始检测系统硬件。启动流程开始根据配置启动INIT(SYSTEMD)进程和对应的DAEMONS进程。这会在下一个阶段完成。</p>
+<h3 id="第五步-INIT"><a href="#第五步-INIT" class="headerlink" title="第五步 INIT"></a>第五步 INIT</h3><p>内核一但加载到第四步，会自动执行sbin(sbin/init)下面的init程序。[在 RHEL/CENTOS 7中，/sbin/init被链接到 ../lib/systemd/systemd下]，当init进程启动，它就成为了你Linux机器的第一个进程。</p>
+<p>init进程做的第一件事是读取配置文件, /etc/inittab，这会指引init进程去读初始化配置脚本去配置环境、设置PATH，开启swapping，检查文件系统等等。从/etc/inittab里，系统会根据rc文件开启对应的服务。</p>
+<p>这只是一篇Linux启动过程的介绍，关于这个话题，有很多东西都可以继续展开。</p>
+<p>接下来会有更详细的文章介绍具体每一步骤，希望你能享受启动过程。</p>
+<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ul>
+<li><a href="https://blog.csdn.net/u014587123/article/details/80965398" target="_blank" rel="noopener">https://blog.csdn.net/u014587123/article/details/80965398</a></li>
+<li><a href="https://www.cnblogs.com/alantu2018/p/8991088.html" target="_blank" rel="noopener">https://www.cnblogs.com/alantu2018/p/8991088.html</a></li>
+<li><a href="https://chendongqi.me/2017/02/20/pm_boot_flow/" target="_blank" rel="noopener">https://chendongqi.me/2017/02/20/pm_boot_flow/</a></li>
+<li><a href="https://www.crybit.com/linux-boot-process/" target="_blank" rel="noopener">https://www.crybit.com/linux-boot-process/</a></li>
+<li><a href="https://opensource.com/article/18/1/analyzing-linux-boot-process" target="_blank" rel="noopener">https://opensource.com/article/18/1/analyzing-linux-boot-process</a></li>
+<li><a href="http://huaqianlee.github.io/2015/08/23/Android/%E9%AB%98%E9%80%9AAndroid%E8%AE%BE%E5%A4%87%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90-%E4%BB%8Epower-on%E4%B8%8A%E7%94%B5%E5%88%B0Home-Lanucher%E5%90%AF%E5%8A%A8/" target="_blank" rel="noopener">http://huaqianlee.github.io/2015/08/23/Android/%E9%AB%98%E9%80%9AAndroid%E8%AE%BE%E5%A4%87%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90-%E4%BB%8Epower-on%E4%B8%8A%E7%94%B5%E5%88%B0Home-Lanucher%E5%90%AF%E5%8A%A8/</a></li>
+<li><a href="http://huaqianlee.github.io/2015/08/21/Linux/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Linux%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/" target="_blank" rel="noopener">http://huaqianlee.github.io/2015/08/21/Linux/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Linux%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="Jasonkent27 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="Jasonkent27 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/26/Unserstand-Android-Framework-Services/" rel="prev" title="理解Android的Framework层服务">
+      <i class="fa fa-chevron-left"></i> 理解Android的Framework层服务
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/19/Understand-Android-Boot-Process/" rel="next" title="理解Android的启动过程">
+      理解Android的启动过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#原文"><span class="nav-number">1.</span> <span class="nav-text">原文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步-BIOS"><span class="nav-number">3.</span> <span class="nav-text">第一步 BIOS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#POST的主要职责"><span class="nav-number">3.1.</span> <span class="nav-text">POST的主要职责</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步-boot-load第一阶段-MBR"><span class="nav-number">4.</span> <span class="nav-text">第二步 boot load第一阶段(MBR)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步-boot-loader第二阶段"><span class="nav-number">5.</span> <span class="nav-text">第三步 boot loader第二阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GRUB-v1"><span class="nav-number">5.1.</span> <span class="nav-text">GRUB v1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GRUB-v2"><span class="nav-number">5.2.</span> <span class="nav-text">GRUB v2</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四步-内核阶段"><span class="nav-number">6.</span> <span class="nav-text">第四步 内核阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第五步-INIT"><span class="nav-number">7.</span> <span class="nav-text">第五步 INIT</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考资料"><span class="nav-number">7.1.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jasonkent27"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Jasonkent27</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nancyyihao" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nancyyihao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/2789544710" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;2789544710" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
+      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      placeholder: "说点什么吧~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: true,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
