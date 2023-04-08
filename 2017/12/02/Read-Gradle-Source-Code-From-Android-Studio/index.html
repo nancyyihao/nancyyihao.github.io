@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.0">
+<meta name="generator" content="Hexo 6.3.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -282,19 +282,19 @@
 
       
         <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>前段时间了解了Android Studio Instant Run的原理，不过基本上都是看国内的博客了解到的，没看到源码，总感觉没有get 到点，于是研究了一下，如何通过Android Studio查看Gradle源码。</p>
-<a id="more"></a>
+<span id="more"></span>
 
-<h3 id="2-方法"><a href="#2-方法" class="headerlink" title="2. 方法"></a>2. 方法</h3><h4 id="2-1-下载"><a href="#2-1-下载" class="headerlink" title="2.1 下载"></a>2.1 下载</h4><p>先到seach.maven.org，然后输入com.android.tools.build进行搜索，先把gradle/gradle core/gradle api/transform api对应的源码下载下来（当然你也可以下载全部）。注意：下载的版本要和Android Studio工程中的build.gradle配置文件中的版本一致。我的版本是compile ‘com.android.tools.build:gradle:2.3.0’，所以我选择gradle 2.3.0版本下载。</p>
-<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p1.png" alt></p>
-<h4 id="2-2-放置源码"><a href="#2-2-放置源码" class="headerlink" title="2.2 放置源码"></a>2.2 放置源码</h4><p>然后找到Android Studio对应目录，右键—&gt;显示包内容，然后打开Contents/gradle/m2repository/com/android/tools/build目录，看下图</p>
-<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p2.png" alt></p>
-<p>然后将相应源码放到对应目录下即可。比如直接把transform-api-2.0.0-deprecated-use-gradle-api-sources.jar放到Contents/gradle/m2repository/com/android/tools/build/transform-api/2.0.0-deprecated-use-gradle-api目录下即可。</p>
-<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p3.png" alt></p>
+<h3 id="2-方法"><a href="#2-方法" class="headerlink" title="2. 方法"></a>2. 方法</h3><h4 id="2-1-下载"><a href="#2-1-下载" class="headerlink" title="2.1 下载"></a>2.1 下载</h4><p>先到seach.maven.org，然后输入com.android.tools.build进行搜索，先把gradle&#x2F;gradle core&#x2F;gradle api&#x2F;transform api对应的源码下载下来（当然你也可以下载全部）。注意：下载的版本要和Android Studio工程中的build.gradle配置文件中的版本一致。我的版本是compile ‘com.android.tools.build:gradle:2.3.0’，所以我选择gradle 2.3.0版本下载。</p>
+<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p1.png"></p>
+<h4 id="2-2-放置源码"><a href="#2-2-放置源码" class="headerlink" title="2.2 放置源码"></a>2.2 放置源码</h4><p>然后找到Android Studio对应目录，右键—&gt;显示包内容，然后打开Contents&#x2F;gradle&#x2F;m2repository&#x2F;com&#x2F;android&#x2F;tools&#x2F;build目录，看下图</p>
+<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p2.png"></p>
+<p>然后将相应源码放到对应目录下即可。比如直接把transform-api-2.0.0-deprecated-use-gradle-api-sources.jar放到Contents&#x2F;gradle&#x2F;m2repository&#x2F;com&#x2F;android&#x2F;tools&#x2F;build&#x2F;transform-api&#x2F;2.0.0-deprecated-use-gradle-api目录下即可。</p>
+<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p3.png"></p>
 <h4 id="2-3-查看源码"><a href="#2-3-查看源码" class="headerlink" title="2.3 查看源码"></a>2.3 查看源码</h4><p>重新打开Android Studio，重新build一下便可看到源码，command+O就可以直接搜索你想要类了。</p>
-<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p4.png" alt></p>
+<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p4.png"></p>
 <p>通过直接查看源码，可以看直接官方的Instant Run是如何做的。</p>
-<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p5.png" alt></p>
-<h3 id="3-参考"><a href="#3-参考" class="headerlink" title="3. 参考"></a>3. 参考</h3><p><a href="http://www.cnblogs.com/dasusu/p/6650782.html" target="_blank" rel="noopener">如何用Adnroid Studio查看build.gradle源码</a></p>
+<p><img src="/2017/12/02/Read-Gradle-Source-Code-From-Android-Studio/p5.png"></p>
+<h3 id="3-参考"><a href="#3-参考" class="headerlink" title="3. 参考"></a>3. 参考</h3><p><a target="_blank" rel="noopener" href="http://www.cnblogs.com/dasusu/p/6650782.html">如何用Adnroid Studio查看build.gradle源码</a></p>
 
     </div>
 
@@ -401,7 +401,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-方法"><span class="nav-number">2.</span> <span class="nav-text">2. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-下载"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 下载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-放置源码"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 放置源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-查看源码"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 查看源码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-参考"><span class="nav-number">3.</span> <span class="nav-text">3. 参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">2. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E4%B8%8B%E8%BD%BD"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 下载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E6%94%BE%E7%BD%AE%E6%BA%90%E7%A0%81"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 放置源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E6%9F%A5%E7%9C%8B%E6%BA%90%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 查看源码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">3. 参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -462,13 +462,13 @@
 <div class="copyright">
   
   &copy; 2016 – 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.3.0
   </div>
   <span class="post-meta-divider">|</span>
   <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
@@ -542,8 +542,8 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       el: '#valine-comments',
       verify: false,
       notify: false,
-      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
-      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      appId: 'Toibk8KsbHfe3teDDXGQ1o7z-gzGzoHsz',
+      appKey: 'Qm3u38tzxpUFDwFeMyfDY9PN',
       placeholder: "说点什么吧~",
       avatar: 'mm',
       meta: guest,
@@ -552,7 +552,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       lang: '' || 'zh-cn',
       path: location.pathname,
       recordIP: false,
-      serverURLs: ''
+      serverURLs: 'https://toibk8ks.lc-cn-n1-shared.com'
     });
   }, window.Valine);
 });

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.0">
+<meta name="generator" content="Hexo 6.3.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -278,12 +278,12 @@
 
       
         <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>Android中View的重要性堪比四大组件，甚至有过之而无不及。View是Android提供给开发者呈现UI的方式。在越来越重视用户体验的时代，UI是App的门面，想要快速高效地做出各种炫酷页面，必须要了解Android-View的工作原理。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h3 id="2-View的绘制"><a href="#2-View的绘制" class="headerlink" title="2. View的绘制"></a>2. View的绘制</h3><p>想象一下，如果让你来设计一套UI系统，用户可以往屏幕上画各式各样的图案。你会怎么设计呢？类似于画画，首先，我们需要确定图案大小，其次我们需要确定图案的位置，最后我们可能需要确定用什么颜色去画。这个过程其实和Android中View的绘制过程相差无几。View的绘制过程也会经历onLayout(位置)、onMesure(大小)、onDraw(着色)三个流程。</p>
 <h4 id="2-1-measure过程"><a href="#2-1-measure过程" class="headerlink" title="2.1 measure过程"></a>2.1 measure过程</h4><p>measure过程有一个重要你的类MeasureSpec，通过这个类把一个int类型数据解包出View测量的模式和View绘制的大小.View的测量模式有三种</p>
 <ul>
-<li><p>EXACTLY<br>当View的layout_width或layout_height属性为match_parent或者固定值时，就是EXACTLY模式(如layout_width=”20dp”或layout_width=”match_parent”)</p>
+<li><p>EXACTLY<br>当View的layout_width或layout_height属性为match_parent或者固定值时，就是EXACTLY模式(如layout_width&#x3D;”20dp”或layout_width&#x3D;”match_parent”)</p>
 </li>
 <li><p>AT_MOST<br>当View的layout_width或layout_height属性为wrap_content时便是使用AT_MOST模式</p>
 </li>
@@ -313,11 +313,11 @@
 <li>public boolean onTouchEvent(MotionEvent) 处理事件，如果该方法返回true，表示该事件已经被处理，不会再传递给下面的子view.<br>对于每一个层级的View来说，基本上都会走如下流程：<br>  先判断本View需不需要拦截View事件，如果需要拦截，则走到本View.onTouchEvent方法中如果不需要，则继续分发事件给子View.</li>
 </ul>
 <p>其伪代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> !onInterceptTouchEvent(ev) ? <span class="keyword">this</span>.onTouchEvent(ev) : child.dispatchTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>举个更形象的例子，假设公司只有三个人，CEO，Manager（你上司）、你，来了个活，CEO看了一下，这事so easy，交给下面的人办就可以了(onInterceptTouchEvent()=false)，先把这活分给(dispatch)经理，经理也觉得这活比较简单，也直接(dispatch)给你了，这活给了你以后，你没有下属了，只能是自己来处理了（这也是View没有onInterceptTouchEvent方法和onTouchEvent默认返回true的原因之一）。如果你发现你自己仍然不能处理好该活(onTouchEvent=false)，那只能继续上报你的经理，如果经理能处理(onTouchEvent=true)，则不用再继续上报给CEO，自己处理就好了。</p>
-<p>在另外一种场景之下，如果在事件分发阶段，CEO或者经理发现这事不需要下面的人去解决，自己搞定的话，只需把<strong>onInterceptTouchEvent() = true</strong>，然后在自己的<strong>onTouchEvent()</strong>方法中处理该事件即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> !onInterceptTouchEvent(ev) ? <span class="built_in">this</span>.onTouchEvent(ev) : child.dispatchTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>举个更形象的例子，假设公司只有三个人，CEO，Manager（你上司）、你，来了个活，CEO看了一下，这事so easy，交给下面的人办就可以了(onInterceptTouchEvent()&#x3D;false)，先把这活分给(dispatch)经理，经理也觉得这活比较简单，也直接(dispatch)给你了，这活给了你以后，你没有下属了，只能是自己来处理了（这也是View没有onInterceptTouchEvent方法和onTouchEvent默认返回true的原因之一）。如果你发现你自己仍然不能处理好该活(onTouchEvent&#x3D;false)，那只能继续上报你的经理，如果经理能处理(onTouchEvent&#x3D;true)，则不用再继续上报给CEO，自己处理就好了。</p>
+<p>在另外一种场景之下，如果在事件分发阶段，CEO或者经理发现这事不需要下面的人去解决，自己搞定的话，只需把<strong>onInterceptTouchEvent() &#x3D; true</strong>，然后在自己的**onTouchEvent()**方法中处理该事件即可。</p>
 <p>事件总是先传递到Activity，Activity再传递到window，经由window传递给view，如果事件传递过程中，中间没有任何对象消费掉该事件，则最后由Activity来处理(Activity.onTouchEvent)</p>
-<p><img src="/2017/08/07/Hello-View-Again-One/p1.png" alt></p>
+<p><img src="/2017/08/07/Hello-View-Again-One/p1.png"></p>
 <h3 id="5-参考"><a href="#5-参考" class="headerlink" title="5. 参考"></a>5. 参考</h3><p>《Android开发艺术探索》<br>《Android群英传》</p>
 
     </div>
@@ -425,7 +425,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-View的绘制"><span class="nav-number">2.</span> <span class="nav-text">2. View的绘制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-measure过程"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 measure过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-layout过程"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 layout过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-draw过程"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 draw过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-自定义View常用方法"><span class="nav-number">3.</span> <span class="nav-text">3. 自定义View常用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-View的事件分发"><span class="nav-number">4.</span> <span class="nav-text">4. View的事件分发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-参考"><span class="nav-number">5.</span> <span class="nav-text">5. 参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-View%E7%9A%84%E7%BB%98%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">2. View的绘制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-measure%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 measure过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-layout%E8%BF%87%E7%A8%8B"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 layout过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-draw%E8%BF%87%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 draw过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%87%AA%E5%AE%9A%E4%B9%89View%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">3. 自定义View常用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-View%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91"><span class="nav-number">4.</span> <span class="nav-text">4. View的事件分发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">5. 参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -486,13 +486,13 @@
 <div class="copyright">
   
   &copy; 2016 – 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.3.0
   </div>
   <span class="post-meta-divider">|</span>
   <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
@@ -566,8 +566,8 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       el: '#valine-comments',
       verify: false,
       notify: false,
-      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
-      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      appId: 'Toibk8KsbHfe3teDDXGQ1o7z-gzGzoHsz',
+      appKey: 'Qm3u38tzxpUFDwFeMyfDY9PN',
       placeholder: "说点什么吧~",
       avatar: 'mm',
       meta: guest,
@@ -576,7 +576,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       lang: '' || 'zh-cn',
       path: location.pathname,
       recordIP: false,
-      serverURLs: ''
+      serverURLs: 'https://toibk8ks.lc-cn-n1-shared.com'
     });
   }, window.Valine);
 });

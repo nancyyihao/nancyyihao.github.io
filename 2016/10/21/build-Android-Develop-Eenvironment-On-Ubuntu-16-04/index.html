@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.0">
+<meta name="generator" content="Hexo 6.3.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -278,16 +278,19 @@
 <li>下载 Android Studio，android-studio-ide-145.3276617-linux.zip</li>
 <li>下载lantern ， lantern-installer-beta-64-bit.deb</li>
 <li>下载genymotion ，genymotion-2.8.0-linux_x64.bin</li>
-<li>下载virtualbox，virtualbox-5.1_5.1.8-111374-Ubuntu-xenial_amd64.deb<br>链接：<a href="http://pan.baidu.com/s/1jI16beI" target="_blank" rel="noopener">http://pan.baidu.com/s/1jI16beI</a> 密码：in90<a id="more"></a>
+<li>下载virtualbox，virtualbox-5.1_5.1.8-111374-Ubuntu-xenial_amd64.deb<br>链接：<a target="_blank" rel="noopener" href="http://pan.baidu.com/s/1jI16beI">http://pan.baidu.com/s/1jI16beI</a> 密码：in90<span id="more"></span></li>
+</ul>
 <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><h4 id="安装lantern"><a href="#安装lantern" class="headerlink" title="安装lantern"></a>安装lantern</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install gdebi-core</span><br><span class="line">sudo gdebi lantern-installer-beta-64-bit.deb</span><br></pre></td></tr></table></figure>
-<h4 id="启动lantern"><a href="#启动lantern" class="headerlink" title="启动lantern"></a>启动lantern</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#### 安装Studio</span><br><span class="line">解压文件并执行下面的命令即可启动Studio</span><br><span class="line">&#96;&#96;&#96;bash</span><br><span class="line"># sudo tar zxvf android-studio-bundle-133.970939-linux.tgz</span><br><span class="line">sudo mv android-studio &#x2F;home&#x2F;</span><br><span class="line">cd &#x2F;home&#x2F;android-studio&#x2F;bin&#x2F;</span><br><span class="line">sudo .&#x2F;studio.sh</span><br></pre></td></tr></table></figure>
+<h4 id="启动lantern"><a href="#启动lantern" class="headerlink" title="启动lantern"></a>启动lantern</h4><p><code>lantern</code></p>
+<h4 id="安装Studio"><a href="#安装Studio" class="headerlink" title="安装Studio"></a>安装Studio</h4><p>解压文件并执行下面的命令即可启动Studio</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo tar zxvf android-studio-bundle-133.970939-linux.tgz</span></span><br><span class="line">sudo <span class="built_in">mv</span> android-studio /home/</span><br><span class="line"><span class="built_in">cd</span> /home/android-studio/bin/</span><br><span class="line">sudo ./studio.sh</span><br></pre></td></tr></table></figure>
 <h4 id="安装virtualbox"><a href="#安装virtualbox" class="headerlink" title="安装virtualbox"></a>安装virtualbox</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg -i virtualbox-<span class="number">5.1_5</span><span class="number">.1</span><span class="number">.8</span>-<span class="number">111374</span>-Ubuntu-xenial_amd64.deb</span><br></pre></td></tr></table></figure>
 <h4 id="安装genymotion"><a href="#安装genymotion" class="headerlink" title="安装genymotion"></a>安装genymotion</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo -s</span><br><span class="line">./genymotion-<span class="number">2.8</span><span class="number">.0</span>-linux_x64.bin</span><br></pre></td></tr></table></figure>
 <h4 id="启动genymotion"><a href="#启动genymotion" class="headerlink" title="启动genymotion"></a>启动genymotion</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /opt/genymobile/genymotion</span><br><span class="line">./genymotion</span><br></pre></td></tr></table></figure>
-<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> vboxdrv.sh: Building VirtualBox kernel modules.</span><br><span class="line">vboxdrv.sh: failed: Look at &#x2F;var&#x2F;log&#x2F;vbox-install.log to find out what went wrong.</span><br><span class="line"> There were problems setting up VirtualBox.  To re-start the set-up process, run</span><br><span class="line">   &#x2F;sbin&#x2F;vboxconfig</span><br><span class="line"> as root.</span><br></pre></td></tr></table></figure>
-解决方法是将gcc版本换成5.4<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-<span class="number">5</span> <span class="number">100</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-<span class="number">4.7</span> <span class="number">50</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-<span class="number">5</span> <span class="number">100</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-<span class="number">4.7</span> <span class="number">50</span></span><br></pre></td></tr></table></figure>
-参考此处：<a href="http://www.cnblogs.com/pngcui/p/5948018.html" target="_blank" rel="noopener">http://www.cnblogs.com/pngcui/p/5948018.html</a> 。</li>
-</ul>
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> vboxdrv.sh: Building VirtualBox kernel modules.</span><br><span class="line">vboxdrv.sh: failed: Look at /var/log/vbox-install.log to find out what went wrong.</span><br><span class="line"> There were problems setting up VirtualBox.  To re-start the set-up process, run</span><br><span class="line">   /sbin/vboxconfig</span><br><span class="line"> as root.</span><br></pre></td></tr></table></figure>
+<p>解决方法是将gcc版本换成5.4</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-<span class="number">5</span> <span class="number">100</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-<span class="number">4.7</span> <span class="number">50</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-<span class="number">5</span> <span class="number">100</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-<span class="number">4.7</span> <span class="number">50</span></span><br></pre></td></tr></table></figure>
+<p>参考此处：<a target="_blank" rel="noopener" href="http://www.cnblogs.com/pngcui/p/5948018.html">http://www.cnblogs.com/pngcui/p/5948018.html</a> 。</p>
 
     </div>
 
@@ -393,7 +396,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装lantern"><span class="nav-number">2.1.</span> <span class="nav-text">安装lantern</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动lantern"><span class="nav-number">2.2.</span> <span class="nav-text">启动lantern</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装virtualbox"><span class="nav-number">2.3.</span> <span class="nav-text">安装virtualbox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装genymotion"><span class="nav-number">2.4.</span> <span class="nav-text">安装genymotion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动genymotion"><span class="nav-number">2.5.</span> <span class="nav-text">启动genymotion</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误处理"><span class="nav-number">3.</span> <span class="nav-text">错误处理</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85lantern"><span class="nav-number">2.1.</span> <span class="nav-text">安装lantern</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8lantern"><span class="nav-number">2.2.</span> <span class="nav-text">启动lantern</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Studio"><span class="nav-number">2.3.</span> <span class="nav-text">安装Studio</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85virtualbox"><span class="nav-number">2.4.</span> <span class="nav-text">安装virtualbox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85genymotion"><span class="nav-number">2.5.</span> <span class="nav-text">安装genymotion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8genymotion"><span class="nav-number">2.6.</span> <span class="nav-text">启动genymotion</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">错误处理</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -454,13 +457,13 @@
 <div class="copyright">
   
   &copy; 2016 – 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.3.0
   </div>
   <span class="post-meta-divider">|</span>
   <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
@@ -534,8 +537,8 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       el: '#valine-comments',
       verify: false,
       notify: false,
-      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
-      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      appId: 'Toibk8KsbHfe3teDDXGQ1o7z-gzGzoHsz',
+      appKey: 'Qm3u38tzxpUFDwFeMyfDY9PN',
       placeholder: "说点什么吧~",
       avatar: 'mm',
       meta: guest,
@@ -544,7 +547,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       lang: '' || 'zh-cn',
       path: location.pathname,
       recordIP: false,
-      serverURLs: ''
+      serverURLs: 'https://toibk8ks.lc-cn-n1-shared.com'
     });
   }, window.Valine);
 });

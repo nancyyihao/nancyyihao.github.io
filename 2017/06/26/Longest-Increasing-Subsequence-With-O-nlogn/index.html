@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.0">
+<meta name="generator" content="Hexo 6.3.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -277,30 +277,32 @@
       
         <h3 id="1-问题"><a href="#1-问题" class="headerlink" title="1. 问题"></a>1. 问题</h3><p>对于给定的序列，求该序列中最长上升子序列长度<br>如：<br>8 2 7 1 9 10 1 4 3 5</p>
 <p>最终输出4（最长上升子序列为[2，7，9，10]）</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h3 id="2-分析"><a href="#2-分析" class="headerlink" title="2. 分析"></a>2. 分析</h3><h4 id="2-1-方法一"><a href="#2-1-方法一" class="headerlink" title="2.1 方法一"></a>2.1 方法一</h4><p>很容易想到的就是O(n^2)的算法：<br>f[i]标识前i个元素中的最长不下降子序列的长度，则</p>
-<p>f[i] = max(f[j]) +1, 0&lt;j&lt;i &amp;&amp; a[j]&lt;a[i]</p>
+<p>f[i] &#x3D; max(f[j]) +1, 0&lt;j&lt;i &amp;&amp; a[j]&lt;a[i]</p>
 <h4 id="2-2-方法二"><a href="#2-2-方法二" class="headerlink" title="2.2 方法二"></a>2.2 方法二</h4><p>换个思路，用d[i]标识以长度为i，最长上升子序列中元素的最小值，拿上面的例子来说<br>8 2 7 1 9 10 1 4 3 5</p>
-<p>8<br>d[1] = 8 （目前为止，长度为1，最长上升子序列最小值当然是8）</p>
-<p>8 2<br>d[1] = 2 （因为2比8小，同样长度为1，最小值需要更新，因为2比8更优）</p>
-<p>8 2 7<br>d[1,2] =2, 7 （我们发现d[1]&lt;a[3] = 7,直接长度加1，并把7添加到d中）</p>
-<p>8 2 7 1<br>d[1,2] = 1,7 （为啥1的位置比2靠后，也能更新2？因为对于长度为1的最长不下降子序列，1作为结尾是最小的）</p>
-<p>8 2 7 1 9<br>d[1,2,3] = [1,7,9]</p>
-<p>8 2 7 1 9 10<br>d[1,2,3,4] = [1,7,9,10]</p>
-<p>8 2 7 1 9 10 1<br>d[1,2,3,4] = [1,7,9,10]</p>
-<p>8 2 7 1 9 10 1 4<br>d[1,2,3,4] = [1,4,9,10]</p>
-<p>8 2 7 1 9 10 1 4 3<br>d[1,2,3,4] = [1,3,9,10]</p>
-<p>8 2 7 1 9 10 1 4 3 5<br>d[1,2,3,4] = [1,3,5,10]<br>（为啥5的位置比9靠后，也能更新9？因为对于长度为3的最长不下降子序列，5作为结尾是最小的）</p>
+<p>8<br>d[1] &#x3D; 8 （目前为止，长度为1，最长上升子序列最小值当然是8）</p>
+<p>8 2<br>d[1] &#x3D; 2 （因为2比8小，同样长度为1，最小值需要更新，因为2比8更优）</p>
+<p>8 2 7<br>d[1,2] &#x3D;2, 7 （我们发现d[1]&lt;a[3] &#x3D; 7,直接长度加1，并把7添加到d中）</p>
+<p>8 2 7 1<br>d[1,2] &#x3D; 1,7 （为啥1的位置比2靠后，也能更新2？因为对于长度为1的最长不下降子序列，1作为结尾是最小的）</p>
+<p>8 2 7 1 9<br>d[1,2,3] &#x3D; [1,7,9]</p>
+<p>8 2 7 1 9 10<br>d[1,2,3,4] &#x3D; [1,7,9,10]</p>
+<p>8 2 7 1 9 10 1<br>d[1,2,3,4] &#x3D; [1,7,9,10]</p>
+<p>8 2 7 1 9 10 1 4<br>d[1,2,3,4] &#x3D; [1,4,9,10]</p>
+<p>8 2 7 1 9 10 1 4 3<br>d[1,2,3,4] &#x3D; [1,3,9,10]</p>
+<p>8 2 7 1 9 10 1 4 3 5<br>d[1,2,3,4] &#x3D; [1,3,5,10]<br>（为啥5的位置比9靠后，也能更新9？因为对于长度为3的最长不下降子序列，5作为结尾是最小的）</p>
 <p>我们发现d数组并不是保存最终的最长上升子序列。假如已经计算出两个状态i，j满足A[i]i且i&gt;j）来说，i并不会比j差——如果j满足Aj&lt;Ak的条件，i也满足。换句话说，如果我们只保留i，一定不会丢失最优解。因此，对于相同的d值，只需要保留A数组中最小的一个即可。</p>
 <pre><code>对于A数组中的所有元素 A[i] 
 1）若d[len] &lt; a[i]，则len = len + 1, d[len] = A[i]
 2）否则在d[1...len]中找到最大的t, 满足d[t]&lt;A[i]，此时用A[i]更新d，即d[t] = A[i]
-步骤1时间复杂度是O(n)，步骤2，因为d是递增的，所以可以用二分查找，时间复杂度是O(nlogn)，因此整个算法复杂度为O(nlogn)</code></pre><h3 id="3-代码"><a href="#3-代码" class="headerlink" title="3. 代码"></a>3. 代码</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;  </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;  </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXN 100000  </span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">int</span> a[MAXN],ans[MAXN],len;  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">binary_search</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;  </span><br><span class="line">    <span class="keyword">int</span> left,right,mid;  </span><br><span class="line">    left=<span class="number">0</span>,right=len;  </span><br><span class="line">    <span class="keyword">while</span>(left&lt;right)&#123;  </span><br><span class="line">        mid = left+(right-left)/<span class="number">2</span>;  </span><br><span class="line">        <span class="keyword">if</span>(ans[mid]&gt;=a[i]) right=mid;  </span><br><span class="line">        <span class="keyword">else</span> left=mid+<span class="number">1</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> left;</span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">int</span> T,N,i,j,k;  </span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;T);  </span><br><span class="line">    <span class="keyword">while</span>(T--)&#123;  </span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;N);  </span><br><span class="line">        <span class="keyword">for</span>(i=<span class="number">1</span>; i&lt;=N; ++i)  </span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;a[i]);  </span><br><span class="line">          </span><br><span class="line">        ans[<span class="number">1</span>] = a[<span class="number">1</span>];  </span><br><span class="line">        len=<span class="number">1</span>;  </span><br><span class="line">        <span class="keyword">for</span>(i=<span class="number">2</span>; i&lt;=N; ++i)&#123;  </span><br><span class="line">            <span class="keyword">if</span>(a[i]&gt;ans[len])  </span><br><span class="line">                ans[++len]=a[i];  </span><br><span class="line">            <span class="keyword">else</span>&#123;  </span><br><span class="line">                <span class="keyword">int</span> pos=binary_search(i);</span><br><span class="line">                ans[pos] = a[i];  </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j=<span class="number">1</span> ; j&lt;=len;j++) &#123;</span><br><span class="line">            	<span class="built_in">printf</span>(<span class="string">"%d "</span>,ans[j]);  </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">           </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,len);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+步骤1时间复杂度是O(n)，步骤2，因为d是递增的，所以可以用二分查找，时间复杂度是O(nlogn)，因此整个算法复杂度为O(nlogn)
+</code></pre>
+<h3 id="3-代码"><a href="#3-代码" class="headerlink" title="3. 代码"></a>3. 代码</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span>  </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span>  </span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAXN 100000  </span></span><br><span class="line">  </span><br><span class="line"><span class="type">int</span> a[MAXN],ans[MAXN],len;  </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">binary_search</span><span class="params">(<span class="type">int</span> i)</span></span>&#123;  </span><br><span class="line">    <span class="type">int</span> left,right,mid;  </span><br><span class="line">    left=<span class="number">0</span>,right=len;  </span><br><span class="line">    <span class="keyword">while</span>(left&lt;right)&#123;  </span><br><span class="line">        mid = left+(right-left)/<span class="number">2</span>;  </span><br><span class="line">        <span class="keyword">if</span>(ans[mid]&gt;=a[i]) right=mid;  </span><br><span class="line">        <span class="keyword">else</span> left=mid+<span class="number">1</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> left;</span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="type">int</span> T,N,i,j,k;  </span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;T);  </span><br><span class="line">    <span class="keyword">while</span>(T--)&#123;  </span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;N);  </span><br><span class="line">        <span class="keyword">for</span>(i=<span class="number">1</span>; i&lt;=N; ++i)  </span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;a[i]);  </span><br><span class="line">          </span><br><span class="line">        ans[<span class="number">1</span>] = a[<span class="number">1</span>];  </span><br><span class="line">        len=<span class="number">1</span>;  </span><br><span class="line">        <span class="keyword">for</span>(i=<span class="number">2</span>; i&lt;=N; ++i)&#123;  </span><br><span class="line">            <span class="keyword">if</span>(a[i]&gt;ans[len])  </span><br><span class="line">                ans[++len]=a[i];  </span><br><span class="line">            <span class="keyword">else</span>&#123;  </span><br><span class="line">                <span class="type">int</span> pos=<span class="built_in">binary_search</span>(i);</span><br><span class="line">                ans[pos] = a[i];  </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j=<span class="number">1</span> ; j&lt;=len;j++) &#123;</span><br><span class="line">            	<span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,ans[j]);  </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">           </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,len);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>输入如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 </span><br><span class="line">10 </span><br><span class="line">8 2 7 1 9 10 1 4 3 5</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 </span><br><span class="line">10 </span><br><span class="line">8 2 7 1 9 10 1 4 3 5</span><br></pre></td></tr></table></figure>
 <p>输出结果为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">2 </span><br><span class="line">2 7 </span><br><span class="line">1 7 </span><br><span class="line">1 7 9 </span><br><span class="line">1 7 9 10 </span><br><span class="line">1 7 9 10 </span><br><span class="line">1 4 9 10 </span><br><span class="line">1 3 9 10 </span><br><span class="line">1 3 5 10 </span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">2 </span><br><span class="line">2 7 </span><br><span class="line">1 7 </span><br><span class="line">1 7 9 </span><br><span class="line">1 7 9 10 </span><br><span class="line">1 7 9 10 </span><br><span class="line">1 4 9 10 </span><br><span class="line">1 3 9 10 </span><br><span class="line">1 3 5 10 </span><br><span class="line">4</span><br></pre></td></tr></table></figure>
 <p>和我们分析结果是一致的。</p>
 
     </div>
@@ -408,7 +410,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-问题"><span class="nav-number">1.</span> <span class="nav-text">1. 问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-分析"><span class="nav-number">2.</span> <span class="nav-text">2. 分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-方法一"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 方法一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-方法二"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 方法二</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-代码"><span class="nav-number">3.</span> <span class="nav-text">3. 代码</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">1. 问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">2. 分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%96%B9%E6%B3%95%E4%B8%80"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 方法一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 方法二</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">3. 代码</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -469,13 +471,13 @@
 <div class="copyright">
   
   &copy; 2016 – 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jasonkent27</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v6.3.0
   </div>
   <span class="post-meta-divider">|</span>
   <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.7.0
@@ -549,8 +551,8 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       el: '#valine-comments',
       verify: false,
       notify: false,
-      appId: '7xzCnwLJNb5UNuwrARXSsPAp-gzGzoHsz',
-      appKey: 'Pn3dWvPjCkouVYj6qqo0dCRA',
+      appId: 'Toibk8KsbHfe3teDDXGQ1o7z-gzGzoHsz',
+      appKey: 'Qm3u38tzxpUFDwFeMyfDY9PN',
       placeholder: "说点什么吧~",
       avatar: 'mm',
       meta: guest,
@@ -559,7 +561,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       lang: '' || 'zh-cn',
       path: location.pathname,
       recordIP: false,
-      serverURLs: ''
+      serverURLs: 'https://toibk8ks.lc-cn-n1-shared.com'
     });
   }, window.Valine);
 });
