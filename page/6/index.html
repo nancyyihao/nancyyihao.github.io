@@ -200,6 +200,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2017/02/27/android-listview-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Jasonkent27">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jasonkent27">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/02/27/android-listview-analysis/" class="post-title-link" itemprop="url">android-listview-分析</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-02-27 00:00:00" itemprop="dateCreated datePublished" datetime="2017-02-27T00:00:00+08:00">2017-02-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/02/27/android-listview-analysis/" class="post-meta-item leancloud_visitors" data-flag-title="android-listview-分析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/02/27/android-listview-analysis/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/02/27/android-listview-analysis/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>从Adapter.getView方法入手, 找到了 AbsListView.obtainView,</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Get a view and have it show the data associated with the specified</span></span><br><span class="line"><span class="comment">   * position. This is called when we have already discovered that the view is</span></span><br><span class="line"><span class="comment">   * not available for reuse in the recycle bin. The only choices left are</span></span><br><span class="line"><span class="comment">   * converting an old view or making a new one.</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> position The position to display</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> isScrap Array of at least 1 boolean, the first entry will become true if</span></span><br><span class="line"><span class="comment">   *                the returned view was taken from the scrap heap, false if otherwise.</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> A view displaying the data associated with the specified position</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  View <span class="title function_">obtainView</span><span class="params">(<span class="type">int</span> position, <span class="type">boolean</span>[] isScrap)</span> &#123;</span><br><span class="line">      isScrap[<span class="number">0</span>] = <span class="literal">false</span>;</span><br><span class="line">      <span class="comment">// Check whether we have a transient state view. Attempt to re-bind the</span></span><br><span class="line">      <span class="comment">// data and discard the view if we fail.</span></span><br><span class="line">      <span class="keyword">final</span> <span class="type">View</span> <span class="variable">transientView</span> <span class="operator">=</span> mRecycler.getTransientStateView(position);</span><br><span class="line">      <span class="keyword">if</span> (transientView != <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="keyword">final</span> <span class="type">LayoutParams</span> <span class="variable">params</span> <span class="operator">=</span> (LayoutParams) transientView.getLayoutParams();</span><br><span class="line">          <span class="comment">// If the view type hasn&#x27;t changed, attempt to re-bind the data.</span></span><br><span class="line">          <span class="keyword">if</span> (params.viewType == mAdapter.getItemViewType(position)) &#123;</span><br><span class="line">              <span class="keyword">final</span> <span class="type">View</span> <span class="variable">updatedView</span> <span class="operator">=</span> mAdapter.getView(position, transientView, <span class="built_in">this</span>);</span><br><span class="line">              <span class="comment">// If we failed to re-bind the data, scrap the obtained view.</span></span><br><span class="line">              <span class="keyword">if</span> (updatedView != transientView) &#123;</span><br><span class="line">                  setItemViewLayoutParams(updatedView, position);</span><br><span class="line">                  mRecycler.addScrapView(updatedView, position);</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          isScrap[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">          <span class="comment">// Finish the temporary detach started in addScrapView().</span></span><br><span class="line">          transientView.dispatchFinishTemporaryDetach();</span><br><span class="line">          <span class="keyword">return</span> transientView;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">final</span> <span class="type">View</span> <span class="variable">scrapView</span> <span class="operator">=</span> mRecycler.getScrapView(position);</span><br><span class="line">      <span class="keyword">final</span> <span class="type">View</span> <span class="variable">child</span> <span class="operator">=</span> mAdapter.getView(position, scrapView, <span class="built_in">this</span>);</span><br><span class="line">      <span class="keyword">if</span> (scrapView != <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="keyword">if</span> (child != scrapView) &#123;</span><br><span class="line">              <span class="comment">// Failed to re-bind the data, return scrap to the heap.</span></span><br><span class="line">              mRecycler.addScrapView(scrapView, position);</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">              isScrap[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">              <span class="comment">// Finish the temporary detach started in addScrapView().</span></span><br><span class="line">              child.dispatchFinishTemporaryDetach();</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">...... <span class="comment">// 省略部分代码</span></span><br><span class="line">      </span><br><span class="line">      <span class="keyword">return</span> child;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>我们把目光放在mRecycler上，其实就是一个RecyclerBin对象，负责缓存View对象，这是ListView复用机制的精华所在，有必要好好刨析这个类. RecyclerBin中各个变量的定义如下：</p>
+<p>&#x2F;&#x2F;回收Listener，当View变为可回收，即ScrapView时，会通过mRecyclerListener通知注册者，listener可通过setRecyclerListener注册</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> RecyclerListener mRecyclerListener;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The position of the first view stored in mActiveViews.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 第一个活动view的position，即第一个可视view的position</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">int</span> mFirstActivePosition;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Views that were on screen at the start of layout. This array is populated at the start of</span></span><br><span class="line"><span class="comment"> * layout, and at the end of layout all view in mActiveViews are moved to mScrapViews.</span></span><br><span class="line"><span class="comment"> * Views in mActiveViews represent a contiguous range of Views, with position of the first</span></span><br><span class="line"><span class="comment"> * view store in mFirstActivePosition.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 活动view的集合</span></span><br><span class="line"><span class="keyword">private</span> View[] mActiveViews = <span class="keyword">new</span> <span class="title class_">View</span>[<span class="number">0</span>];</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Unsorted views that can be used by the adapter as a convert view.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">/**废弃的可修复view集合，复用时传递到Adapter#getView方法的convertView参数。</span></span><br><span class="line"><span class="comment"> * 因为item type可能大于1，只有view type相同的view之间才能复用，所以是个二维数组</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> ArrayList&lt;View&gt;[] mScrapViews;</span><br><span class="line"><span class="comment">// ListView item type数量</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">int</span> mViewTypeCount;</span><br><span class="line"><span class="comment">// 当前的废弃view数组，定义这个成员是为了在mViewTypeCount为1时使用方便，不需要去取mScrapViews的第一个元素</span></span><br><span class="line"><span class="keyword">private</span> ArrayList&lt;View&gt; mCurrentScrap;</span><br><span class="line"><span class="comment">// 被跳过的，不能复用的view集合。view type小于0或者处理transient状态的view不能被复用。</span></span><br><span class="line"><span class="keyword">private</span> ArrayList&lt;View&gt; mSkippedScrap;</span><br><span class="line"><span class="comment">// 处于 transient状态的view集合，处于transient状态的view不能被复用，如view的动画正在播放，</span></span><br><span class="line"><span class="comment">// transient是瞬时、过渡的意思，关于transient状态详见android.view.View#PFLAG2_HAS_TRANSIENT_STATE</span></span><br><span class="line"><span class="keyword">private</span> SparseArray&lt;View&gt; mTransientStateViews;</span><br><span class="line"><span class="comment">// 如果adapter的hasStableIds方法返回true，处于过度状态的view保存到这里。因为需要保存view的position，而且处于过度状态的view一般很少，</span></span><br><span class="line"><span class="comment">// 这2个成员用了稀疏数组。具体不需要case，知道是保存转换状态view的集合就行。</span></span><br><span class="line"><span class="keyword">private</span> LongSparseArray&lt;View&gt; mTransientStateViewsById;</span><br></pre></td></tr></table></figure>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><p><a target="_blank" rel="noopener" href="http://blog.csdn.net/zwjemperor/article/details/52564098">Android ListView复用机制详解</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://blog.csdn.net/checkin001/article/details/50097797">RecyclerView与ListView对比浅析（二）：View缓存篇</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2016/12/31/2016-summary/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1079,103 +1179,6 @@ content of the inflated hierarchy.
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://nancyyihao.github.io/2016/09/10/Introduction-of-Android-Binder/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Jasonkent27">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Jasonkent27">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2016/09/10/Introduction-of-Android-Binder/" class="post-title-link" itemprop="url">Android-Binder使用</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2016-09-10 00:00:00" itemprop="dateCreated datePublished" datetime="2016-09-10T00:00:00+08:00">2016-09-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span id="/2016/09/10/Introduction-of-Android-Binder/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Binder使用" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2016/09/10/Introduction-of-Android-Binder/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2016/09/10/Introduction-of-Android-Binder/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于Android来说，Binder的重要性怎么说都不为过。不管是我们的四大组件Activity、Service、BroadcastReceiver、ContentProvider，还是经常在应用中使用到的各种ServiceManager，其背后都是Binder在支撑。然而Binder机制又不是三言两语能够描述得清楚的，因此本文通过对一个简单的AIDL Demo进行分析，让读者对Binder有个初步的认识，要想深入了解Binder背后的原理，可以参考最后的延伸阅读。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2016/09/10/Introduction-of-Android-Binder/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1248,19 +1251,19 @@ content of the inflated hierarchy.
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
