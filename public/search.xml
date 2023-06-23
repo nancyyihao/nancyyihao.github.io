@@ -4,6 +4,56 @@
   
     
     <entry>
+      <title>在不同浏览器上共享登录状态</title>
+      <link href="/2023/06/23/Share-Login-Status-On-Different-Browser/"/>
+      <url>/2023/06/23/Share-Login-Status-On-Different-Browser/</url>
+      
+        <content type="html"><![CDATA[<h3 id="1-问题"><a href="#1-问题" class="headerlink" title="1. 问题"></a>1. 问题</h3><p>经常需要在家里跟公司登录同一个网站，每次在公司登录后，家里浏览器登录状态就会被踢下来，很麻烦。希望找到一种办法可以共享登录状态，不用每次都要重新登录。</p><span id="more"></span><h3 id="2-解决方案"><a href="#2-解决方案" class="headerlink" title="2. 解决方案"></a>2. 解决方案</h3><p>使用 Chrome 插件<code>Cookie Backup and Restore</code>即可轻松办到。步骤如下：</p><ol><li><p>两台电脑的 chrome 浏览器都安装上 Cookie Backup and Restore 插件</p></li><li><p>在电脑 A 上登录，然后在电脑 A 上使用Cookie Backup and Restore插件把 Cookie 导出成文件<code>a.ckz</code></p></li><li><p>回到电脑 B，打开Cookie Backup and Restore插件，选择之前导出的<code>a.ckz</code>文件，输入密码即可</p></li><li><p>直接在电脑 B 中打开你的网站，你会发现，已经处于登录状态了</p><p><img src="/2023/06/23/Share-Login-Status-On-Different-Browser/p1.png"></p></li></ol><h3 id="3-链接"><a href="#3-链接" class="headerlink" title="3. 链接"></a>3. 链接</h3><ol><li>插件链接：<a href="https://chrome.google.com/webstore/detail/cookie-backup-and-restore/cndobhdcpmpilkebeebeecgminfhkpcj">https://chrome.google.com/webstore/detail/cookie-backup-and-restore/cndobhdcpmpilkebeebeecgminfhkpcj</a></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> Web </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Web </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>在腾讯云轻量服务器上部署 ChatGPT 服务</title>
+      <link href="/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/"/>
+      <url>/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/</url>
+      
+        <content type="html"><![CDATA[<h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>由于ChatGPT 不对国内开放，如何稳定获取ChatGPT服务已经成为一个令人头疼的问题。好在 github 上已经有人帮我们扫除了障碍，通过简单几句命令，便可把 ChatGPT 服务部署到本地。为了能在 PC和移动端上都能使用，于是我决定把ChatGPT服务部署到云服务器上。</p><span id="more"></span><h3 id="2-部署到腾讯云"><a href="#2-部署到腾讯云" class="headerlink" title="2. 部署到腾讯云"></a>2. 部署到腾讯云</h3><p>使用ChatGPT的前提是得有一个 open-AI 账号，没有需要打开链接：<a href="https://openai.com/%E6%B3%A8%E5%86%8C%E4%B8%80%E4%B8%AA%E3%80%82%E5%A6%82%E6%9E%9C%E6%B2%A1%E6%9C%89%E6%88%96%E8%80%85%E6%B3%A8%E5%86%8C%E4%B8%8D%E4%BA%86openAI">https://openai.com/注册一个。如果没有或者注册不了openAI</a> 账号，后面就不用看了。</p><h4 id="2-1-启动-docker"><a href="#2-1-启动-docker" class="headerlink" title="2.1 启动 docker"></a>2.1 启动 docker</h4><p>通过链接进入腾讯云服务器管理后台：<a href="https://console.cloud.tencent.com/lighthouse/instance/index?rid=8%EF%BC%8C%E7%99%BB%E5%BD%95%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%87%8C%E3%80%82">https://console.cloud.tencent.com/lighthouse/instance/index?rid=8，登录到服务器里。</a></p><p><img src="/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/p1.png"></p><p>我的腾讯云轻量服务器操作系统是TencentOS Server 3.1 (TK4)，默认带了 docker 服务，只需启动即可。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo -s</span><br><span class="line">systemctl start docker</span><br></pre></td></tr></table></figure><p>执行完后，继续输入<code>docker info</code> ，发现可以正常打印信息，则说明docker 服务启动成功</p><p><img src="/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/p2.png"></p><h4 id="2-2-安装pandora镜像"><a href="#2-2-安装pandora镜像" class="headerlink" title="2.2 安装pandora镜像"></a>2.2 安装pandora镜像</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull pengzhile/pandora</span><br></pre></td></tr></table></figure><p>如果发现pull 过程中报错：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: Get https://registry-1.docker.io/v2/: net/http: TLS handshake timeout</span><br></pre></td></tr></table></figure><p>则需要改 docker 镜像地址。步骤如下：</p><ol><li><p>修改或新增daemon.json，执行命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/docker/daemon.json</span><br></pre></td></tr></table></figure></li><li><p>按 i，填入下方内容，然后按 ESC，输入wq即可</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   &quot;registry-mirrors&quot;: [</span><br><span class="line">       &quot;https://mirror.ccs.tencentyun.com&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li><li><p>重启 docker 服务，如果不生效，直接重启服务器。重启服务器后，需要先按步骤 1启动 docker 才能进行后续操作。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure></li><li><p>docker 服务重启成功后，重新执行pull 命令即可拉取到镜像</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull pengzhile/pandora</span><br></pre></td></tr></table></figure></li></ol><h4 id="2-3-启动pandora镜像"><a href="#2-3-启动pandora镜像" class="headerlink" title="2.3 启动pandora镜像"></a>2.3 启动pandora镜像</h4><p>执行下方命令，即可启动 ChatGPT 镜像，该镜像会自动监听80&#x2F;433两个端口，当服务器收到80&#x2F;433两个端口过来的数据后，会自动转发到ChatGPT镜像中。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run  -e PANDORA_CLOUD=cloud -e PANDORA_SERVER=0.0.0.0:80 -p 80:80 -p 433:433 -d pengzhile/pandora</span><br></pre></td></tr></table></figure><p>执行成功后，浏览器中输入公网 IP</p><p><img src="/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/p3.png"></p><p>顺利的话，便会弹出下方登录窗口</p><p><img src="/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/p4.png"></p><p>正常输入账户密码，就能进入 ChatGPT 页面了。</p><p><img src="/2023/06/23/Deploy-ChatGPT-on-Tencent-Cloud/p5.png"></p><p>这里建议使用Access Token进行登录，这样在token有效期内（14 天），不管 PC 还是移动端，浏览器直接输入公网 IP 都能可正常使用。</p><h3 id="3-参考链接"><a href="#3-参考链接" class="headerlink" title="3. 参考链接"></a>3. 参考链接</h3><ol><li>pandora项目地址：<a href="https://github.com/pengzhile/pandora">https://github.com/pengzhile/pandora</a></li><li>解决 docker 拉取失败：<a href="https://blog.csdn.net/qq_16733389/article/details/122282085">https://blog.csdn.net/qq_16733389/article/details/122282085</a></li><li>本地部署 ChatGPT：<a href="https://juejin.cn/post/7237032198280790073">https://juejin.cn/post/7237032198280790073</a></li><li>腾讯云部署ChatGPT：<a href="https://blog.laoda.de/archives/docker-compose-install-pandora">https://blog.laoda.de/archives/docker-compose-install-pandora</a></li><li>腾讯云 docker 操作：<a href="https://cloud.tencent.com/document/product/213/46000">https://cloud.tencent.com/document/product/213/46000</a></li></ol><h3 id="4-遗留问题"><a href="#4-遗留问题" class="headerlink" title="4. 遗留问题"></a>4. 遗留问题</h3><p>本来想直接通过配置 nginx 反向代理，来规避备案的问题，尝试了直接腾讯云轻量服务器安装 nginx 的方式和 docker 安装 nginx 的方式，结果直接访问域名，都会跳到备案页面。如果你找到了办法，请下方留言。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Server </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Server </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>利用Python加Selenium下载音视频</title>
       <link href="/2023/04/08/Crawl-Video-Audio-With-Python-And-Selenium/"/>
       <url>/2023/04/08/Crawl-Video-Audio-With-Python-And-Selenium/</url>
@@ -1752,10 +1802,10 @@
     
     <entry>
       <title></title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h3 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h3><p>90后一枚<br>毕业于北京邮电大学，CS专业</p><p>中学时期开始学习编程，曾获得NOIP一等奖<br>大学期间玩过不少东西，刷机、操作系统、单片机、解释器（pascal转C）、php、java web，python都玩过，然一事无成。原来所做的东西仅仅浮于表面，深度不够。痛定思痛，专注Android开发</p><h3 id="经历"><a href="#经历" class="headerlink" title="经历"></a>经历</h3><p>15年初开始接触Android<br>15年7月开始在京东金融实习，为期半年，主要负责京东钱包Android端迭代工作<br>16年7月入职猪场至今，负责网易新闻Android端日常迭代工作</p><h3 id="目前状态"><a href="#目前状态" class="headerlink" title="目前状态"></a>目前状态</h3><p>主要工作是正常的需求迭代<br>更关注代码封装性和可扩展性<br>同时会做些性能优化的工作（内存泄漏、卡顿优化等）</p><h3 id="联系我"><a href="#联系我" class="headerlink" title="联系我"></a>联系我</h3><p>e-mail : <a href="mailto:&#x6a;&#x61;&#115;&#x6f;&#110;&#x6b;&#101;&#x6e;&#116;&#50;&#x37;&#x40;&#49;&#54;&#x33;&#x2e;&#99;&#111;&#109;">&#x6a;&#x61;&#115;&#x6f;&#110;&#x6b;&#101;&#x6e;&#116;&#50;&#x37;&#x40;&#49;&#54;&#x33;&#x2e;&#99;&#111;&#109;</a></p>]]></content>
       
     </entry>
     
@@ -1763,10 +1813,10 @@
     
     <entry>
       <title></title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
       
-        <content type="html"><![CDATA[<h3 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h3><p>90后一枚<br>毕业于北京邮电大学，CS专业</p><p>中学时期开始学习编程，曾获得NOIP一等奖<br>大学期间玩过不少东西，刷机、操作系统、单片机、解释器（pascal转C）、php、java web，python都玩过，然一事无成。原来所做的东西仅仅浮于表面，深度不够。痛定思痛，专注Android开发</p><h3 id="经历"><a href="#经历" class="headerlink" title="经历"></a>经历</h3><p>15年初开始接触Android<br>15年7月开始在京东金融实习，为期半年，主要负责京东钱包Android端迭代工作<br>16年7月入职猪场至今，负责网易新闻Android端日常迭代工作</p><h3 id="目前状态"><a href="#目前状态" class="headerlink" title="目前状态"></a>目前状态</h3><p>主要工作是正常的需求迭代<br>更关注代码封装性和可扩展性<br>同时会做些性能优化的工作（内存泄漏、卡顿优化等）</p><h3 id="联系我"><a href="#联系我" class="headerlink" title="联系我"></a>联系我</h3><p>e-mail : <a href="mailto:&#106;&#x61;&#115;&#111;&#110;&#x6b;&#x65;&#110;&#x74;&#50;&#55;&#64;&#49;&#x36;&#51;&#x2e;&#99;&#x6f;&#x6d;">&#106;&#x61;&#115;&#111;&#110;&#x6b;&#x65;&#110;&#x74;&#50;&#55;&#64;&#49;&#x36;&#51;&#x2e;&#99;&#x6f;&#x6d;</a></p>]]></content>
+        <content type="html"><![CDATA[]]></content>
       
     </entry>
     
