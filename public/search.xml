@@ -1083,6 +1083,35 @@
     
     
     <entry>
+      <title>笔记（一） - 《编码：隐藏在计算机背后的语言》</title>
+      <link href="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/"/>
+      <url>/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/</url>
+      
+        <content type="html"><![CDATA[<h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>最近一周，陆陆续续把《编码：隐藏在计算机背后的语言》看完了。不得不佩服作者深厚的计算机功底，更佩服作者能把抽象的计算机硬件和软件说得如此明白，透彻。通过简单小故事入手，深处浅出，娓娓道来。佩服的同时也在感叹，为啥这样一本好书，竟从没在计算机类书籍TOP100榜单中出现过。不可否认，如今的大部分程序员几乎不需要详细知道计算机底层相关知识也能把手头的工作做完，但知道了底层原理更能让我们如虎添翼，比别人走得更远。</p><span id="more"></span><h3 id="2-梗概"><a href="#2-梗概" class="headerlink" title="2. 梗概"></a>2. 梗概</h3><h4 id="2-1-信息的编码和传递"><a href="#2-1-信息的编码和传递" class="headerlink" title="2.1 信息的编码和传递"></a>2.1 信息的编码和传递</h4><p>作者从两个10岁小孩通信需求出发，讲述了他们如何利用手电筒和自定义的编码规则互相通信。一个简单的例子就是通过手电筒闪一次代表A，闪两次代表B，一次类推，闪26次代表Z，那么，如果要传送”HOW ARE YOU”，只需要闪相应次数即可。当然，每个字母闪完后，再闪下一个字母前，时间间隔要稍有不同，否则就没法分辨出此次闪是属于当前字母的还是下一个字母的。在这个例子中，其实涉及到了两个概念，信息的编码和解码：发送方和接收方事先定义好某些行为和某些含义的对应关系（映射表），发送方通过发送某些行为给接收方，接收方通过行为关系映射表便可查出发送方要传递的含义。莫尔斯电报机干的其实就是这事：发送端发送点和划，接收方通过下图解码还原出信息。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p1.png" alt="图1"></p><h4 id="2-2-电报机的原理"><a href="#2-2-电报机的原理" class="headerlink" title="2.2 电报机的原理"></a>2.2 电报机的原理</h4><p>电报机的原理基于电磁现象：如果你取一只铁棒，用细导线将它绕几百圈，然后让电流通过导线，铁棒变成了磁铁， 这时它就能吸引其他的铁和钢。移开电流，铁棒的磁性消失。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p2.png" alt="图2"></p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p3.png" alt="图3"></p><h4 id="2-3-继电器的发明"><a href="#2-3-继电器的发明" class="headerlink" title="2.3 继电器的发明"></a>2.3 继电器的发明</h4><p>电报机的发明极大地拓宽了人们传递信息的方式。但是电报机也有个很大的缺陷：当传输距离过长时，信号会变弱甚至失真。因此需要继电器：将上一个电报机发过来的信息再次发送出去。继电器是一个伟大的发明，通过继电器可以构造出一台计算机的大多数部件。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p4.png" alt="图4"></p><h4 id="2-4-继电器与逻辑门电路"><a href="#2-4-继电器与逻辑门电路" class="headerlink" title="2.4 继电器与逻辑门电路"></a>2.4 继电器与逻辑门电路</h4><h5 id="2-4-1-与门"><a href="#2-4-1-与门" class="headerlink" title="2.4.1 与门"></a>2.4.1 与门</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p5.png"></p><h5 id="2-4-2-或门"><a href="#2-4-2-或门" class="headerlink" title="2.4.2 或门"></a>2.4.2 或门</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p6.png"></p><h5 id="2-4-3-非门"><a href="#2-4-3-非门" class="headerlink" title="2.4.3 非门"></a>2.4.3 非门</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p7.png"></p><p>与或非是电路中最基础的三个电路，通过与或非可以组合出其他XOR、NAND、NOR等电路</p><h4 id="2-5-二进制计算机"><a href="#2-5-二进制计算机" class="headerlink" title="2.5 二进制计算机"></a>2.5 二进制计算机</h4><h5 id="2-5-1-加法"><a href="#2-5-1-加法" class="headerlink" title="2.5.1 加法"></a>2.5.1 加法</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p8.png"><br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p9.png"></p><h5 id="2-5-2-减法"><a href="#2-5-2-减法" class="headerlink" title="2.5.2 减法"></a>2.5.2 减法</h5><p>减法的原理十分巧妙，利用了补码的思想 ：减去一个数等于加上一个数的补码。对于无符号数来说，补码就是直接取反。所以减法计算器核心部件也是加法计算器，电路图如下：<br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p10.png"></p><h4 id="2-6-触发器"><a href="#2-6-触发器" class="headerlink" title="2.6 触发器"></a>2.6 触发器</h4><p>2.6.1 振荡器电路<br>思考一下如下电路：这幅图似乎在演示一种逻辑矛盾，反向器的输出是和其输入相反的，但是在这里，其输 出同时又是其输入。需要特别指出的是，反向器实际上是一个继电器，而继电器从一个状态 转换到另一个状态是需要时间的。所以，即使输入和输出是相等的，输出也会很快地改变， 成为输入的倒置。电路的输出是什么呢？其实就是提供电压和不提供电压之间的变换。或者说输出要么是 0， 要么是1。<br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p11.png"></p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p12.png"></p><p>2.6.2 触发器电路</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p13.png"><br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p14.png"></p><p>触发器可以保存信息的这个特性使得它变成一个非常关键的工具。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p15.png"></p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p16.png"></p><h4 id="2-7-存储器"><a href="#2-7-存储器" class="headerlink" title="2.7 存储器"></a>2.7 存储器</h4><p>在2.6章节我们已经知道怎么使用D触发器来保存一位数据了，接下来我们就通过扩展来保存更多的信息</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p17.png"></p><p>2.7.1 选择器</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p18.png"></p><p>2.7.2 译码器和完整电路</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p19.png"></p><p>扩展方式（1）：</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p20.png"></p><p>扩展方式（2）：</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p21.png"></p><h4 id="2-8-程序的产生"><a href="#2-8-程序的产生" class="headerlink" title="2.8 程序的产生"></a>2.8 程序的产生</h4><p>由于篇幅太长，特意重新写了一篇，请看这里：<a href="https://nancyyihao.github.io/2017/07/09/Notes-2-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/">笔记（二）</a></p><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从手电筒传递信息到莫尔斯电报机再到当今的计算机，虽然古老的传递方式已经废弃，触发器和继电器也不再应用于计算机当中，计算机技术的发展也日新月异，但是万变不离其宗，读了此书后，更加了解了计算机的本质，强烈推荐！</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 读书 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 读书 </tag>
+            
+            <tag> 编码 </tag>
+            
+            <tag> 笔记 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>笔记（二） - 《编码：隐藏在计算机背后的语言》</title>
       <link href="/2017/07/09/Notes-2-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/"/>
       <url>/2017/07/09/Notes-2-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/</url>
@@ -1102,35 +1131,6 @@
             <tag> 读书 </tag>
             
             <tag> 笔记 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>笔记（一） - 《编码：隐藏在计算机背后的语言》</title>
-      <link href="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/"/>
-      <url>/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/</url>
-      
-        <content type="html"><![CDATA[<h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>最近一周，陆陆续续把《编码：隐藏在计算机背后的语言》看完了。不得不佩服作者深厚的计算机功底，更佩服作者能把抽象的计算机硬件和软件说得如此明白，透彻。通过简单小故事入手，深处浅出，娓娓道来。佩服的同时也在感叹，为啥这样一本好书，竟从没在计算机类书籍TOP100榜单中出现过。不可否认，如今的大部分程序员几乎不需要详细知道计算机底层相关知识也能把手头的工作做完，但知道了底层原理更能让我们如虎添翼，比别人走得更远。</p><span id="more"></span><h3 id="2-梗概"><a href="#2-梗概" class="headerlink" title="2. 梗概"></a>2. 梗概</h3><h4 id="2-1-信息的编码和传递"><a href="#2-1-信息的编码和传递" class="headerlink" title="2.1 信息的编码和传递"></a>2.1 信息的编码和传递</h4><p>作者从两个10岁小孩通信需求出发，讲述了他们如何利用手电筒和自定义的编码规则互相通信。一个简单的例子就是通过手电筒闪一次代表A，闪两次代表B，一次类推，闪26次代表Z，那么，如果要传送”HOW ARE YOU”，只需要闪相应次数即可。当然，每个字母闪完后，再闪下一个字母前，时间间隔要稍有不同，否则就没法分辨出此次闪是属于当前字母的还是下一个字母的。在这个例子中，其实涉及到了两个概念，信息的编码和解码：发送方和接收方事先定义好某些行为和某些含义的对应关系（映射表），发送方通过发送某些行为给接收方，接收方通过行为关系映射表便可查出发送方要传递的含义。莫尔斯电报机干的其实就是这事：发送端发送点和划，接收方通过下图解码还原出信息。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p1.png" alt="图1"></p><h4 id="2-2-电报机的原理"><a href="#2-2-电报机的原理" class="headerlink" title="2.2 电报机的原理"></a>2.2 电报机的原理</h4><p>电报机的原理基于电磁现象：如果你取一只铁棒，用细导线将它绕几百圈，然后让电流通过导线，铁棒变成了磁铁， 这时它就能吸引其他的铁和钢。移开电流，铁棒的磁性消失。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p2.png" alt="图2"></p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p3.png" alt="图3"></p><h4 id="2-3-继电器的发明"><a href="#2-3-继电器的发明" class="headerlink" title="2.3 继电器的发明"></a>2.3 继电器的发明</h4><p>电报机的发明极大地拓宽了人们传递信息的方式。但是电报机也有个很大的缺陷：当传输距离过长时，信号会变弱甚至失真。因此需要继电器：将上一个电报机发过来的信息再次发送出去。继电器是一个伟大的发明，通过继电器可以构造出一台计算机的大多数部件。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p4.png" alt="图4"></p><h4 id="2-4-继电器与逻辑门电路"><a href="#2-4-继电器与逻辑门电路" class="headerlink" title="2.4 继电器与逻辑门电路"></a>2.4 继电器与逻辑门电路</h4><h5 id="2-4-1-与门"><a href="#2-4-1-与门" class="headerlink" title="2.4.1 与门"></a>2.4.1 与门</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p5.png"></p><h5 id="2-4-2-或门"><a href="#2-4-2-或门" class="headerlink" title="2.4.2 或门"></a>2.4.2 或门</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p6.png"></p><h5 id="2-4-3-非门"><a href="#2-4-3-非门" class="headerlink" title="2.4.3 非门"></a>2.4.3 非门</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p7.png"></p><p>与或非是电路中最基础的三个电路，通过与或非可以组合出其他XOR、NAND、NOR等电路</p><h4 id="2-5-二进制计算机"><a href="#2-5-二进制计算机" class="headerlink" title="2.5 二进制计算机"></a>2.5 二进制计算机</h4><h5 id="2-5-1-加法"><a href="#2-5-1-加法" class="headerlink" title="2.5.1 加法"></a>2.5.1 加法</h5><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p8.png"><br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p9.png"></p><h5 id="2-5-2-减法"><a href="#2-5-2-减法" class="headerlink" title="2.5.2 减法"></a>2.5.2 减法</h5><p>减法的原理十分巧妙，利用了补码的思想 ：减去一个数等于加上一个数的补码。对于无符号数来说，补码就是直接取反。所以减法计算器核心部件也是加法计算器，电路图如下：<br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p10.png"></p><h4 id="2-6-触发器"><a href="#2-6-触发器" class="headerlink" title="2.6 触发器"></a>2.6 触发器</h4><p>2.6.1 振荡器电路<br>思考一下如下电路：这幅图似乎在演示一种逻辑矛盾，反向器的输出是和其输入相反的，但是在这里，其输 出同时又是其输入。需要特别指出的是，反向器实际上是一个继电器，而继电器从一个状态 转换到另一个状态是需要时间的。所以，即使输入和输出是相等的，输出也会很快地改变， 成为输入的倒置。电路的输出是什么呢？其实就是提供电压和不提供电压之间的变换。或者说输出要么是 0， 要么是1。<br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p11.png"></p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p12.png"></p><p>2.6.2 触发器电路</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p13.png"><br><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p14.png"></p><p>触发器可以保存信息的这个特性使得它变成一个非常关键的工具。</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p15.png"></p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p16.png"></p><h4 id="2-7-存储器"><a href="#2-7-存储器" class="headerlink" title="2.7 存储器"></a>2.7 存储器</h4><p>在2.6章节我们已经知道怎么使用D触发器来保存一位数据了，接下来我们就通过扩展来保存更多的信息</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p17.png"></p><p>2.7.1 选择器</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p18.png"></p><p>2.7.2 译码器和完整电路</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p19.png"></p><p>扩展方式（1）：</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p20.png"></p><p>扩展方式（2）：</p><p><img src="/2017/07/09/Notes-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/p21.png"></p><h4 id="2-8-程序的产生"><a href="#2-8-程序的产生" class="headerlink" title="2.8 程序的产生"></a>2.8 程序的产生</h4><p>由于篇幅太长，特意重新写了一篇，请看这里：<a href="https://nancyyihao.github.io/2017/07/09/Notes-2-about-Code-The-Hidden-Language-Of-Computer-Hardware-and-Software/">笔记（二）</a></p><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从手电筒传递信息到莫尔斯电报机再到当今的计算机，虽然古老的传递方式已经废弃，触发器和继电器也不再应用于计算机当中，计算机技术的发展也日新月异，但是万变不离其宗，读了此书后，更加了解了计算机的本质，强烈推荐！</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> 读书 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 读书 </tag>
-            
-            <tag> 笔记 </tag>
-            
-            <tag> 编码 </tag>
             
         </tags>
       
@@ -1802,10 +1802,10 @@
     
     <entry>
       <title></title>
-      <link href="/categories/index.html"/>
-      <url>/categories/index.html</url>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h3 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h3><p>90后一枚<br>毕业于北京邮电大学，CS专业</p><h3 id="经历"><a href="#经历" class="headerlink" title="经历"></a>经历</h3><p>15年初开始接触Android<br>15年7月开始在京东金融实习，为期半年，主要负责京东钱包Android端迭代工作<br>16年7月-18年6月在猪场，负责网易新闻Android端日常迭代工作<br>18年7月-入职鹅厂至今，负责腾讯视频Android&#x2F;iOS日常迭代工作</p><h3 id="目前状态"><a href="#目前状态" class="headerlink" title="目前状态"></a>目前状态</h3><p>主要工作是正常的需求迭代<br>更关注代码封装性和可扩展性<br>同时会做些性能优化的工作（内存泄漏、卡顿优化等）</p><h3 id="联系我"><a href="#联系我" class="headerlink" title="联系我"></a>联系我</h3><p>e-mail : <a href="mailto:&#106;&#97;&#115;&#111;&#110;&#107;&#101;&#x6e;&#x74;&#50;&#x37;&#64;&#49;&#x36;&#x33;&#x2e;&#99;&#x6f;&#109;">&#106;&#97;&#115;&#111;&#110;&#107;&#101;&#x6e;&#x74;&#50;&#x37;&#64;&#49;&#x36;&#x33;&#x2e;&#99;&#x6f;&#109;</a></p>]]></content>
       
     </entry>
     
@@ -1824,10 +1824,10 @@
     
     <entry>
       <title></title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
+      <link href="/categories/index.html"/>
+      <url>/categories/index.html</url>
       
-        <content type="html"><![CDATA[<h3 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h3><p>90后一枚<br>毕业于北京邮电大学，CS专业</p><h3 id="经历"><a href="#经历" class="headerlink" title="经历"></a>经历</h3><p>15年初开始接触Android<br>15年7月开始在京东金融实习，为期半年，主要负责京东钱包Android端迭代工作<br>16年7月-18年6月在猪场，负责网易新闻Android端日常迭代工作<br>18年7月-入职鹅厂至今，负责腾讯视频Android&#x2F;iOS日常迭代工作</p><h3 id="目前状态"><a href="#目前状态" class="headerlink" title="目前状态"></a>目前状态</h3><p>主要工作是正常的需求迭代<br>更关注代码封装性和可扩展性<br>同时会做些性能优化的工作（内存泄漏、卡顿优化等）</p><h3 id="联系我"><a href="#联系我" class="headerlink" title="联系我"></a>联系我</h3><p>e-mail : <a href="mailto:&#x6a;&#97;&#115;&#111;&#110;&#107;&#101;&#110;&#x74;&#50;&#x37;&#64;&#49;&#x36;&#x33;&#x2e;&#99;&#111;&#109;">&#x6a;&#97;&#115;&#111;&#110;&#107;&#101;&#110;&#x74;&#50;&#x37;&#64;&#49;&#x36;&#x33;&#x2e;&#99;&#111;&#109;</a></p>]]></content>
+        <content type="html"><![CDATA[]]></content>
       
     </entry>
     
